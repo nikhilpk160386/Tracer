@@ -106,6 +106,10 @@
   .project-selector::-webkit-scrollbar { display: none; }
   .chip { background: var(--bg-elev); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.38rem 0.8rem; border-radius: 999px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all 0.15s; }
   .chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .chip.chip-add { border-style: dashed; color: var(--ink-faint); }
+  .chip.chip-add:hover, .chip.chip-add:active { color: var(--accent); border-color: var(--accent); }
+  .project-edit-link { background: none; border: none; color: var(--ink-faint); font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; text-decoration: underline; font-family: 'Inter', sans-serif; }
+  .project-edit-link:hover { color: var(--accent); }
   .chip .num { opacity: 0.6; margin-left: 0.3rem; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
 
   .filters { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; align-items: center; flex-wrap: wrap; }
@@ -281,6 +285,62 @@
   .bucket-tab[data-bucket="today"].active .bt-label,
   .bucket-tab[data-bucket="today"].active { color: var(--warn); border-color: var(--warn); }
 
+  /* SHARE BUTTONS */
+  .share-btn {
+    background: rgba(37, 211, 102, 0.12);
+    border: 1px solid rgba(37, 211, 102, 0.35);
+    color: #25d366;
+    padding: 0.32rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .share-btn:hover, .share-btn:active { background: rgba(37, 211, 102, 0.22); }
+  .share-btn .wa-ico {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z'/></svg>") no-repeat center;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z'/></svg>") no-repeat center;
+    flex-shrink: 0;
+  }
+  .share-btn.compact { padding: 0.28rem 0.4rem; font-size: 0; }
+  .share-btn.compact .wa-ico { width: 14px; height: 14px; }
+
+  /* Reminders button - iOS-blue */
+  .reminder-btn {
+    background: rgba(0, 122, 255, 0.12);
+    border: 1px solid rgba(0, 122, 255, 0.35);
+    color: #4a9eff;
+    padding: 0.32rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .reminder-btn:hover, .reminder-btn:active { background: rgba(0, 122, 255, 0.22); }
+  .reminder-btn::before {
+    content: '🔔';
+    font-size: 0.85rem;
+    margin-right: 0.05rem;
+  }
+
+  /* Dashboard digest button */
+  .digest-share { margin-bottom: 0.9rem; }
+
   /* EMPTY */
   .empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink-faint); font-family: 'Fraunces', serif; font-style: italic; }
   .empty .ico { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.4rem; }
@@ -314,6 +374,10 @@
 
 <main>
   <section class="view active" id="view-dashboard">
+    <div class="digest-share" style="display:flex;justify-content:flex-end;gap:0.5rem;flex-wrap:wrap;">
+      <button class="reminder-btn" id="remindToday">Send today's to Reminders</button>
+      <button class="share-btn" id="shareDigest"><span class="wa-ico"></span>Share daily digest</button>
+    </div>
     <div class="kpi-grid">
       <div class="kpi"><div class="label">Open</div><div class="value" id="kpiOpen">0</div><div class="delta" id="kpiOpenDelta"></div></div>
       <div class="kpi"><div class="label">Overdue</div><div class="value crit" id="kpiOverdue">0</div><div class="delta">need attention</div></div>
@@ -355,6 +419,11 @@
         <option value="section">Sort: Section</option>
         <option value="created">Sort: Newest</option>
       </select>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.9rem;flex-wrap:wrap;align-items:center;">
+      <button class="share-btn" id="shareFiltered"><span class="wa-ico"></span>Share this list</button>
+      <button class="share-btn" id="shareProjectSummary"><span class="wa-ico"></span>Share project summary</button>
+      <button class="project-edit-link" id="editProjectLink">Rename / Delete</button>
     </div>
     <div class="task-list" id="taskList"></div>
   </section>
@@ -412,10 +481,37 @@
       </div>
     </div>
     <div class="field"><label>Latest Update / Notes</label><textarea id="fNotes" placeholder="Last status update, blockers, context…"></textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
+      <button class="reminder-btn" id="remindTask" style="display:none;">Send to Reminders</button>
+      <button class="share-btn" id="shareTask" style="display:none;"><span class="wa-ico"></span>Share this task</button>
+    </div>
     <div class="modal-actions">
       <button class="btn danger" id="btnDelete" style="display:none;">Delete</button>
       <button class="btn" id="btnCancel">Cancel</button>
       <button class="btn primary" id="btnSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal-backdrop" id="projectModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="projectModalTitle">New Project</h2>
+      <button class="modal-close" id="projectModalClose">×</button>
+    </div>
+    <div class="field">
+      <label>Project Name</label>
+      <input type="text" id="fProjectName" placeholder="e.g. MIDC Pune Phase 2" autocomplete="off" />
+    </div>
+    <div class="field" id="projectStatsField" style="display:none;">
+      <label>Stats</label>
+      <div style="font-size:0.78rem;color:var(--ink-soft);line-height:1.5;" id="projectStatsText"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="projectDeleteBtn" style="display:none;">Delete</button>
+      <button class="btn" id="projectCancelBtn">Cancel</button>
+      <button class="btn primary" id="projectSaveBtn">Save</button>
     </div>
   </div>
 </div>
@@ -526,6 +622,293 @@ function toast(msg) {
 
 function isOpen(t) { return t.status !== 'done'; }
 function isOverdue(t) { return isOpen(t) && t.due && daysUntil(t.due) < 0; }
+
+/* ===== WHATSAPP SHARE ===== */
+
+function shareToWhatsApp(text) {
+  const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+}
+
+/* ===== iOS REMINDERS (via native Share Sheet) ===== */
+
+async function sendToReminders(title, due, notes) {
+  // Use native share sheet on iOS — Reminders is one of the targets.
+  // The user taps "Reminders" in the sheet, and iOS pre-fills the title/notes.
+  // iOS doesn't accept structured due dates via Web Share, so we put the date in the title.
+  let shareTitle = title;
+  if (due) {
+    const d = new Date(due);
+    const diff = daysUntil(due);
+    let dateLabel = '';
+    if (diff === 0) dateLabel = 'today';
+    else if (diff === 1) dateLabel = 'tomorrow';
+    else if (diff > 0) dateLabel = `in ${diff}d (${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})`;
+    else dateLabel = `${Math.abs(diff)}d overdue`;
+    shareTitle = `${title} — due ${dateLabel}`;
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: notes || shareTitle,
+      });
+      return true;
+    } catch (err) {
+      // User cancelled or share failed - silent
+      if (err.name !== 'AbortError') console.warn('Share failed:', err);
+      return false;
+    }
+  } else {
+    // Fallback: copy to clipboard
+    const txt = notes ? `${shareTitle}\n${notes}` : shareTitle;
+    try {
+      await navigator.clipboard.writeText(txt);
+      toast('Copied — paste into Reminders app');
+      return true;
+    } catch (err) {
+      toast('Could not share. Try again.');
+      return false;
+    }
+  }
+}
+
+// Bulk: send today's tasks to Reminders as one summary
+async function sendTodayToReminders() {
+  const open = state.tasks.filter(isOpen);
+  const todayAndOverdue = open.filter(t => t.due && daysUntil(t.due) <= 0);
+  if (todayAndOverdue.length === 0) {
+    toast('Nothing due today or overdue 👍');
+    return;
+  }
+  const lines = todayAndOverdue
+    .sort((a, b) => a.due.localeCompare(b.due))
+    .map(t => {
+      const proj = getProject(t.projectId);
+      const due = daysUntil(t.due);
+      const dueLbl = due === 0 ? 'today' : `${Math.abs(due)}d late`;
+      return `• ${t.title} (${proj?.name || ''} · ${dueLbl}${t.assignee ? ' · ' + t.assignee : ''})`;
+    });
+  const title = `TRACER · Today's tasks (${todayAndOverdue.length})`;
+  const notes = lines.join('\n');
+  sendToReminders(title, null, notes);
+}
+
+function dateHeader() {
+  const d = new Date();
+  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function fmtDue(dateStr) {
+  if (!dateStr) return '';
+  const diff = daysUntil(dateStr);
+  if (diff < 0) return `${Math.abs(diff)}d late`;
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff < 7) return `in ${diff}d`;
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function prioEmoji(p) {
+  return { crit: '🔴', high: '🟠', med: '🟡', low: '🟢' }[p] || '⚪';
+}
+
+function statusEmoji(s) {
+  return { todo: '⚪', wip: '🟡', blocked: '🔵', done: '✅' }[s] || '⚪';
+}
+
+// 1. Single task
+function buildTaskMessage(t) {
+  const proj = getProject(t.projectId);
+  const lines = [`📌 *${t.title}*`, ''];
+  if (proj) lines.push(`📍 ${proj.name}${t.section ? ' · ' + t.section : ''}`);
+  if (t.assignee) lines.push(`👤 ${t.assignee}`);
+  lines.push(`${prioEmoji(t.priority)} *${PRIO_LABELS[t.priority] || t.priority} priority*`);
+  if (t.due) lines.push(`📅 Due ${fmtDue(t.due)} (${t.due})`);
+  lines.push(`${statusEmoji(t.status)} ${STATUS_LABELS[t.status] || t.status}`);
+  if (t.notes) {
+    lines.push('');
+    lines.push(`💬 _Last update:_ ${t.notes}`);
+  }
+  lines.push('');
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
+
+// 2. Per-assignee
+function buildAssigneeMessage(name) {
+  const open = state.tasks.filter(t => isOpen(t) && t.assignee === name);
+  const overdue = open.filter(t => t.due && daysUntil(t.due) < 0);
+  const dueWeek = open.filter(t => t.due && daysUntil(t.due) >= 0 && daysUntil(t.due) <= 7);
+  const wip = open.filter(t => t.status === 'wip' && !overdue.includes(t) && !dueWeek.includes(t));
+  const other = open.filter(t => !overdue.includes(t) && !dueWeek.includes(t) && !wip.includes(t));
+
+  const lines = [`📋 *Tasks for ${name}*`, `📅 As of ${dateHeader()}`, ''];
+
+  const renderGroup = (emoji, label, items) => {
+    if (items.length === 0) return;
+    lines.push(`${emoji} *${label} (${items.length})*`);
+    items.forEach(t => {
+      const proj = getProject(t.projectId);
+      lines.push(`• ${t.title}`);
+      const meta = [];
+      if (proj) meta.push(proj.name);
+      if (t.section) meta.push(t.section);
+      if (t.due) meta.push(fmtDue(t.due));
+      if (meta.length) lines.push(`  📍 ${meta.join(' · ')}`);
+    });
+    lines.push('');
+  };
+
+  renderGroup('🔴', 'OVERDUE', overdue);
+  renderGroup('🟡', 'DUE THIS WEEK', dueWeek);
+  renderGroup('🟢', 'IN PROGRESS', wip);
+  renderGroup('⚪', 'OTHER OPEN', other);
+
+  if (open.length === 0) {
+    lines.push('✅ No open tasks. All clear!');
+    lines.push('');
+  }
+
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
+
+// 3. Filtered list (current Projects view) — uses what's visible
+function buildFilteredListMessage() {
+  const proj = getProject(state.currentProjectId);
+  const statusFilter = document.getElementById('filterStatus').value;
+  const assigneeFilter = document.getElementById('filterAssignee').value;
+
+  let tasks = state.tasks.filter(t => t.projectId === state.currentProjectId);
+  if (statusFilter === 'open') tasks = tasks.filter(isOpen);
+  else if (statusFilter === 'overdue') tasks = tasks.filter(isOverdue);
+  else if (statusFilter !== 'all') tasks = tasks.filter(t => t.status === statusFilter);
+  if (assigneeFilter) tasks = tasks.filter(t => t.assignee === assigneeFilter);
+
+  // Sort by due then priority
+  tasks.sort((a, b) => {
+    if (a.due && b.due) return a.due.localeCompare(b.due);
+    if (a.due) return -1; if (b.due) return 1;
+    return (PRIO_ORDER[a.priority] ?? 2) - (PRIO_ORDER[b.priority] ?? 2);
+  });
+
+  const statusLabel = {
+    open: 'Open tasks', todo: 'Not started', wip: 'In progress',
+    blocked: 'Blocked', done: 'Completed', overdue: 'Overdue', all: 'All tasks'
+  }[statusFilter] || 'Tasks';
+
+  const lines = [
+    `📋 *${proj?.name || 'Tasks'} — ${statusLabel}*`,
+    `📅 ${dateHeader()} · ${tasks.length} item${tasks.length !== 1 ? 's' : ''}`,
+    ''
+  ];
+  if (assigneeFilter) lines.splice(1, 0, `👤 ${assigneeFilter}`);
+
+  if (tasks.length === 0) {
+    lines.push('_No tasks match._');
+  } else {
+    // Cap at 25 to keep WhatsApp message manageable
+    const show = tasks.slice(0, 25);
+    show.forEach(t => {
+      const meta = [];
+      if (t.assignee) meta.push(t.assignee);
+      if (t.due) meta.push(fmtDue(t.due));
+      lines.push(`${prioEmoji(t.priority)} ${t.title}`);
+      if (meta.length) lines.push(`   ${meta.join(' · ')}`);
+    });
+    if (tasks.length > 25) lines.push(`... +${tasks.length - 25} more`);
+  }
+  lines.push('');
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
+
+// 4. Project summary
+function buildProjectSummary(projectId) {
+  const proj = getProject(projectId);
+  if (!proj) return '';
+  const tasks = state.tasks.filter(t => t.projectId === projectId);
+  const done = tasks.filter(t => t.status === 'done').length;
+  const wip = tasks.filter(t => t.status === 'wip').length;
+  const todo = tasks.filter(t => t.status === 'todo').length;
+  const blocked = tasks.filter(t => t.status === 'blocked').length;
+  const overdue = tasks.filter(isOverdue);
+  const pct = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+
+  const lines = [
+    `🏗️ *${proj.name}*`,
+    `📅 ${dateHeader()}`,
+    '',
+    `📊 Progress: ${pct}% complete`,
+    `✅ Done: ${done} / ${tasks.length}`,
+    `🟡 In progress: ${wip}`,
+  ];
+  if (overdue.length) lines.push(`🔴 *Overdue: ${overdue.length}*`);
+  lines.push(`⚪ Not started: ${todo}`);
+  if (blocked) lines.push(`🔵 Blocked: ${blocked}`);
+
+  if (overdue.length) {
+    lines.push('');
+    lines.push('⚠️ *Top overdue items:*');
+    overdue
+      .sort((a, b) => a.due.localeCompare(b.due))
+      .slice(0, 5)
+      .forEach(t => lines.push(`• ${t.title} · ${fmtDue(t.due)}${t.assignee ? ' · ' + t.assignee : ''}`));
+  }
+
+  lines.push('');
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
+
+// 5. Daily digest
+function buildDailyDigest() {
+  const tasks = state.tasks;
+  const open = tasks.filter(isOpen);
+  const overdue = open.filter(t => t.due && daysUntil(t.due) < 0);
+  const today = open.filter(t => t.due && daysUntil(t.due) === 0);
+  const in3 = open.filter(t => t.due && daysUntil(t.due) >= 1 && daysUntil(t.due) <= 3);
+  const in7 = open.filter(t => t.due && daysUntil(t.due) >= 1 && daysUntil(t.due) <= 7);
+  const wip = tasks.filter(t => t.status === 'wip').length;
+  const done = tasks.filter(t => t.status === 'done').length;
+  const active = state.projects.filter(p => tasks.some(t => t.projectId === p.id));
+
+  const lines = [
+    `🌅 *TRACER Daily Digest*`,
+    `📅 ${dateHeader()}`,
+    '',
+    `📊 *Overall*`,
+    `• ${open.length} open across ${active.length} projects`,
+    `• ${wip} in progress`,
+    `• ${done} completed`,
+    '',
+    `⏰ *Due Windows*`,
+    `🔴 Overdue: ${overdue.length}`,
+    `🟠 Today: ${today.length}`,
+    `🟡 Next 3 days: ${in3.length}`,
+    `🟢 Next 7 days: ${in7.length}`,
+  ];
+
+  // Projects with most overdue
+  const byOverdue = active
+    .map(p => ({ p, n: tasks.filter(t => t.projectId === p.id && isOverdue(t)).length }))
+    .filter(x => x.n > 0)
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 5);
+
+  if (byOverdue.length) {
+    lines.push('');
+    lines.push('🏗️ *Projects needing attention*');
+    byOverdue.forEach(({ p, n }) => lines.push(`• ${p.name} — ${n} overdue`));
+  }
+
+  lines.push('');
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
 
 /* ===== HEADER DATE ===== */
 function setDateMeta() {
@@ -672,6 +1055,12 @@ function renderProjects() {
     chip.onclick = () => { state.currentProjectId = p.id; save(); renderProjects(); };
     chips.appendChild(chip);
   });
+  // Add-project chip
+  const addChip = document.createElement('button');
+  addChip.className = 'chip chip-add';
+  addChip.innerHTML = '+ New Project';
+  addChip.onclick = () => openProjectModal();
+  chips.appendChild(addChip);
 
   // Assignee filter
   const fA = document.getElementById('filterAssignee');
@@ -896,10 +1285,19 @@ function renderAssignees() {
         ${overdueN ? `<span class="badge crit">${overdueN} late</span>` : ''}
         ${wipN ? `<span class="badge warn">${wipN} WIP</span>` : ''}
         <span class="badge">${openN} open</span>
+        <button class="share-btn compact" data-share-assignee="${escapeHTML(name)}" aria-label="Share via WhatsApp"><span class="wa-ico"></span></button>
         <span class="chevron">▾</span>
       </div>
     `;
-    head.onclick = () => {
+    // Wire the share button to stop event propagation (so it doesn't collapse the group)
+    const shareBtn = head.querySelector('[data-share-assignee]');
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      shareToWhatsApp(buildAssigneeMessage(name));
+    });
+    head.onclick = (e) => {
+      // Don't toggle if the share button was clicked
+      if (e.target.closest('[data-share-assignee]')) return;
       if (collapsedAssignees.has(name)) collapsedAssignees.delete(name);
       else collapsedAssignees.add(name);
       renderAssignees();
@@ -964,6 +1362,8 @@ function openTaskModal(task = null) {
   state.editingId = task ? task.id : null;
   document.getElementById('modalTitle').textContent = task ? 'Edit Task' : 'New Task';
   document.getElementById('btnDelete').style.display = task ? 'block' : 'none';
+  document.getElementById('shareTask').style.display = task ? 'inline-flex' : 'none';
+  document.getElementById('remindTask').style.display = task ? 'inline-flex' : 'none';
 
   const fP = document.getElementById('fProject');
   fP.innerHTML = '';
@@ -1076,6 +1476,122 @@ function rerender() {
   if (active === 'assignees') renderAssignees();
   if (active === 'search') renderSearch();
 }
+
+/* ===== PROJECT MANAGEMENT ===== */
+let editingProjectId = null;
+
+function makeProjectId(name) {
+  // Slug from name, uniqueness-checked
+  let base = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) || 'p';
+  let id = base;
+  let n = 2;
+  while (state.projects.some(p => p.id === id)) {
+    id = `${base}-${n++}`;
+  }
+  return id;
+}
+
+function openProjectModal(projectId = null) {
+  editingProjectId = projectId;
+  const modal = document.getElementById('projectModal');
+  const isEdit = !!projectId;
+  document.getElementById('projectModalTitle').textContent = isEdit ? 'Edit Project' : 'New Project';
+  document.getElementById('projectDeleteBtn').style.display = isEdit ? 'block' : 'none';
+  const statsField = document.getElementById('projectStatsField');
+
+  if (isEdit) {
+    const p = getProject(projectId);
+    document.getElementById('fProjectName').value = p.name;
+    const tasks = state.tasks.filter(t => t.projectId === projectId);
+    const open = tasks.filter(isOpen).length;
+    const done = tasks.filter(t => t.status === 'done').length;
+    statsField.style.display = 'block';
+    document.getElementById('projectStatsText').innerHTML =
+      `${tasks.length} task${tasks.length !== 1 ? 's' : ''} · ${open} open · ${done} completed`;
+  } else {
+    document.getElementById('fProjectName').value = '';
+    statsField.style.display = 'none';
+  }
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('fProjectName').focus(), 100);
+}
+
+function closeProjectModal() {
+  document.getElementById('projectModal').classList.remove('show');
+  editingProjectId = null;
+}
+
+document.getElementById('projectModalClose').onclick = closeProjectModal;
+document.getElementById('projectCancelBtn').onclick = closeProjectModal;
+document.getElementById('projectModal').addEventListener('click', e => {
+  if (e.target.id === 'projectModal') closeProjectModal();
+});
+
+document.getElementById('projectSaveBtn').onclick = () => {
+  const name = document.getElementById('fProjectName').value.trim();
+  if (!name) { toast('Project name required'); return; }
+  if (editingProjectId) {
+    const p = getProject(editingProjectId);
+    p.name = name;
+    toast('Project renamed');
+  } else {
+    const id = makeProjectId(name);
+    state.projects.push({ id, name });
+    state.currentProjectId = id;
+    toast('Project added');
+  }
+  save();
+  rerender();
+  closeProjectModal();
+};
+
+document.getElementById('projectDeleteBtn').onclick = () => {
+  if (!editingProjectId) return;
+  const p = getProject(editingProjectId);
+  const taskCount = state.tasks.filter(t => t.projectId === editingProjectId).length;
+  let msg = `Delete project "${p.name}"?`;
+  if (taskCount > 0) msg += `\n\nThis will also delete ${taskCount} task${taskCount !== 1 ? 's' : ''}. This cannot be undone.`;
+  if (!confirm(msg)) return;
+  state.tasks = state.tasks.filter(t => t.projectId !== editingProjectId);
+  state.projects = state.projects.filter(p => p.id !== editingProjectId);
+  if (state.currentProjectId === editingProjectId) {
+    state.currentProjectId = state.projects[0]?.id || null;
+  }
+  save();
+  rerender();
+  closeProjectModal();
+  toast('Project deleted');
+};
+
+document.getElementById('editProjectLink').onclick = () => {
+  if (state.currentProjectId) openProjectModal(state.currentProjectId);
+};
+
+/* ===== SHARE BUTTON WIRING ===== */
+document.getElementById('shareDigest').onclick = () => shareToWhatsApp(buildDailyDigest());
+document.getElementById('shareFiltered').onclick = () => shareToWhatsApp(buildFilteredListMessage());
+document.getElementById('shareProjectSummary').onclick = () => shareToWhatsApp(buildProjectSummary(state.currentProjectId));
+document.getElementById('shareTask').onclick = () => {
+  if (!state.editingId) return;
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (t) shareToWhatsApp(buildTaskMessage(t));
+};
+
+/* ===== REMINDER BUTTON WIRING ===== */
+document.getElementById('remindToday').onclick = () => sendTodayToReminders();
+document.getElementById('remindTask').onclick = () => {
+  if (!state.editingId) return;
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (!t) return;
+  const proj = getProject(t.projectId);
+  const notesParts = [];
+  if (proj) notesParts.push(`Project: ${proj.name}`);
+  if (t.section) notesParts.push(`Section: ${t.section}`);
+  if (t.assignee) notesParts.push(`Assignee: ${t.assignee}`);
+  if (t.priority) notesParts.push(`Priority: ${PRIO_LABELS[t.priority] || t.priority}`);
+  if (t.notes) notesParts.push(`\n${t.notes}`);
+  sendToReminders(t.title, t.due, notesParts.join('\n'));
+};
 
 /* ===== INIT ===== */
 loadOrSeed();

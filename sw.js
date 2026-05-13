@@ -1,6 +1,6 @@
 // TRACER service worker — offline-first cache strategy
 
-const CACHE = 'tracer-v1';
+const CACHE = 'tracer-v3';
 const ASSETS = [
   './',
   './index.html',
