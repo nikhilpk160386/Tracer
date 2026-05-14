@@ -341,6 +341,211 @@
   /* Dashboard digest button */
   .digest-share { margin-bottom: 0.9rem; }
 
+  /* SETTINGS BUTTON */
+  .settings-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .settings-btn:hover, .settings-btn:active {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* SETTINGS MODAL SECTIONS */
+  .settings-section {
+    margin-bottom: 1.2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .settings-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .settings-section h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.7rem;
+  }
+  .settings-row {
+    display: flex;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+  }
+  .settings-row .btn {
+    flex: 1;
+    padding: 0.65rem;
+    text-align: center;
+  }
+  .settings-info {
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    line-height: 1.5;
+    margin-top: 0.4rem;
+  }
+  .settings-info code {
+    background: var(--bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+  }
+
+  /* SNAPSHOTS */
+  .snapshot-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .snapshot-card {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+  }
+  .snapshot-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .snapshot-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .snapshot-totals {
+    display: flex;
+    gap: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .snapshot-totals .num.crit { color: var(--crit); }
+  .snapshot-totals .num.ok { color: var(--ok); }
+  .snapshot-totals .num.warn { color: var(--warn); }
+  .snapshot-delta {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .snapshot-delta .up { color: var(--ok); }
+  .snapshot-delta .down { color: var(--crit); }
+  .snapshot-delete {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.2rem 0.4rem;
+  }
+  .snapshot-delete:hover { color: var(--crit); }
+
+  /* BULK SELECTION MODE */
+  .task.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .task.selectable {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .bulk-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--accent);
+    padding: 0.7rem 1rem calc(env(safe-area-inset-bottom, 0) + 0.7rem);
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 80;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+  }
+  .bulk-bar.show { display: flex; }
+  .bulk-bar-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bulk-count {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .bulk-count .num {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .bulk-cancel {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.5rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .bulk-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .bulk-action {
+    flex: 1 1 auto;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 0.55rem 0.6rem;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .bulk-action.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .bulk-action.danger {
+    color: var(--crit);
+    border-color: rgba(217, 119, 102, 0.4);
+  }
+
+  /* TEMPLATES */
+  .template-card {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  .template-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem; }
+  .template-name { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--ink); }
+  .template-count { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--ink-faint); }
+  .template-desc { font-size: 0.78rem; color: var(--ink-soft); line-height: 1.45; margin-bottom: 0.65rem; }
+  .template-use { width: 100%; padding: 0.55rem !important; font-size: 0.82rem !important; }
+
   /* EMPTY */
   .empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink-faint); font-family: 'Fraunces', serif; font-style: italic; }
   .empty .ico { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.4rem; }
@@ -359,7 +564,10 @@
 <header class="header">
   <div class="brand">
     <h1>TRACER<span>.</span></h1>
-    <div class="meta" id="dateMeta"></div>
+    <div style="display:flex;align-items:center;gap:0.7rem;">
+      <div class="meta" id="dateMeta"></div>
+      <button class="settings-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </div>
   </div>
   <div class="search-wrap">
     <input type="text" id="globalSearch" placeholder="Search tasks, assignees, sections…" autocomplete="off" />
@@ -424,6 +632,7 @@
       <button class="share-btn" id="shareFiltered"><span class="wa-ico"></span>Share this list</button>
       <button class="share-btn" id="shareProjectSummary"><span class="wa-ico"></span>Share project summary</button>
       <button class="project-edit-link" id="editProjectLink">Rename / Delete</button>
+      <button class="project-edit-link" id="useTemplateBtn" style="color:var(--accent);">+ Use template</button>
     </div>
     <div class="task-list" id="taskList"></div>
   </section>
@@ -480,6 +689,19 @@
         <button data-p="low">Low</button>
       </div>
     </div>
+    <div class="field">
+      <label>Recurring?</label>
+      <select id="fRecurrence">
+        <option value="">No, one-time task</option>
+        <option value="daily">Repeats every day</option>
+        <option value="weekly">Repeats every week</option>
+        <option value="biweekly">Repeats every 2 weeks</option>
+        <option value="monthly">Repeats every month</option>
+        <option value="quarterly">Repeats every 3 months</option>
+        <option value="yearly">Repeats every year</option>
+      </select>
+      <div style="font-size:0.7rem;color:var(--ink-faint);margin-top:0.3rem;">When you mark it done, due date advances instead of completing.</div>
+    </div>
     <div class="field"><label>Latest Update / Notes</label><textarea id="fNotes" placeholder="Last status update, blockers, context…"></textarea></div>
     <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
       <button class="reminder-btn" id="remindTask" style="display:none;">Send to Reminders</button>
@@ -516,6 +738,80 @@
   </div>
 </div>
 
+<!-- TEMPLATES MODAL -->
+<div class="modal-backdrop" id="templatesModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Task Templates</h2>
+      <button class="modal-close" id="templatesClose">×</button>
+    </div>
+    <div style="font-size:0.78rem;color:var(--ink-faint);margin-bottom:0.8rem;line-height:1.45;">
+      Tap to add a pre-built set of tasks to the currently selected project. Due dates will be set relative to today.
+    </div>
+    <div id="templatesList"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Settings</h2>
+      <button class="modal-close" id="settingsClose">×</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>Backup &amp; Restore</h3>
+      <div class="settings-row">
+        <button class="btn primary" id="exportBackupBtn">Export Backup</button>
+        <button class="btn" id="importBackupBtn">Restore Backup</button>
+      </div>
+      <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
+      <div class="settings-info">
+        Export saves a <code>.json</code> file containing all tasks, projects, snapshots, and settings. Save it to iCloud Drive or share via WhatsApp/email. Restore replaces all current data.
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Snapshots</h3>
+      <div class="settings-row">
+        <button class="btn primary" id="takeSnapshotBtn">📸 Take Snapshot Now</button>
+      </div>
+      <div class="settings-info" id="snapshotCountInfo">No snapshots yet.</div>
+      <div class="snapshot-list" id="snapshotList" style="margin-top:0.7rem;"></div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Data Summary</h3>
+      <div class="settings-info" id="dataSummary"></div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Danger Zone</h3>
+      <div class="settings-row">
+        <button class="btn danger" id="resetSeedBtn">Reset to Original Seed</button>
+      </div>
+      <div class="settings-info">
+        Replaces all current data with the 247 original tasks. Your edits will be lost unless you export a backup first.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BULK SELECTION BAR -->
+<div class="bulk-bar" id="bulkBar">
+  <div class="bulk-bar-head">
+    <div class="bulk-count"><span class="num" id="bulkCountNum">0</span> selected</div>
+    <button class="bulk-cancel" id="bulkCancelBtn">Cancel</button>
+  </div>
+  <div class="bulk-actions">
+    <button class="bulk-action primary" id="bulkDoneBtn">Mark Done</button>
+    <button class="bulk-action" id="bulkReassignBtn">Reassign</button>
+    <button class="bulk-action" id="bulkShiftBtn">Shift Date</button>
+    <button class="bulk-action danger" id="bulkDeleteBtn">Delete</button>
+  </div>
+</div>
+
 <script type="application/json" id="seedData">{"projects":[{"id":"mes","name":"MES Workshop Bldg"},{"id":"bkm","name":"MJP BKM"},{"id":"csn","name":"MIDC CSN"},{"id":"chakan","name":"Chakan MIDC"},{"id":"head","name":"Head Office"},{"id":"akola","name":"MIDC Akola"},{"id":"nagar","name":"Nagar Projects"},{"id":"mesahn","name":"MES Ahilyanagar"},{"id":"mspl","name":"MIDC MS P L"},{"id":"misc","name":"Other / Misc"},{"id":"wtp","name":"MIDC WTP 72 MLD"}],"assignees":["Aditya More","Aditya More / Aditya Patil","Aditya Patil","Bhushan","Bhushan & Laxmikant","Danekar","Danekar & Ragini","Dinkar","Dinkar & Laxmikant","Dinkar & Ragini","Ganesh & Laxmikant","Ganesh K","Ketaki","Korhale","Laxmikant","Mangesh","Mangesh & Laxmikant","Mangesh & Vrushali","Nikhil","Nikhil & Ragini","PUK","Paresh","Ragini","Ragini & Korhale","Ragini & Paresh","SI","Shukla","Vishwanath","Vrushali","ZAD"],"tasks":[{"id":"t0001","title":"Finalisation of Management balance sheets","projectId":"head","section":"Finance","assignee":"Bhushan & Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0002","title":"Preparation of AER up to 31-03-2026","projectId":"head","section":"Finance","assignee":"Bhushan","priority":"high","status":"wip","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0003","title":"Update Alandi & Pandharpur expenses report","projectId":"head","section":"Accounts","assignee":"Bhushan","priority":"med","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0004","title":"Review TR sheet of Narsingh Patil","projectId":"head","section":"Accounts","assignee":"Bhushan & Laxmikant","priority":"med","status":"wip","done":false,"due":"2026-05-18","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0005","title":"Review Maintenance expenses report - FY 2025-26","projectId":"head","section":"Maintenance","assignee":"Paresh","priority":"med","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0006","title":"Review fuel consumption report for workshop building & BKM","projectId":"head","section":"Maintenance","assignee":"Paresh","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0007","title":"Review up-to-date utility report","projectId":"head","section":"HR","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0008","title":"Review all assets report","projectId":"head","section":"Maintenance","assignee":"Paresh","priority":"med","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0009","title":"Review Centering and Shuttering report","projectId":"head","section":"Maintenance","assignee":"Paresh","priority":"med","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0010","title":"Review insurance report","projectId":"head","section":"Admin ","assignee":"Vishwanath","priority":"high","status":"done","done":true,"due":"2026-05-05","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0011","title":"Review RTO compliances report","projectId":"head","section":"Admin ","assignee":"Vishwanath","priority":"high","status":"done","done":true,"due":"2026-05-05","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0012","title":"Review of financial statements up to Mar 2026","projectId":"head","section":"Finance","assignee":"Bhushan","priority":"high","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0013","title":"Theft claim settlement of DI pipes - submit final charge sheet to insurance co.","projectId":"head","section":"Admin ","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0014","title":"Review of FD interest report","projectId":"head","section":"Finance","assignee":"Laxmikant","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0015","title":"Joining of new employees - WTP & MES Ahilyanagar","projectId":"head","section":"HR","assignee":"Ketaki","priority":"high","status":"todo","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0016","title":"Mortgage of Dharashiv Land for Addl BG Limit","projectId":"head","section":"Finance","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0017","title":"Interest sheet of KMBL current account up to 31.03.26","projectId":"head","section":"Accounts","assignee":"Bhushan","priority":"crit","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0018","title":"Write email to KMBL and further course of action","projectId":"head","section":"Accounts","assignee":"Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0019","title":"Approval to DO of armament Shop - at zone office","projectId":"mes","section":"Proposal","assignee":"Nikhil","priority":"med","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0020","title":"Approval to yard stick of armament shop by CWE","projectId":"mes","section":"Proposal","assignee":"Nikhil","priority":"crit","status":"done","done":true,"due":"2026-04-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0021","title":"List balance qty of TMT, blocks and ready mix plaster for completion of all structures","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0022","title":"Issue of car parking - TBD with dept and issue letter","projectId":"mes","section":"Proposal","assignee":"Nikhil","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0023","title":"Conduct up to date material reconciliation","projectId":"mes","section":"Engineering & Purchase ","assignee":"Ragini & Paresh","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0024","title":"Procurement of next lot of APP Membrane ","projectId":"mes","section":"Purchase ","assignee":"Vrushali","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0025","title":"Completion of all terraces water proofing work","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":null,"completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0026","title":"Finalise levels for internal approach roads & start work","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"done","done":true,"due":"2026-04-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0027","title":"Procurement of electrical cables","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0028","title":"Finalisation of electrical contractor","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0029","title":"Procurement of external plumbing material","projectId":"mes","section":"Purchase ","assignee":"Vrushali","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0030","title":"Finalisation of plumbing contractor","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0031","title":"Finalisation of agency for door frames and doors and procurement","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0032","title":"Finalise required type and qty of windows","projectId":"mes","section":"Engineering","assignee":"Ragini","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0033","title":"Procurement of windows","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0034","title":"Obtain approval from dept for acid resistant, ceramic and vitrified tiles","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"done","done":true,"due":"2026-04-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0035","title":"Finalisation of location for static water tank, sentry, washing platform and ramp from dept","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0036","title":"Complete work of static water tank, sentry, washing platform, ramp","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":null,"completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0037","title":"Finalisation of make for painting and obtain approval from dept","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"med","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0038","title":"Finalise agency for painting","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"med","status":"todo","done":false,"due":"2026-06-05","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0039","title":"Completion of slab - Accn Part D","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0040","title":"Completion of slab - Accn Part E","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0041","title":"Completion of slab - Admin FF","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0042","title":"Completion of slab - Tradesman unit","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0043","title":"Delivery of cement bulker ","projectId":"mes","section":"Purchase ","assignee":"Vrushali","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0044","title":"Project expenses report up to 31.03.26","projectId":"mes","section":"Finance","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0045","title":"Sub contractor reconciliation","projectId":"mes","section":"Engineering","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0046","title":"Preparation of next RAR","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"todo","done":false,"due":"2026-05-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0047","title":"Armament Shop - RCC work","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0048","title":"Static Water Tank","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0049","title":"Washing Platform","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"wip","done":false,"due":"2026-04-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0050","title":"Car Parking - RCC work completion","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0051","title":"Sentry and Alarm Post","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"med","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0052","title":"Increase labors of Ali","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"todo","done":false,"due":"2026-05-12","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0053","title":"Dwarf Wall & Ramp work - 7 Structures","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"crit","status":"wip","done":false,"due":"2026-04-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0054","title":"Admin 1st Floor Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0055","title":"Accommodation Building Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"wip","done":false,"due":"2026-04-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0056","title":"Storage Accommodation Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"wip","done":false,"due":"2026-04-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0057","title":"Tradesmen Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0058","title":"Drying and Ironing Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"done","done":true,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0059","title":"Armament Shop Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0060","title":"Car Parking Blockwork","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"high","status":"todo","done":false,"due":"2026-07-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0061","title":"Admin 1st Floor Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"crit","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0062","title":"Accommodation Building Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0063","title":"Storage Accommodation Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"wip","done":false,"due":"2026-05-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0064","title":"Tradesmen Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0065","title":"Drying and Ironing Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0066","title":"Armament Shop Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"med","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0067","title":"Car Parking Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"med","status":"todo","done":false,"due":"2026-07-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0068","title":"Guard Room Plaster","projectId":"mes","section":"Site ","assignee":"Aditya Patil","priority":"high","status":"done","done":true,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0069","title":"Accommodation Building Waterproofing Plaster","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0070","title":"Admin Waterproofing Plaster","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"done","done":true,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0071","title":"Car Parking Waterproofing Plaster","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"low","status":"todo","done":false,"due":"2026-07-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0072","title":"APP - Garage 4.5m (11 Veh)","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0073","title":"APP - Battery Charging ","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0074","title":"APP - Ancillary Shop","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0075","title":"APP - Specialist Shop","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0076","title":"APP - Guard Room","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0077","title":"APP - MT Store","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0078","title":"APP - Storage Accommodation","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0079","title":"APP - Tradesmen","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0080","title":"APP - Drying and Ironing","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0081","title":"APP - Accommodation","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0082","title":"APP - Admin","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0083","title":"APP - Repair Bay","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0084","title":"APP - Car Parking","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"low","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0085","title":"APP - Armament 4 Slab","projectId":"mes","section":"Site ","assignee":"Aditya More / Aditya Patil","priority":"high","status":"todo","done":false,"due":"2026-06-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0086","title":"Tremix - Garages 3.8m - 3 veh","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0087","title":"Tremix - Repair Bay","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0088","title":"Tremix - Motor Cycle Parking","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0089","title":"Tremix - Car Parking","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0090","title":"Tremix - All Ramps","projectId":"mes","section":"Site ","assignee":"Aditya More","priority":"med","status":"todo","done":false,"due":"2026-06-05","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0091","title":"Excavation of balance road work","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"done","done":true,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0092","title":"Procure GSB and start work (300 brass GSB 150mm + 450 brass WMM 225mm)","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"wip","done":false,"due":"2026-04-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0093","title":"Obtain Quotation for Plumbing Material","projectId":"mes","section":"Purchase ","assignee":"Vrushali","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0094","title":"Obtain Quotation for Labors for Plumbing work - Malik","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0095","title":"Finalize location for DI Pipe","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0096","title":"Toilet fitting qty workout & confirm payment schedule","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0097","title":"Start Plumbing work within the week","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0098","title":"Delivery of PVC doors ","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0099","title":"Delivery of Pressed Steel door frames ","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0100","title":"Finalize contractor for doors","projectId":"mes","section":"Site ","assignee":"Ragini & Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0101","title":"Procure Panelled Door Shutters - after fixing pressed steel frames","projectId":"mes","section":"Site ","assignee":"Paresh","priority":"med","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0102","title":"Internal Electrification rates from Bandapalle, Milind Bhagwat, Raju","projectId":"mes","section":"Site ","assignee":"Ragini & Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0103","title":"External Electrification rates finalisation ","projectId":"mes","section":"Site ","assignee":"Ragini & Korhale","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0104","title":"Kotah Stone - Accommodation","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"todo","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0105","title":"Kotah Stone - Storage Accommodation","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0106","title":"Kotah Stone - Tradesmen","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0107","title":"Kotah Stone - Drying and Ironing","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0108","title":"Kotah Stone - Guard Room","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0109","title":"Kotah Stone - Armament Shop","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"med","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0110","title":"Increase Mithilesh's labour","projectId":"mes","section":"Site ","assignee":"Korhale","priority":"crit","status":"todo","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0111","title":"Procurement of balance flooring material","projectId":"mes","section":"Purchase ","assignee":"Paresh","priority":"crit","status":"wip","done":false,"due":"2026-05-06","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0112","title":"Submission and release of RAR and PVC","projectId":"mes","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0113","title":"Scrap of old MS pipes","projectId":"csn","section":"Waluj-Shendra Pipeline","assignee":"Ganesh K","priority":"high","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0114","title":"Decision regarding DI pipes @ Shendra yard","projectId":"csn","section":"Waluj-Shendra Pipeline","assignee":"Nikhil","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0115","title":"Finalisation of agency for Funder Max, Al windows, ACP panels, Glazing","projectId":"csn","section":"DIC Building","assignee":"Ganesh K","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0116","title":"Submission and payment of PV bill","projectId":"csn","section":"DIC Building","assignee":"Laxmikant","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0117","title":"Procurement of door frames and doors","projectId":"csn","section":"DIC Building","assignee":"Ganesh K","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0118","title":"Project expenses report","projectId":"csn","section":"DIC Building","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0119","title":"Material reconciliation","projectId":"csn","section":"DIC Building","assignee":"Ragini","priority":"crit","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0120","title":"Sub contractor reconciliation","projectId":"csn","section":"DIC Building","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0121","title":"Approval to TLE by CEO","projectId":"csn","section":"DIC Building","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0122","title":"Finalisation of agency for interior furniture work","projectId":"csn","section":"DIC Building","assignee":"Ganesh K","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0123","title":"Approval to TLE by CEO","projectId":"csn","section":"Oasis Junction","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0124","title":"Release of payment towards final bill","projectId":"csn","section":"Oasis Junction","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0125","title":"Release of amount withheld against compensation","projectId":"csn","section":"Oasis Junction","assignee":"Laxmikant","priority":"med","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0126","title":"Project expenses report","projectId":"csn","section":"Oasis Junction","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0127","title":"Agreement with SC","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0128","title":"Delivery follow up MS specials - Natu","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Ragini","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0129","title":"Delivery follow up valves - KP Mondal","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Ragini","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0130","title":"Approval to excess qty proposal","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Ganesh & Laxmikant","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0131","title":"Procurement of next lot of MS pipes","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Vrushali ","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0132","title":"Approval to TLE - 03 months","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Ganesh K","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0133","title":"Recording & Payment of RA bill","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Ganesh K","priority":"crit","status":"todo","done":false,"due":"2026-05-18","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0134","title":"Recording & Payment of PV bill","projectId":"csn","section":"Waluj MS Pipeline","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0135","title":"Approval to TLE by CEO","projectId":"akola","section":"Chikhali Pipeline","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0136","title":"Start pipeline work along PWD limits","projectId":"akola","section":"Chikhali Pipeline","assignee":"Mangesh","priority":"high","status":"done","done":true,"due":"2026-03-14","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0137","title":"Procurement of MJ collar joints","projectId":"akola","section":"Chikhali Pipeline","assignee":"Ragini","priority":"high","status":"done","done":true,"due":"2026-03-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0138","title":"Procurement of air valve shafts","projectId":"akola","section":"Chikhali Pipeline","assignee":"Ragini","priority":"high","status":"done","done":true,"due":"2026-03-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0139","title":"Project expenses report","projectId":"akola","section":"Chikhali Pipeline","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0140","title":"Recording and release of RA bill","projectId":"akola","section":"Chikhali Pipeline","assignee":"Mangesh & Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0141","title":"Finalise contractor and start the work of HW crossing","projectId":"akola","section":"Chikhali Pipeline","assignee":"Mangesh","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0142","title":"Obtain permission from PWD","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Mangesh","priority":"crit","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0143","title":"Start pipeline work along PWD limits","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Mangesh","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0144","title":"RCC design of well","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0145","title":"Finalise contractor for well activity","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Mangesh","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0146","title":"Procurement of balance DI pipe","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Nikhil","priority":"med","status":"todo","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0147","title":"Procurement of balance valves & specials","projectId":"akola","section":"Deulgaon Raja Pipeline","assignee":"Mangesh & Vrushali","priority":"med","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0148","title":"Approval to special relief","projectId":"chakan","section":"Chakan ESR & Pipeline","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0149","title":"Release of payment against special relief","projectId":"chakan","section":"Chakan ESR & Pipeline","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0150","title":"Release of withheld payment against final bill","projectId":"chakan","section":"Chakan ESR & Pipeline","assignee":"Laxmikant","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0151","title":"Start work of septic tank and watchman cabin","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0152","title":"Calculate qty of plumbing material and provide to purchase dept","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0153","title":"Procurement of balance plumbing material","projectId":"chakan","section":"Chakan Building","assignee":"Vrushali","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0154","title":"Issue WO and start activity of false ceiling and wall punning","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0155","title":"Calculate qty of granite for bathroom doors and procure","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar & Ragini","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0156","title":"Furniture layout","projectId":"chakan","section":"Chakan Building","assignee":"Ragini","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0157","title":"Tile sample approval from MIDC","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0158","title":"Approval to glazing design","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar & Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0159","title":"Ext power supply activity - Bandapalle to start work","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0160","title":"Finalisation of road alignment","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0161","title":"Approval to TLE by CEO","projectId":"chakan","section":"Chakan Building","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0162","title":"Procurement of flooring material","projectId":"chakan","section":"Chakan Building","assignee":"Vrushali","priority":"high","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0163","title":"Submission of PV bill","projectId":"chakan","section":"Chakan Building","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0164","title":"Project expenses report","projectId":"chakan","section":"Chakan Building","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0165","title":"Material Reconciliation","projectId":"chakan","section":"Chakan Building","assignee":"Ragini & Paresh","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0166","title":"Sub Contractor Reconciliation","projectId":"chakan","section":"Chakan Building","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0167","title":"Submission and payment of RA bill","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar & Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0168","title":"Start work of external painting","projectId":"chakan","section":"Chakan Building","assignee":"Dinkar & Ragini","priority":"crit","status":"todo","done":false,"due":"2026-05-09","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0169","title":"Preparation & Review of Project expenses report","projectId":"nagar","section":"Low Security Wall","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0170","title":"Approval to TLE by CE office","projectId":"nagar","section":"A Vehicle Track","assignee":"Nikhil","priority":"crit","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0171","title":"Obtain work completion certificate","projectId":"nagar","section":"A Vehicle Track","assignee":"Nikhil","priority":"crit","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0172","title":"Completion of minor balance activities on site","projectId":"nagar","section":"A Vehicle Track","assignee":"Korhale","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0173","title":"Recording of bills","projectId":"nagar","section":"A Vehicle Track","assignee":"Korhale","priority":"crit","status":"done","done":true,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0174","title":"Submission of pre-final and final bill","projectId":"nagar","section":"A Vehicle Track","assignee":"Korhale","priority":"crit","status":"wip","done":false,"due":"2026-05-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0175","title":"Release of payment against pre-final bill","projectId":"nagar","section":"A Vehicle Track","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0176","title":"Preparation and review of Project expenses report","projectId":"nagar","section":"A Vehicle Track","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0177","title":"Call - Meena, Lamkane, Jadhav, CWE","projectId":"nagar","section":"A Vehicle Track","assignee":"Nikhil","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0178","title":"Release of performance & retention BG","projectId":"nagar","section":"A Vehicle Track","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0179","title":"Completion & commissioning of solar plant - sign of ZP CEO pending","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"crit","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0180","title":"Decision on P/W retrofitting work from Biwal","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"crit","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0181","title":"Complete bal road crossing for DI K7 100mm - 80m (break and repair)","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0182","title":"Start DI K7 150mm - 1078m & 250mm - 590m","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0183","title":"Issue of DI K7 150mm - 411m - Bhabhi Row issue (Kukana - Tarwadi)","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"blocked","done":false,"due":null,"completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0184","title":"Kukana to Chilekhanwadi - 30m - PWD road permission pending","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"blocked","done":false,"due":null,"completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0185","title":"DI K7 200mm - 20m - end connection @ WTP premises","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0186","title":"DI K7 250mm - 590m - WTP to Swagat hotel","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0187","title":"Procurement of DI K7 300mm-12m & 350mm-110m and K9 250mm-60m for WTP work","projectId":"bkm","section":"Site","assignee":"Vrushali","priority":"high","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0188","title":"DI PL ~200m inside WTP premises using SI JCB","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0189","title":"DI K9 250mm RWRM - 1814m balance (13646/15460 done)","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"wip","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0190","title":"DI K7 200mm - 1799m balance (4411/6210 done)","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"wip","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0191","title":"DI K7 250mm - 944m balance (1276/2220 done) - Jojar ROW","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"wip","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0192","title":"DI K7 300mm - 650-700m balance out of 3381m - Poclain & Vivek Joshi to be deployed","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0193","title":"Start DI K9 250mm RWRM for 1500m - SI excavator","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"blocked","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0194","title":"HDPE 110mm - 1.1/2.56 Kms via Cont Nipunge","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0195","title":"Balance DI K7 200mm - 1999m & DI K7 300mm - 700m via Cont Gaikwad","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0196","title":"Transfer JCB to DI K7 350mm - 659m balance work","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0197","title":"RM HDPE 110mm - 1897m balance (2744/4641 done) - SI 710m + Nipunge 1177m","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-07-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0198","title":"Preparation of RA bills","projectId":"bkm","section":"Site","assignee":"Aditya More","priority":"high","status":"done","done":true,"due":"2026-05-07","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0199","title":"Start the work of Babhulvedhe, Usthal Dhumala, Handi Nimgaon","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"med","status":"todo","done":false,"due":"2026-05-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0200","title":"Hyd testing of all completed DI & HDPE pipelines","projectId":"bkm","section":"Site","assignee":"Danekar","priority":"high","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0201","title":"Procurement of water proofing material","projectId":"bkm","section":"Purchase","assignee":"Vrushali","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0202","title":"Approval to TLE ","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0203","title":"Approval to revised estimate","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0204","title":"Approval to penalty waiver proposal","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0205","title":"Release of compensation deducted by MJP","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0206","title":"Review of material reconciliation","projectId":"bkm","section":"Purchase","assignee":"Ragini & Paresh","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0207","title":"Review of project expenses report","projectId":"bkm","section":"Finance","assignee":"Ketaki","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0208","title":"Review of contractor reconciliation","projectId":"bkm","section":"Engineering","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0209","title":"Review of diesel consumption","projectId":"bkm","section":"Maintenance","assignee":"Paresh","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0210","title":"Rate & agency finalisation for concrete chamber work","projectId":"bkm","section":"Site","assignee":"Danekar & Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0211","title":"Procurement of DIDF pipes","projectId":"bkm","section":"Purchase","assignee":"Vrushali ","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0212","title":"Rate & agency finalisation for ESR - waterproofing, plaster and painting","projectId":"bkm","section":"Engineering","assignee":"Danekar & Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0213","title":"Rates of Paswan to be finalised for balance WTP works and start work","projectId":"bkm","section":"Engineering","assignee":"Danekar & Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0214","title":"Issue of Kundan Singh - finalise with payment remittance","projectId":"bkm","section":"Accounts","assignee":"Nikhil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0215","title":"Procurement of balance items for retrofitting works @ Bhenda","projectId":"bkm","section":"Purchase","assignee":"Vrushali","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0216","title":"Procurement of EME items for Mukindpur","projectId":"bkm","section":"Purchase","assignee":"Vrushali","priority":"high","status":"todo","done":false,"due":"2026-06-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0217","title":"Steel reconciliation for all structures","projectId":"bkm","section":"Engineering","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0218","title":"Calculation of qty of steel for balance work of all structures","projectId":"bkm","section":"Engineering","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0219","title":"Submission and approval to clause 38","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0220","title":"Release of balance payment from MJP","projectId":"bkm","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0221","title":"Procurement of MS Pipe - 500 mtr (Lot I)","projectId":"mspl","section":"Purchase ","assignee":"Vrushali","priority":"crit","status":"todo","done":false,"due":"2026-05-13","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0222","title":"Finalisation of cont for MS Plate - Bending & Cutting","projectId":"mspl","section":"Site","assignee":"Ganesh K","priority":"crit","status":"wip","done":false,"due":"2026-05-13","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0223","title":"Procurement of MS Plates ","projectId":"mspl","section":"Purchase ","assignee":"Vrushali","priority":"crit","status":"todo","done":false,"due":"2026-05-13","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0224","title":"Feasibility study of project","projectId":"mspl","section":"Finance","assignee":"Nikhil","priority":"crit","status":"todo","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0225","title":"Agreement signing with ZAD","projectId":"mspl","section":"Proposal","assignee":"Nikhil","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0226","title":"Prepare transaction sheet & share with Varun Madhani","projectId":"mspl","section":"Accounts","assignee":"Nikhil","priority":"high","status":"todo","done":false,"due":"2026-05-10","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0227","title":"Obtain work order ","projectId":"mesahn","section":"Proposal","assignee":"Laxmikant","priority":"crit","status":"wip","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0228","title":"Signing of contract agreement @ zone office","projectId":"mesahn","section":"Proposal","assignee":"Nikhil","priority":"crit","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0229","title":"Finalisation of RCC cont, Issuance of work order ","projectId":"mesahn","section":"Engineering ","assignee":"Ragini","priority":"crit","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0230","title":"Preparation of payment breakdown schedule ","projectId":"mesahn","section":"Engineering ","assignee":"Ragini","priority":"high","status":"todo","done":false,"due":"2026-05-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0231","title":"Submission & approval of payment breakdown schedule ","projectId":"mesahn","section":"Engineering ","assignee":"Laxmikant","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0232","title":"Start of excavation work ","projectId":"mesahn","section":"Site","assignee":"Shukla","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0233","title":"Submission of letters for brand approval, labor camp and RMC ","projectId":"mesahn","section":"Engineering ","assignee":"Ragini","priority":"high","status":"wip","done":false,"due":"2026-05-11","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0234","title":"Shifting of RMC Plant & Its installation","projectId":"mesahn","section":"Maintenance","assignee":"Paresh","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0235","title":"Calculation of qty of steel & concrete for entire scope","projectId":"mesahn","section":"Engineering ","assignee":"Ragini","priority":"high","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0236","title":"Settlement of accounts with PIPL","projectId":"misc","section":"JNPT Dry Port","assignee":"PUK","priority":"crit","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0237","title":"Finalisation of claim amount for arbitration","projectId":"misc","section":"JNPT Dry Port","assignee":"Nikhil","priority":"crit","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0238","title":"Preparation of supporting documents for claim","projectId":"misc","section":"JNPT Dry Port","assignee":"Nikhil & Ragini","priority":"crit","status":"todo","done":false,"due":"2026-05-30","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0239","title":"Meeting with KLA team","projectId":"misc","section":"JNPT Dry Port","assignee":"Nikhil","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0240","title":"Preparation of Statement of Claim","projectId":"misc","section":"JNPT Dry Port","assignee":"Nikhil","priority":"high","status":"todo","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0241","title":"Reply to notice of Electrotherm","projectId":"misc","section":"Waluj - Chikalthana PL","assignee":"Nikhil","priority":"crit","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0242","title":"Finalisation & approval of Hyd Design","projectId":"wtp","section":null,"assignee":"ZAD","priority":"crit","status":"wip","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0243","title":"Finalisation of RCC designer ","projectId":"wtp","section":null,"assignee":"ZAD","priority":"crit","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0244","title":"Approval of RCC design by MIDC (after vetting)","projectId":"wtp","section":null,"assignee":"ZAD","priority":"crit","status":"todo","done":false,"due":"2026-06-15","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0245","title":"Start of excavation work","projectId":"wtp","section":null,"assignee":"SI","priority":"high","status":"todo","done":false,"due":"2026-05-25","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0246","title":"Decision regarding RMC plant ","projectId":"wtp","section":null,"assignee":"SI","priority":"high","status":"wip","done":false,"due":"2026-05-31","completedAt":null,"notes":null,"updateDate":null,"created":0},{"id":"t0247","title":"Finalisation of contractor ","projectId":"wtp","section":null,"assignee":"ZAD","priority":"high","status":"todo","done":false,"due":"2026-05-20","completedAt":null,"notes":null,"updateDate":null,"created":0}]}</script>
 <script>
 /* ========================================================================
@@ -538,9 +834,13 @@ let state = {
   tasks: [],
   projects: SEED.projects.slice(),
   assignees: SEED.assignees.slice(),
+  snapshots: [],   // [{ id, takenAt, totals, perProject }]
   currentProjectId: SEED.projects[0]?.id || 'mes',
   editingId: null,
-  searchQuery: ''
+  searchQuery: '',
+  // Bulk selection mode (not persisted)
+  selectedIds: new Set(),
+  bulkMode: false
 };
 
 function loadOrSeed() {
@@ -551,17 +851,19 @@ function loadOrSeed() {
     try {
       const parsed = JSON.parse(raw);
       if (parsed.tasks) state.tasks = parsed.tasks;
+      if (parsed.projects) state.projects = parsed.projects;
+      if (parsed.assignees) state.assignees = parsed.assignees;
+      if (parsed.snapshots) state.snapshots = parsed.snapshots;
       if (parsed.currentProjectId) state.currentProjectId = parsed.currentProjectId;
       return;
     } catch (e) { console.warn('Load failed, re-seeding', e); }
   }
 
   // First load OR seed updated — seed from embedded data
-  // Generate stable createdAt timestamps spread across recent past so sort order is sensible
   const now = Date.now();
   state.tasks = SEED.tasks.map((t, i) => ({
     ...t,
-    created: now - (SEED.tasks.length - i) * 60000  // 1 min apart, oldest first
+    created: now - (SEED.tasks.length - i) * 60000
   }));
   localStorage.setItem(SEED_VERSION_KEY, CURRENT_SEED_VERSION);
   save();
@@ -570,7 +872,11 @@ function loadOrSeed() {
 function save() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      tasks: state.tasks, currentProjectId: state.currentProjectId
+      tasks: state.tasks,
+      projects: state.projects,
+      assignees: state.assignees,
+      snapshots: state.snapshots,
+      currentProjectId: state.currentProjectId
     }));
   } catch (e) { console.warn('Save failed', e); }
 }
@@ -1166,7 +1472,44 @@ function taskCard(t, opts = {}) {
   if (dc === 'overdue') cls += ' overdue';
   else if (dc === 'soon') cls += ' due-soon';
   else if (t.status === 'blocked') cls += ' blocked';
+  if (state.bulkMode) {
+    cls += ' selectable';
+    if (state.selectedIds.has(t.id)) cls += ' selected';
+  }
   card.className = cls;
+
+  // Long-press to enter bulk mode (or toggle selection if already in bulk mode)
+  let pressTimer = null;
+  const handlePressStart = (e) => {
+    if (state.bulkMode) return; // in bulk mode, tap toggles instead
+    pressTimer = setTimeout(() => {
+      // haptic via vibration if supported
+      if (navigator.vibrate) navigator.vibrate(40);
+      enterBulkMode(t.id);
+      pressTimer = null;
+    }, 500);
+  };
+  const handlePressEnd = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+  };
+  card.addEventListener('touchstart', handlePressStart, { passive: true });
+  card.addEventListener('touchend', handlePressEnd);
+  card.addEventListener('touchcancel', handlePressEnd);
+  card.addEventListener('touchmove', handlePressEnd);
+  card.addEventListener('mousedown', handlePressStart);
+  card.addEventListener('mouseup', handlePressEnd);
+  card.addEventListener('mouseleave', handlePressEnd);
+
+  // In bulk mode: clicking anywhere on the card toggles selection
+  if (state.bulkMode) {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSelection(t.id);
+    });
+  }
 
   // Check button
   const check = document.createElement('button');
@@ -1176,11 +1519,18 @@ function taskCard(t, opts = {}) {
   else if (t.status === 'blocked') checkCls += ' blocked';
   check.className = checkCls;
   check.setAttribute('aria-label', 'Cycle status');
-  check.onclick = (e) => { e.stopPropagation(); cycleStatus(t.id); };
+  check.onclick = (e) => {
+    e.stopPropagation();
+    if (state.bulkMode) { toggleSelection(t.id); return; }
+    cycleStatus(t.id);
+  };
 
   const body = document.createElement('div');
   body.className = 'task-body';
-  body.onclick = () => openTaskModal(t);
+  body.onclick = (e) => {
+    if (state.bulkMode) { e.stopPropagation(); toggleSelection(t.id); return; }
+    openTaskModal(t);
+  };
 
   const title = document.createElement('div');
   title.className = 'task-title' + (t.status === 'done' ? ' done' : '');
@@ -1193,6 +1543,7 @@ function taskCard(t, opts = {}) {
   if (t.priority) metaHTML += `<span class="tag"><span class="priority-dot ${t.priority}"></span>${PRIO_LABELS[t.priority] || t.priority}</span>`;
   if (t.status === 'wip') metaHTML += `<span class="stat-tag wip">WIP</span>`;
   else if (t.status === 'blocked') metaHTML += `<span class="stat-tag blocked">BLOCKED</span>`;
+  if (t.recurrence) metaHTML += `<span class="tag" style="opacity:0.7;">🔁 ${escapeHTML(recurrenceLabel(t.recurrence))}</span>`;
   if (t.assignee) metaHTML += `<span class="tag">${escapeHTML(t.assignee)}</span>`;
   if (t.due) metaHTML += `<span class="due ${dc}">${dueLabel(t.due)}</span>`;
   if (t.section && !opts.showProject) metaHTML += `<span class="tag" style="opacity:0.6;">${escapeHTML(t.section)}</span>`;
@@ -1217,7 +1568,11 @@ function taskCard(t, opts = {}) {
   menuBtn.className = 'task-menu-btn';
   menuBtn.innerHTML = '⋯';
   menuBtn.setAttribute('aria-label', 'Edit task');
-  menuBtn.onclick = (e) => { e.stopPropagation(); openTaskModal(t); };
+  menuBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (state.bulkMode) { toggleSelection(t.id); return; }
+    openTaskModal(t);
+  };
 
   card.appendChild(check);
   card.appendChild(body);
@@ -1229,13 +1584,228 @@ function taskCard(t, opts = {}) {
 function cycleStatus(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
-  // todo -> wip -> done -> todo (Blocked is set via modal only)
+
+  // Recurring task: completing it advances the due date instead of marking done
+  if (t.recurrence && (t.status === 'wip' || (t.status === 'todo' && t.due))) {
+    const oldDue = t.due;
+    t.due = nextRecurrenceDate(t.due || new Date().toISOString().slice(0, 10), t.recurrence);
+    t.status = 'todo';
+    t.completedAt = null;
+    save();
+    rerender();
+    toast(`Recurring · next due ${dueLabel(t.due)}`);
+    return;
+  }
+
+  // Normal task: todo -> wip -> done -> todo
   if (t.status === 'todo' || t.status === 'blocked') t.status = 'wip';
   else if (t.status === 'wip') { t.status = 'done'; t.completedAt = new Date().toISOString(); }
   else if (t.status === 'done') { t.status = 'todo'; t.completedAt = null; }
   save();
   rerender();
   toast(`Set to ${STATUS_LABELS[t.status]}`);
+}
+
+/* ============================================================
+   TASK TEMPLATES
+   ============================================================ */
+
+// Built-in templates — tuned for Nikhil's government construction workflow
+const BUILTIN_TEMPLATES = [
+  {
+    id: 'builtin-award',
+    name: 'Project Award',
+    description: 'From Letter of Acceptance to project officially starting on site.',
+    tasks: [
+      { title: 'Receipt of LoA from the department',                         priority: 'crit', daysFromNow: 7 },
+      { title: 'Submission of Performance Bank Guarantee (PBG)',             priority: 'crit', daysFromNow: 15 },
+      { title: 'Receipt of Work Order from the department',                  priority: 'high', daysFromNow: 7 },
+      { title: 'Signing of Contract Agreement',                              priority: 'high', daysFromNow: 15 },
+      { title: 'Insurance policies (CAR, workmen\u2019s comp, third party)', priority: 'high', daysFromNow: 15 },
+      { title: 'Mobilization advance application',                           priority: 'high', daysFromNow: 7 },
+      { title: 'Stipulation of BG for Mobilization advance',                 priority: 'high', daysFromNow: 7 },
+      { title: 'Joint site handover survey with client representative',      priority: 'crit', daysFromNow: 3 },
+      { title: 'Preparation of GAD, Layout and RCC drawings',                priority: 'high', daysFromNow: 15 },
+      { title: 'Submission & Approval of all the drawings',                  priority: 'crit', daysFromNow: 30 },
+      { title: 'Project schedule (bar chart) submission to client',          priority: 'crit', daysFromNow: 7 },
+      { title: 'Hiring / Appointment of Project staff',                      priority: 'crit', daysFromNow: 7 },
+      { title: 'Identification & Deployment of resources',                   priority: 'med',  daysFromNow: 7 },
+      { title: 'Internal project kickoff meeting (HO + site team)',          priority: 'high', daysFromNow: 7 },
+      { title: 'Finalisation of sub-contractor',                             priority: 'crit', daysFromNow: 7 },
+      { title: 'Site Clearance & Commencement of work',                      priority: 'crit', daysFromNow: 7 }
+    ]
+  },
+  {
+    id: 'builtin-mobilization',
+    name: 'Project Mobilization',
+    description: 'Physical setup at site, once contract is signed and site is handed over.',
+    tasks: [
+      { title: 'Temporary electricity connection application',                              priority: 'high', daysFromNow: 2 },
+      { title: 'Water connection / tanker arrangement',                                     priority: 'high', daysFromNow: 2 },
+      { title: 'Site survey & layout marking',                                              priority: 'crit', daysFromNow: 5 },
+      { title: 'Site office / cabin installation + Accommodation arrangement for staff',    priority: 'high', daysFromNow: 5 },
+      { title: 'Boundary fencing / barricading complete',                                   priority: 'high', daysFromNow: 7 },
+      { title: 'Security guard arrangement (24x7)',                                         priority: 'high', daysFromNow: 7 },
+      { title: 'Material stacking area finalisation',                                       priority: 'med',  daysFromNow: 7 },
+      { title: 'Labour camp setup (if applicable)',                                         priority: 'med',  daysFromNow: 10 },
+      { title: 'Calculation of quantities of major activities & material required',         priority: 'crit', daysFromNow: 5 },
+      { title: 'Initial material procurement \u2014 cement, steel, formwork',               priority: 'high', daysFromNow: 10 },
+      { title: 'Equipment mobilization (from HO / previous site)',                          priority: 'high', daysFromNow: 7 },
+      { title: 'Sub-contractor mobilization to site',                                       priority: 'high', daysFromNow: 14 }
+    ]
+  },
+  {
+    id: 'builtin-demobilization',
+    name: 'Project Demobilization',
+    description: 'Closing the site out after physical work is complete \u2014 ends at site clearance.',
+    tasks: [
+      { title: 'Final material reconciliation',                              priority: 'high', daysFromNow: 7 },
+      { title: 'Surplus material transfer to next site / sale',              priority: 'high', daysFromNow: 7 },
+      { title: 'Equipment return to HO / transfer to another site',          priority: 'high', daysFromNow: 7 },
+      { title: 'Site cleaning & garbage clearance',                          priority: 'med',  daysFromNow: 10 },
+      { title: 'Boundary fencing removal',                                   priority: 'med',  daysFromNow: 12 },
+      { title: 'Site office / cabin dismantling',                            priority: 'med',  daysFromNow: 14 },
+      { title: 'Final electricity bill closure',                             priority: 'med',  daysFromNow: 14 },
+      { title: 'Final water connection closure',                             priority: 'med',  daysFromNow: 14 },
+      { title: 'Site documents transfer to HO archive',                      priority: 'high', daysFromNow: 14 },
+      { title: 'Letter to department regarding completion of work',          priority: 'high', daysFromNow: 7 },
+      { title: 'Release of ISD Bank Guarantee / Retention BG',               priority: 'crit', daysFromNow: 15 }
+    ]
+  }
+];
+
+function allTemplates() {
+  return [...BUILTIN_TEMPLATES, ...(state.customTemplates || [])];
+}
+
+function applyTemplate(templateId, projectId) {
+  const tpl = allTemplates().find(t => t.id === templateId);
+  if (!tpl) { toast('Template not found'); return; }
+  const proj = getProject(projectId);
+  if (!proj) { toast('Project not found'); return; }
+
+  const today = new Date();
+  let added = 0;
+  tpl.tasks.forEach((tplTask, i) => {
+    const dueDate = new Date(today);
+    dueDate.setDate(dueDate.getDate() + (tplTask.daysFromNow ?? 0));
+    state.tasks.push({
+      id: uid(),
+      title: tplTask.title,
+      projectId: projectId,
+      section: tplTask.section || null,
+      assignee: null,
+      due: dueDate.toISOString().slice(0, 10),
+      priority: tplTask.priority || 'med',
+      status: 'todo',
+      notes: null,
+      recurrence: tplTask.recurrence ? keyToRecurrence(tplTask.recurrence) : null,
+      created: Date.now() + i
+    });
+    added++;
+  });
+  save();
+  rerender();
+  toast(`Added ${added} tasks from "${tpl.name}"`);
+}
+
+function openTemplatesModal() {
+  const modal = document.getElementById('templatesModal');
+  const list = document.getElementById('templatesList');
+  list.innerHTML = '';
+  allTemplates().forEach(tpl => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `
+      <div class="template-head">
+        <div class="template-name">${escapeHTML(tpl.name)}</div>
+        <div class="template-count">${tpl.tasks.length} tasks</div>
+      </div>
+      <div class="template-desc">${escapeHTML(tpl.description || '')}</div>
+      <button class="btn primary template-use" data-tpl-id="${tpl.id}">Add to ${escapeHTML(getProject(state.currentProjectId)?.name || 'Current project')}</button>
+    `;
+    card.querySelector('.template-use').onclick = () => {
+      applyTemplate(tpl.id, state.currentProjectId);
+      closeTemplatesModal();
+    };
+    list.appendChild(card);
+  });
+  modal.classList.add('show');
+}
+
+function closeTemplatesModal() {
+  document.getElementById('templatesModal').classList.remove('show');
+}
+
+
+function recurrenceLabel(rec) {
+  if (!rec) return '';
+  const key = recurrenceToKey(rec);
+  const labels = { daily: 'Daily', weekly: 'Weekly', biweekly: 'Bi-weekly',
+                   monthly: 'Monthly', quarterly: 'Quarterly', yearly: 'Yearly' };
+  return labels[key] || 'Recurring';
+}
+
+function keyToRecurrence(key) {
+  if (!key) return null;
+  const map = {
+    daily:     { frequency: 'daily',   interval: 1 },
+    weekly:    { frequency: 'weekly',  interval: 1 },
+    biweekly:  { frequency: 'weekly',  interval: 2 },
+    monthly:   { frequency: 'monthly', interval: 1 },
+    quarterly: { frequency: 'monthly', interval: 3 },
+    yearly:    { frequency: 'yearly',  interval: 1 }
+  };
+  return map[key] || null;
+}
+
+function recurrenceToKey(rec) {
+  if (!rec) return '';
+  if (rec.frequency === 'daily') return 'daily';
+  if (rec.frequency === 'weekly' && rec.interval === 2) return 'biweekly';
+  if (rec.frequency === 'weekly') return 'weekly';
+  if (rec.frequency === 'monthly' && rec.interval === 3) return 'quarterly';
+  if (rec.frequency === 'monthly') return 'monthly';
+  if (rec.frequency === 'yearly') return 'yearly';
+  return '';
+}
+
+function nextRecurrenceDate(fromDateStr, rec) {
+  const d = new Date(fromDateStr);
+  if (rec.frequency === 'daily') {
+    d.setDate(d.getDate() + (rec.interval || 1));
+  } else if (rec.frequency === 'weekly') {
+    d.setDate(d.getDate() + 7 * (rec.interval || 1));
+  } else if (rec.frequency === 'monthly') {
+    d.setMonth(d.getMonth() + (rec.interval || 1));
+  } else if (rec.frequency === 'yearly') {
+    d.setFullYear(d.getFullYear() + (rec.interval || 1));
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+// Catch-up: if any recurring task has a due date in the past, fast-forward it
+// (called once on app open, after loadOrSeed)
+function processRecurringTasks() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let advanced = 0;
+  state.tasks.forEach(t => {
+    if (!t.recurrence || !t.due) return;
+    if (t.status === 'done') return; // recurring + done is weird, leave alone
+    let due = new Date(t.due);
+    while (due < today) {
+      due = new Date(nextRecurrenceDate(due.toISOString().slice(0, 10), t.recurrence));
+      advanced++;
+    }
+    const newDue = due.toISOString().slice(0, 10);
+    if (newDue !== t.due) {
+      t.due = newDue;
+    }
+  });
+  if (advanced > 0) {
+    save();
+  }
 }
 
 /* ===== ASSIGNEES VIEW ===== */
@@ -1376,6 +1946,11 @@ function openTaskModal(task = null) {
   state.assignees.forEach(a => {
     const o = document.createElement('option'); o.value = a; o.textContent = a; fA.appendChild(o);
   });
+  // "Add new..." option at the bottom
+  const addOpt = document.createElement('option');
+  addOpt.value = '__ADD_NEW__';
+  addOpt.textContent = '+ Add new assignee…';
+  fA.appendChild(addOpt);
 
   if (task) {
     document.getElementById('fTitle').value = task.title;
@@ -1384,6 +1959,7 @@ function openTaskModal(task = null) {
     fA.value = task.assignee || '';
     document.getElementById('fDue').value = task.due || '';
     document.getElementById('fNotes').value = task.notes || '';
+    document.getElementById('fRecurrence').value = task.recurrence ? recurrenceToKey(task.recurrence) : '';
     selectedPriority = task.priority || 'med';
     selectedStatus = task.status || 'todo';
   } else {
@@ -1393,6 +1969,7 @@ function openTaskModal(task = null) {
     fA.value = '';
     document.getElementById('fDue').value = '';
     document.getElementById('fNotes').value = '';
+    document.getElementById('fRecurrence').value = '';
     selectedPriority = 'med';
     selectedStatus = 'todo';
   }
@@ -1424,6 +2001,41 @@ document.getElementById('modalClose').onclick = closeModal;
 document.getElementById('btnCancel').onclick = closeModal;
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
+// "+ Add new assignee" inline flow
+document.getElementById('fAssignee').addEventListener('change', (e) => {
+  if (e.target.value !== '__ADD_NEW__') return;
+  const name = prompt('New assignee name:')?.trim();
+  if (!name) {
+    // User cancelled or empty — reset selection to unassigned
+    e.target.value = '';
+    return;
+  }
+  // Check if already exists (case-insensitive)
+  const existing = state.assignees.find(a => a.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    toast(`"${existing}" already exists`);
+    e.target.value = existing;
+    return;
+  }
+  // Add and select
+  state.assignees.push(name);
+  state.assignees.sort();
+  save();
+  // Rebuild dropdown
+  const fA = e.target;
+  const currentVal = name;
+  fA.innerHTML = '<option value="">— Unassigned —</option>';
+  state.assignees.forEach(a => {
+    const o = document.createElement('option'); o.value = a; o.textContent = a; fA.appendChild(o);
+  });
+  const addOpt = document.createElement('option');
+  addOpt.value = '__ADD_NEW__';
+  addOpt.textContent = '+ Add new assignee…';
+  fA.appendChild(addOpt);
+  fA.value = currentVal;
+  toast(`Added "${name}"`);
+});
+
 document.getElementById('btnSave').onclick = () => {
   const title = document.getElementById('fTitle').value.trim();
   if (!title) { toast('Task title is required'); return; }
@@ -1435,7 +2047,8 @@ document.getElementById('btnSave').onclick = () => {
     due: document.getElementById('fDue').value || null,
     priority: selectedPriority,
     status: selectedStatus,
-    notes: document.getElementById('fNotes').value.trim() || null
+    notes: document.getElementById('fNotes').value.trim() || null,
+    recurrence: keyToRecurrence(document.getElementById('fRecurrence').value)
   };
   if (state.editingId) {
     const t = state.tasks.find(x => x.id === state.editingId);
@@ -1567,7 +2180,388 @@ document.getElementById('editProjectLink').onclick = () => {
   if (state.currentProjectId) openProjectModal(state.currentProjectId);
 };
 
-/* ===== SHARE BUTTON WIRING ===== */
+document.getElementById('useTemplateBtn').onclick = () => openTemplatesModal();
+document.getElementById('templatesClose').onclick = closeTemplatesModal;
+document.getElementById('templatesModal').addEventListener('click', e => {
+  if (e.target.id === 'templatesModal') closeTemplatesModal();
+});
+
+/* ============================================================
+   SETTINGS / BACKUP / RESTORE
+   ============================================================ */
+
+function openSettings() {
+  refreshSnapshotList();
+  refreshDataSummary();
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('show');
+}
+
+function refreshDataSummary() {
+  const t = state.tasks.length;
+  const open = state.tasks.filter(isOpen).length;
+  const done = state.tasks.filter(x => x.status === 'done').length;
+  const p = state.projects.length;
+  const a = state.assignees.length;
+  const s = state.snapshots.length;
+  let bytes = 0;
+  try { bytes = (localStorage.getItem(STORAGE_KEY) || '').length; } catch (e) {}
+  const kb = (bytes / 1024).toFixed(1);
+  document.getElementById('dataSummary').innerHTML =
+    `${t} tasks (${open} open · ${done} done) · ${p} projects · ${a} assignees · ${s} snapshot${s !== 1 ? 's' : ''} <br>Storage used: ${kb} KB`;
+}
+
+function exportBackup() {
+  const backup = {
+    app: 'TRACER',
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    schema: CURRENT_SEED_VERSION,
+    data: {
+      tasks: state.tasks,
+      projects: state.projects,
+      assignees: state.assignees,
+      snapshots: state.snapshots,
+      currentProjectId: state.currentProjectId
+    }
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const filename = `tracer-backup-${new Date().toISOString().slice(0, 10)}.json`;
+
+  // Try Web Share API first (best on iOS — opens native share sheet → Save to Files / iCloud Drive / WhatsApp / Mail)
+  const file = new File([json], filename, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: 'TRACER Backup' })
+      .then(() => toast('Backup shared'))
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          // Fall back to download
+          downloadBlob(json, filename);
+        }
+      });
+  } else {
+    downloadBlob(json, filename);
+  }
+}
+
+function downloadBlob(text, filename) {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast('Backup downloaded');
+}
+
+function importBackup(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const data = parsed.data || parsed;
+      if (!data.tasks || !Array.isArray(data.tasks)) {
+        toast('Invalid backup file');
+        return;
+      }
+      const confirmMsg = `Replace current data with this backup?\n\nThis backup has ${data.tasks.length} tasks, ${data.projects?.length || 0} projects, ${data.snapshots?.length || 0} snapshots.\n\nYour current data (${state.tasks.length} tasks) will be replaced.`;
+      if (!confirm(confirmMsg)) return;
+      if (data.tasks) state.tasks = data.tasks;
+      if (data.projects) state.projects = data.projects;
+      if (data.assignees) state.assignees = data.assignees;
+      if (data.snapshots) state.snapshots = data.snapshots;
+      if (data.currentProjectId) state.currentProjectId = data.currentProjectId;
+      save();
+      rerender();
+      closeSettings();
+      toast(`Restored ${data.tasks.length} tasks`);
+    } catch (err) {
+      console.error(err);
+      toast('Could not read backup file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetSeed() {
+  if (!confirm('Reset to original 247 seeded tasks?\n\nAll your edits, new tasks, and snapshots will be lost. Export a backup first if needed.')) return;
+  if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+  const now = Date.now();
+  state.tasks = SEED.tasks.map((t, i) => ({ ...t, created: now - (SEED.tasks.length - i) * 60000 }));
+  state.projects = SEED.projects.slice();
+  state.assignees = SEED.assignees.slice();
+  state.snapshots = [];
+  state.currentProjectId = SEED.projects[0]?.id || 'mes';
+  save();
+  rerender();
+  closeSettings();
+  toast('Reset to seed');
+}
+
+/* ============================================================
+   SNAPSHOTS
+   ============================================================ */
+
+function buildSnapshotObject(isAuto = false) {
+  const tasks = state.tasks;
+  const totals = {
+    total: tasks.length,
+    open: tasks.filter(isOpen).length,
+    overdue: tasks.filter(isOverdue).length,
+    wip: tasks.filter(t => t.status === 'wip').length,
+    done: tasks.filter(t => t.status === 'done').length,
+    blocked: tasks.filter(t => t.status === 'blocked').length
+  };
+  const perProject = {};
+  state.projects.forEach(p => {
+    const pt = tasks.filter(t => t.projectId === p.id);
+    if (pt.length === 0) return;
+    const pDone = pt.filter(t => t.status === 'done').length;
+    perProject[p.id] = {
+      name: p.name,
+      total: pt.length,
+      done: pDone,
+      open: pt.filter(isOpen).length,
+      overdue: pt.filter(isOverdue).length,
+      pct: pt.length ? Math.round(pDone / pt.length * 100) : 0
+    };
+  });
+  return {
+    id: 's' + Date.now().toString(36),
+    takenAt: new Date().toISOString(),
+    auto: isAuto,
+    totals,
+    perProject
+  };
+}
+
+function takeSnapshot(isAuto = false) {
+  const snap = buildSnapshotObject(isAuto);
+  state.snapshots.unshift(snap); // newest first
+  if (state.snapshots.length > 52) state.snapshots = state.snapshots.slice(0, 52);
+  save();
+  // Only refresh modal list if it's currently open
+  if (document.getElementById('settingsModal').classList.contains('show')) {
+    refreshSnapshotList();
+    refreshDataSummary();
+  }
+  if (!isAuto) toast('Snapshot captured');
+}
+
+function maybeAutoSnapshot() {
+  // Auto-snapshot if last one was more than 7 days ago (or no snapshots exist)
+  const last = state.snapshots[0];
+  const now = Date.now();
+  if (!last) {
+    // First-ever — take baseline silently
+    takeSnapshot(true);
+    return;
+  }
+  const lastTime = new Date(last.takenAt).getTime();
+  const daysSince = (now - lastTime) / 86400000;
+  if (daysSince >= 7) {
+    takeSnapshot(true);
+    // Subtle toast so the user knows it happened
+    setTimeout(() => toast('📸 Weekly snapshot captured'), 1500);
+  }
+}
+
+function refreshSnapshotList() {
+  const container = document.getElementById('snapshotList');
+  const info = document.getElementById('snapshotCountInfo');
+  container.innerHTML = '';
+  const snaps = state.snapshots;
+  if (snaps.length === 0) {
+    info.textContent = 'No snapshots yet. Take one to start tracking progress over time.';
+    return;
+  }
+  info.textContent = `${snaps.length} snapshot${snaps.length !== 1 ? 's' : ''} captured (newest first).`;
+  snaps.forEach((s, idx) => {
+    const date = new Date(s.takenAt);
+    const dateStr = date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+
+    const card = document.createElement('div');
+    card.className = 'snapshot-card';
+
+    let html = `
+      <div class="snapshot-head">
+        <div class="snapshot-date">${dateStr} · ${timeStr}</div>
+        <button class="snapshot-delete" data-snap-id="${s.id}" aria-label="Delete snapshot">🗑</button>
+      </div>
+      <div class="snapshot-totals">
+        <span><span class="num">${s.totals.open}</span> open</span>
+        <span><span class="num crit">${s.totals.overdue}</span> overdue</span>
+        <span><span class="num warn">${s.totals.wip}</span> WIP</span>
+        <span><span class="num ok">${s.totals.done}</span> done</span>
+      </div>
+    `;
+
+    // Show delta vs next snapshot (older)
+    if (idx < snaps.length - 1) {
+      const prev = snaps[idx + 1];
+      const deltaOpen = s.totals.open - prev.totals.open;
+      const deltaDone = s.totals.done - prev.totals.done;
+      const deltaOverdue = s.totals.overdue - prev.totals.overdue;
+      const prevDate = new Date(prev.takenAt);
+      const daysAgo = Math.round((date - prevDate) / 86400000);
+      const parts = [];
+      if (deltaDone !== 0) parts.push(`${deltaDone > 0 ? '<span class="up">+' : '<span class="down">'}${deltaDone}</span> done`);
+      if (deltaOverdue !== 0) parts.push(`${deltaOverdue > 0 ? '<span class="down">+' : '<span class="up">'}${deltaOverdue}</span> overdue`);
+      if (deltaOpen !== 0) parts.push(`${deltaOpen > 0 ? '<span class="down">+' : '<span class="up">'}${deltaOpen}</span> open`);
+      if (parts.length) {
+        html += `<div class="snapshot-delta">vs ${daysAgo}d ago: ${parts.join(' · ')}</div>`;
+      }
+    } else {
+      html += `<div class="snapshot-delta">First snapshot — baseline</div>`;
+    }
+
+    card.innerHTML = html;
+    card.querySelector('[data-snap-id]').onclick = (e) => {
+      e.stopPropagation();
+      if (!confirm('Delete this snapshot?')) return;
+      state.snapshots = state.snapshots.filter(x => x.id !== s.id);
+      save();
+      refreshSnapshotList();
+      refreshDataSummary();
+    };
+    container.appendChild(card);
+  });
+}
+
+/* ============================================================
+   BULK SELECTION MODE
+   ============================================================ */
+
+let longPressTimer = null;
+
+function enterBulkMode(initialTaskId) {
+  state.bulkMode = true;
+  state.selectedIds = new Set();
+  if (initialTaskId) state.selectedIds.add(initialTaskId);
+  document.body.classList.add('bulk-mode');
+  updateBulkBar();
+  rerender();
+}
+
+function exitBulkMode() {
+  state.bulkMode = false;
+  state.selectedIds = new Set();
+  document.body.classList.remove('bulk-mode');
+  document.getElementById('bulkBar').classList.remove('show');
+  rerender();
+}
+
+function toggleSelection(taskId) {
+  if (state.selectedIds.has(taskId)) state.selectedIds.delete(taskId);
+  else state.selectedIds.add(taskId);
+  if (state.selectedIds.size === 0) {
+    exitBulkMode();
+  } else {
+    updateBulkBar();
+    rerender();
+  }
+}
+
+function updateBulkBar() {
+  document.getElementById('bulkCountNum').textContent = state.selectedIds.size;
+  document.getElementById('bulkBar').classList.add('show');
+}
+
+function bulkMarkDone() {
+  const ids = Array.from(state.selectedIds);
+  ids.forEach(id => {
+    const t = state.tasks.find(x => x.id === id);
+    if (t) {
+      t.status = 'done';
+      t.completedAt = new Date().toISOString();
+    }
+  });
+  save();
+  toast(`${ids.length} marked done`);
+  exitBulkMode();
+}
+
+function bulkDelete() {
+  const ids = Array.from(state.selectedIds);
+  if (!confirm(`Delete ${ids.length} task${ids.length !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+  state.tasks = state.tasks.filter(t => !state.selectedIds.has(t.id));
+  save();
+  toast(`${ids.length} deleted`);
+  exitBulkMode();
+}
+
+function bulkReassign() {
+  // Show simple prompt with list of assignees
+  const assigneeOptions = ['— Unassigned —', ...state.assignees];
+  const list = assigneeOptions.map((a, i) => `${i + 1}. ${a}`).join('\n');
+  const choice = prompt(`Reassign ${state.selectedIds.size} tasks to:\n\n${list}\n\nEnter number:`);
+  if (!choice) return;
+  const idx = parseInt(choice, 10) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= assigneeOptions.length) {
+    toast('Invalid choice');
+    return;
+  }
+  const newAssignee = idx === 0 ? null : assigneeOptions[idx];
+  state.tasks.forEach(t => {
+    if (state.selectedIds.has(t.id)) t.assignee = newAssignee;
+  });
+  save();
+  toast(`Reassigned to ${newAssignee || 'Unassigned'}`);
+  exitBulkMode();
+}
+
+function bulkShift() {
+  const choice = prompt(`Shift due dates of ${state.selectedIds.size} tasks by:\n\n1. +1 day\n2. +3 days\n3. +7 days\n4. +14 days\n5. +30 days\n6. -1 day\n7. -7 days\n\nEnter number:`);
+  if (!choice) return;
+  const shifts = { '1': 1, '2': 3, '3': 7, '4': 14, '5': 30, '6': -1, '7': -7 };
+  const days = shifts[choice];
+  if (days === undefined) { toast('Invalid choice'); return; }
+  let shifted = 0;
+  state.tasks.forEach(t => {
+    if (state.selectedIds.has(t.id) && t.due) {
+      const d = new Date(t.due);
+      d.setDate(d.getDate() + days);
+      t.due = d.toISOString().slice(0, 10);
+      shifted++;
+    }
+  });
+  save();
+  toast(`Shifted ${shifted} task${shifted !== 1 ? 's' : ''} by ${days > 0 ? '+' : ''}${days}d`);
+  exitBulkMode();
+}
+
+/* ===== WIRING (settings, snapshots, bulk) ===== */
+
+document.getElementById('settingsBtn').onclick = openSettings;
+document.getElementById('settingsClose').onclick = closeSettings;
+document.getElementById('settingsModal').addEventListener('click', e => {
+  if (e.target.id === 'settingsModal') closeSettings();
+});
+
+document.getElementById('exportBackupBtn').onclick = exportBackup;
+document.getElementById('importBackupBtn').onclick = () => document.getElementById('importFileInput').click();
+document.getElementById('importFileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) importBackup(file);
+  e.target.value = ''; // reset
+});
+document.getElementById('resetSeedBtn').onclick = resetSeed;
+
+document.getElementById('takeSnapshotBtn').onclick = takeSnapshot;
+
+document.getElementById('bulkCancelBtn').onclick = exitBulkMode;
+document.getElementById('bulkDoneBtn').onclick = bulkMarkDone;
+document.getElementById('bulkDeleteBtn').onclick = bulkDelete;
+document.getElementById('bulkReassignBtn').onclick = bulkReassign;
+document.getElementById('bulkShiftBtn').onclick = bulkShift;
+
+
 document.getElementById('shareDigest').onclick = () => shareToWhatsApp(buildDailyDigest());
 document.getElementById('shareFiltered').onclick = () => shareToWhatsApp(buildFilteredListMessage());
 document.getElementById('shareProjectSummary').onclick = () => shareToWhatsApp(buildProjectSummary(state.currentProjectId));
@@ -1595,6 +2589,8 @@ document.getElementById('remindTask').onclick = () => {
 
 /* ===== INIT ===== */
 loadOrSeed();
+maybeAutoSnapshot();
+processRecurringTasks();
 setDateMeta();
 renderDashboard();
 
