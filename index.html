@@ -341,6 +341,128 @@
   /* Dashboard digest button */
   .digest-share { margin-bottom: 0.9rem; }
 
+  /* SIGN-IN SCREEN */
+  .signin-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+  }
+  .signin-overlay.show { display: flex; }
+  .signin-card {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+  .signin-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 2.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+  .signin-brand span { color: var(--accent); }
+  .signin-tagline {
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+  }
+  .signin-step h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+  }
+  .signin-step p {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+    line-height: 1.45;
+  }
+  .signin-input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    box-sizing: border-box;
+  }
+  .signin-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .signin-btn {
+    width: 100%;
+    padding: 0.95rem;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 0.7rem;
+  }
+  .signin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .signin-error {
+    color: var(--crit);
+    font-size: 0.78rem;
+    margin-bottom: 1rem;
+    min-height: 1rem;
+  }
+  .signin-namelist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .signin-name {
+    padding: 0.85rem 1rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .signin-name:hover, .signin-name:active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .signin-name.other {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  .signin-footer {
+    margin-top: 2rem;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .signin-loading {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+
   /* SETTINGS BUTTON */
   .settings-btn {
     background: none;
@@ -558,8 +680,46 @@
   .install.show { display: inline-block; }
   @media (display-mode: standalone) { .install { display: none !important; } }
 </style>
+
+<!-- Firebase SDKs (v10 compat — loads as global firebase namespace) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
+<!-- SIGN-IN OVERLAY (shown until authenticated) -->
+<div class="signin-overlay" id="signinOverlay">
+  <div class="signin-card">
+    <div class="signin-brand">TRACER<span>.</span></div>
+    <div class="signin-tagline">Project command center for construction teams</div>
+
+    <!-- Step 1: Workspace code -->
+    <div class="signin-step" id="signinStep1">
+      <h2>Enter workspace code</h2>
+      <p>Ask the workspace admin for the code if you don't have it.</p>
+      <input type="text" id="signinCode" class="signin-input" placeholder="Workspace code" autocomplete="off" autocapitalize="off" autocorrect="off" />
+      <div class="signin-error" id="signinError"></div>
+      <button class="signin-btn" id="signinCodeBtn">Continue</button>
+    </div>
+
+    <!-- Step 2: Display name picker -->
+    <div class="signin-step" id="signinStep2" style="display:none;">
+      <h2>Who are you?</h2>
+      <p>Pick your name so teammates know who edited what.</p>
+      <div class="signin-namelist" id="signinNames"></div>
+      <div class="signin-error" id="signinError2"></div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="signin-step" id="signinLoading" style="display:none;">
+      <h2>Connecting…</h2>
+      <p>Syncing with workspace.</p>
+    </div>
+
+    <div class="signin-footer">v2 · Firebase sync</div>
+  </div>
+</div>
 
 <header class="header">
   <div class="brand">
@@ -787,6 +947,17 @@
     </div>
 
     <div class="settings-section">
+      <h3>Workspace &amp; Team</h3>
+      <div class="settings-info" id="workspaceInfo">Not signed in.</div>
+      <div class="settings-row" style="margin-top:0.5rem;">
+        <button class="btn" id="signoutBtn">Sign Out</button>
+      </div>
+      <div class="settings-info" style="margin-top:0.6rem;">
+        Signing out clears your identity from this device. You can sign back in with the workspace code anytime.
+      </div>
+    </div>
+
+    <div class="settings-section">
       <h3>Danger Zone</h3>
       <div class="settings-row">
         <button class="btn danger" id="resetSeedBtn">Reset to Original Seed</button>
@@ -823,6 +994,376 @@ const STORAGE_KEY = 'tracer.data.v2';
 const SEED_VERSION_KEY = 'tracer.seedVersion';
 const CURRENT_SEED_VERSION = '2026-05-13-247';
 
+/* ============================================================
+   FIREBASE CONFIGURATION
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCWu-UCaUnDoHqGSQBrqFFDX9YWQIOQNmg",
+  authDomain: "tracer-77411.firebaseapp.com",
+  projectId: "tracer-77411",
+  storageBucket: "tracer-77411.firebasestorage.app",
+  messagingSenderId: "550048048533",
+  appId: "1:550048048533:web:2b09f538c9299ebc00829c"
+};
+
+// Workspace code — case-insensitive compare; stored hashed-ish for minor obfuscation
+const WORKSPACE_CODE = 'nikhil16$'; // lowercase for comparison
+const WORKSPACE_ID = 'main'; // single workspace document
+const DEFAULT_DISPLAY_NAMES = ['Nikhil', 'PUK', 'Laxmikant', 'Bhushan', 'Ketaki', 'Ragini', 'Vrushali', 'Paresh'];
+
+// Local storage keys for auth state (per-device, not synced)
+const AUTH_KEY = 'tracer.auth.v1'; // { signedIn: true, displayName: 'Nikhil', signedInAt: ISO }
+
+let firebaseApp = null;
+let firebaseAuth = null;
+let firebaseDb = null;
+let firestoreReady = false;
+let unsubscribeTasks = null;
+let unsubscribeProjects = null;
+let unsubscribeMeta = null;
+let unsubscribeSnapshots = null;
+let currentUser = null; // { displayName, signedInAt }
+let suppressLocalRender = false;
+
+/* Initialize Firebase, set up offline persistence */
+function initFirebase() {
+  if (!window.firebase) {
+    console.error('Firebase SDK not loaded');
+    return false;
+  }
+  try {
+    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseAuth = firebase.auth();
+    firebaseDb = firebase.firestore();
+    // Enable offline persistence
+    firebaseDb.enablePersistence({ synchronizeTabs: true }).catch(err => {
+      // Multi-tab issue or unsupported browser — non-fatal
+      console.warn('Firestore persistence:', err.code);
+    });
+    firestoreReady = true;
+    return true;
+  } catch (e) {
+    console.error('Firebase init failed', e);
+    return false;
+  }
+}
+
+/* ============================================================
+   AUTH FLOW
+   ============================================================ */
+function getStoredAuth() {
+  try { return JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); }
+  catch (e) { return null; }
+}
+function setStoredAuth(auth) {
+  if (auth) localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+  else localStorage.removeItem(AUTH_KEY);
+}
+
+function showSigninScreen() {
+  document.getElementById('signinOverlay').classList.add('show');
+  document.getElementById('signinStep1').style.display = '';
+  document.getElementById('signinStep2').style.display = 'none';
+  document.getElementById('signinLoading').style.display = 'none';
+  document.getElementById('signinCode').value = '';
+  document.getElementById('signinError').textContent = '';
+  setTimeout(() => document.getElementById('signinCode').focus(), 100);
+}
+
+function hideSigninScreen() {
+  document.getElementById('signinOverlay').classList.remove('show');
+}
+
+function showNamePicker() {
+  document.getElementById('signinStep1').style.display = 'none';
+  document.getElementById('signinStep2').style.display = '';
+  document.getElementById('signinLoading').style.display = 'none';
+  // Populate names from team members (will hydrate from firestore after sign-in)
+  const list = document.getElementById('signinNames');
+  list.innerHTML = '';
+  const names = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
+  names.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'signin-name';
+    btn.textContent = name;
+    btn.onclick = () => pickDisplayName(name);
+    list.appendChild(btn);
+  });
+  // "Other (type my name)" option
+  const other = document.createElement('button');
+  other.className = 'signin-name other';
+  other.textContent = '+ Other (type my name)';
+  other.onclick = () => {
+    const typed = prompt('Type your full name:')?.trim();
+    if (typed && typed.length > 0) pickDisplayName(typed);
+  };
+  list.appendChild(other);
+}
+
+function showSigninLoading() {
+  document.getElementById('signinStep1').style.display = 'none';
+  document.getElementById('signinStep2').style.display = 'none';
+  document.getElementById('signinLoading').style.display = '';
+}
+
+async function submitWorkspaceCode() {
+  const input = document.getElementById('signinCode');
+  const err = document.getElementById('signinError');
+  const code = (input.value || '').trim().toLowerCase();
+  if (!code) {
+    err.textContent = 'Please enter the workspace code.';
+    return;
+  }
+  if (code !== WORKSPACE_CODE) {
+    err.textContent = 'Invalid workspace code. Ask the admin.';
+    input.value = '';
+    return;
+  }
+  err.textContent = '';
+  showSigninLoading();
+  try {
+    if (!firebaseAuth.currentUser) {
+      await firebaseAuth.signInAnonymously();
+    }
+    // Move to name picker after we know we have a Firebase identity
+    showNamePicker();
+  } catch (e) {
+    console.error('Anonymous sign-in failed', e);
+    err.textContent = 'Connection failed. Check internet and try again.';
+    document.getElementById('signinStep1').style.display = '';
+    document.getElementById('signinLoading').style.display = 'none';
+  }
+}
+
+async function pickDisplayName(name) {
+  if (!name) return;
+  showSigninLoading();
+  currentUser = { displayName: name, signedInAt: new Date().toISOString() };
+  setStoredAuth({ signedIn: true, displayName: name, signedInAt: currentUser.signedInAt });
+  // Register in Firestore members subcollection so others see who's active
+  try {
+    await firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('members').doc(firebaseAuth.currentUser.uid).set({
+      displayName: name,
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      uid: firebaseAuth.currentUser.uid
+    }, { merge: true });
+    // Ensure the name is in the global teamMembers list
+    await ensureTeamMember(name);
+  } catch (e) {
+    console.warn('Member register failed', e);
+    // Non-fatal — proceed
+  }
+  hideSigninScreen();
+  // Start the live data sync
+  await attachFirestoreListeners();
+  // Render the app
+  rerender();
+}
+
+/* Adds a name to the workspace teamMembers list if not present */
+async function ensureTeamMember(name) {
+  const docRef = firebaseDb.collection('workspaces').doc(WORKSPACE_ID);
+  await firebaseDb.runTransaction(async tx => {
+    const doc = await tx.get(docRef);
+    let members = [];
+    if (doc.exists) members = doc.data().teamMembers || [];
+    if (!members.find(m => m.toLowerCase() === name.toLowerCase())) {
+      members.push(name);
+      members.sort();
+      tx.set(docRef, { teamMembers: members }, { merge: true });
+    }
+  });
+}
+
+async function signOut() {
+  if (!confirm('Sign out of TRACER on this device? You can sign in again with the workspace code.')) return;
+  // Tear down listeners
+  if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+  if (unsubscribeProjects) { unsubscribeProjects(); unsubscribeProjects = null; }
+  if (unsubscribeMeta) { unsubscribeMeta(); unsubscribeMeta = null; }
+  if (unsubscribeSnapshots) { unsubscribeSnapshots(); unsubscribeSnapshots = null; }
+  setStoredAuth(null);
+  currentUser = null;
+  try { await firebaseAuth.signOut(); } catch (e) {}
+  // Clear local state and show sign-in
+  state.tasks = [];
+  state.projects = [];
+  state.assignees = [];
+  state.snapshots = [];
+  showSigninScreen();
+}
+
+/* ============================================================
+   FIRESTORE DATA LAYER
+   ============================================================ */
+
+// Firestore paths
+function tasksColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('tasks'); }
+function projectsColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('projects'); }
+function snapshotsColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('snapshots'); }
+function workspaceDoc() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID); }
+
+// Used by every write so we know who did what
+function editStamp() {
+  return {
+    lastEditedBy: currentUser?.displayName || 'Unknown',
+    lastEditedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+}
+
+async function attachFirestoreListeners() {
+  // Tasks
+  unsubscribeTasks = tasksColl().onSnapshot(snap => {
+    const tasks = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      tasks.push({ ...d, id: doc.id });
+    });
+    state.tasks = tasks;
+    saveCache();
+    if (!suppressLocalRender) rerender();
+  }, err => console.warn('Tasks sync error', err));
+
+  // Projects
+  unsubscribeProjects = projectsColl().orderBy('order', 'asc').onSnapshot(snap => {
+    const projects = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      projects.push({ id: doc.id, name: d.name, order: d.order || 0 });
+    });
+    if (projects.length) state.projects = projects;
+    saveCache();
+    if (!suppressLocalRender) rerender();
+  }, err => console.warn('Projects sync error', err));
+
+  // Workspace meta (assignees, teamMembers)
+  unsubscribeMeta = workspaceDoc().onSnapshot(doc => {
+    const d = doc.data() || {};
+    if (d.assignees) state.assignees = d.assignees;
+    if (d.teamMembers) state.teamMembers = d.teamMembers;
+    if (d.currentProjectId && !state.currentProjectId) state.currentProjectId = d.currentProjectId;
+    saveCache();
+    if (!suppressLocalRender) rerender();
+  }, err => console.warn('Meta sync error', err));
+
+  // Snapshots (limited to last 52)
+  unsubscribeSnapshots = snapshotsColl().orderBy('takenAt', 'desc').limit(52).onSnapshot(snap => {
+    const snaps = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      snaps.push({ ...d, id: doc.id, takenAt: d.takenAt?.toDate ? d.takenAt.toDate().toISOString() : d.takenAt });
+    });
+    state.snapshots = snaps;
+    saveCache();
+  }, err => console.warn('Snapshots sync error', err));
+}
+
+// Save current state to localStorage as offline cache
+function saveCache() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      tasks: state.tasks,
+      projects: state.projects,
+      assignees: state.assignees,
+      teamMembers: state.teamMembers,
+      snapshots: state.snapshots,
+      currentProjectId: state.currentProjectId
+    }));
+  } catch (e) { console.warn('Cache save failed', e); }
+}
+
+// Firestore-write helpers — all writes funnel through these
+async function fsCreateTask(task) {
+  const id = task.id || uid();
+  await tasksColl().doc(id).set({ ...task, ...editStamp(), createdBy: currentUser?.displayName || null });
+  return id;
+}
+async function fsUpdateTask(id, patch) {
+  await tasksColl().doc(id).update({ ...patch, ...editStamp() });
+}
+async function fsDeleteTask(id) {
+  await tasksColl().doc(id).delete();
+}
+async function fsCreateProject(project) {
+  const id = project.id || ('p' + Date.now().toString(36));
+  await projectsColl().doc(id).set({ ...project, ...editStamp() });
+  return id;
+}
+async function fsUpdateProject(id, patch) {
+  await projectsColl().doc(id).update({ ...patch, ...editStamp() });
+}
+async function fsDeleteProject(id) {
+  await projectsColl().doc(id).delete();
+}
+async function fsUpdateMeta(patch) {
+  await workspaceDoc().set(patch, { merge: true });
+}
+async function fsCreateSnapshot(snap) {
+  const id = snap.id || ('s' + Date.now().toString(36));
+  // Convert ISO date string back to Firestore Timestamp for server-side sort
+  const data = { ...snap, takenAt: firebase.firestore.Timestamp.fromDate(new Date(snap.takenAt)) };
+  delete data.id;
+  await snapshotsColl().doc(id).set(data);
+}
+async function fsDeleteSnapshot(id) {
+  await snapshotsColl().doc(id).delete();
+}
+
+// One-time migration: push localStorage cache to Firestore (used for backup restore + first-time seed)
+async function migrateToFirestore(seedData) {
+  if (!firestoreReady || !currentUser) return;
+  const batch = firebaseDb.batch();
+  let opCount = 0;
+  const FLUSH = 400; // Firestore batch limit is 500
+
+  // Tasks
+  (seedData.tasks || []).forEach(t => {
+    const ref = tasksColl().doc(t.id);
+    batch.set(ref, { ...t, lastEditedBy: currentUser.displayName, lastEditedAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: currentUser.displayName });
+    opCount++;
+  });
+
+  // Projects (assign order from index)
+  (seedData.projects || []).forEach((p, i) => {
+    const ref = projectsColl().doc(p.id);
+    batch.set(ref, { name: p.name, order: i, lastEditedBy: currentUser.displayName });
+    opCount++;
+  });
+
+  // Workspace meta
+  const metaRef = workspaceDoc();
+  batch.set(metaRef, {
+    assignees: seedData.assignees || [],
+    teamMembers: seedData.teamMembers || DEFAULT_DISPLAY_NAMES,
+    currentProjectId: seedData.currentProjectId || 'mes',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+  opCount++;
+
+  if (opCount > FLUSH) {
+    // Bigger than one batch — commit current and start a fresh one
+    // For simplicity, split tasks into chunks
+    await batch.commit();
+    // Snapshots in a second pass
+    let sb = firebaseDb.batch();
+    let sc = 0;
+    for (const s of (seedData.snapshots || [])) {
+      sb.set(snapshotsColl().doc(s.id), { ...s, takenAt: firebase.firestore.Timestamp.fromDate(new Date(s.takenAt)) });
+      sc++;
+      if (sc >= FLUSH) { await sb.commit(); sb = firebaseDb.batch(); sc = 0; }
+    }
+    if (sc > 0) await sb.commit();
+  } else {
+    // Add snapshots to same batch
+    (seedData.snapshots || []).forEach(s => {
+      batch.set(snapshotsColl().doc(s.id), { ...s, takenAt: firebase.firestore.Timestamp.fromDate(new Date(s.takenAt)) });
+    });
+    await batch.commit();
+  }
+}
+
+
+
 const SEED = JSON.parse(document.getElementById('seedData').textContent);
 
 const STATUS_LABELS = { todo: 'Not started', wip: 'In progress', blocked: 'Blocked', done: 'Done' };
@@ -835,6 +1376,7 @@ let state = {
   projects: SEED.projects.slice(),
   assignees: SEED.assignees.slice(),
   snapshots: [],   // [{ id, takenAt, totals, perProject }]
+  teamMembers: DEFAULT_DISPLAY_NAMES.slice(), // Synced via Firestore once signed in
   currentProjectId: SEED.projects[0]?.id || 'mes',
   editingId: null,
   searchQuery: '',
@@ -854,6 +1396,7 @@ function loadOrSeed() {
       if (parsed.projects) state.projects = parsed.projects;
       if (parsed.assignees) state.assignees = parsed.assignees;
       if (parsed.snapshots) state.snapshots = parsed.snapshots;
+      if (parsed.teamMembers) state.teamMembers = parsed.teamMembers;
       if (parsed.currentProjectId) state.currentProjectId = parsed.currentProjectId;
       return;
     } catch (e) { console.warn('Load failed, re-seeding', e); }
@@ -870,15 +1413,87 @@ function loadOrSeed() {
 }
 
 function save() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      tasks: state.tasks,
-      projects: state.projects,
-      assignees: state.assignees,
-      snapshots: state.snapshots,
-      currentProjectId: state.currentProjectId
-    }));
-  } catch (e) { console.warn('Save failed', e); }
+  // Always write the local cache for offline support and fast next-load
+  saveCache();
+  // If Firebase is up and we're signed in, also push the full state to Firestore.
+  // We use a debounced batch write so rapid sequential edits don't fire many requests.
+  if (firestoreReady && currentUser) scheduleFirestoreSync();
+}
+
+// Coalesce rapid save() calls into a single batch write
+let _syncTimer = null;
+let _syncQueued = false;
+function scheduleFirestoreSync() {
+  _syncQueued = true;
+  if (_syncTimer) return;
+  _syncTimer = setTimeout(async () => {
+    _syncTimer = null;
+    if (!_syncQueued) return;
+    _syncQueued = false;
+    try {
+      await pushStateToFirestore();
+    } catch (e) {
+      console.warn('Firestore sync failed (will retry on next change)', e);
+    }
+  }, 400); // 400ms debounce
+}
+
+async function pushStateToFirestore() {
+  if (!firestoreReady || !currentUser) return;
+  const stamp = editStamp();
+
+  // Batch all tasks (write the current task list authoritatively)
+  // We DON'T delete tasks that exist in Firestore but not in state — that's done explicitly via deleteTask
+  let batch = firebaseDb.batch();
+  let opCount = 0;
+  const FLUSH = 400;
+
+  for (const t of state.tasks) {
+    batch.set(tasksColl().doc(t.id), { ...t, ...stamp }, { merge: false });
+    opCount++;
+    if (opCount >= FLUSH) {
+      await batch.commit();
+      batch = firebaseDb.batch();
+      opCount = 0;
+    }
+  }
+  // Projects
+  for (let i = 0; i < state.projects.length; i++) {
+    const p = state.projects[i];
+    batch.set(projectsColl().doc(p.id), { name: p.name, order: i, ...stamp }, { merge: false });
+    opCount++;
+    if (opCount >= FLUSH) {
+      await batch.commit();
+      batch = firebaseDb.batch();
+      opCount = 0;
+    }
+  }
+  // Meta
+  batch.set(workspaceDoc(), {
+    assignees: state.assignees,
+    teamMembers: state.teamMembers || DEFAULT_DISPLAY_NAMES,
+    currentProjectId: state.currentProjectId
+  }, { merge: true });
+  opCount++;
+
+  if (opCount > 0) await batch.commit();
+}
+
+// Explicit delete helpers — needed because pushStateToFirestore() above doesn't delete
+async function deleteTaskFromFirestore(taskId) {
+  if (!firestoreReady || !currentUser) return;
+  try { await tasksColl().doc(taskId).delete(); }
+  catch (e) { console.warn('Delete task failed', e); }
+}
+async function deleteProjectFromFirestore(projectId) {
+  if (!firestoreReady || !currentUser) return;
+  try { await projectsColl().doc(projectId).delete(); }
+  catch (e) { console.warn('Delete project failed', e); }
+}
+async function deleteSnapshotFromFirestore(snapId) {
+  if (!firestoreReady || !currentUser) return;
+  try { await snapshotsColl().doc(snapId).delete(); }
+  catch (e) { console.warn('Delete snapshot failed', e); }
 }
 
 /* ===== UTILITIES ===== */
@@ -2077,7 +2692,9 @@ document.getElementById('btnSave').onclick = () => {
 document.getElementById('btnDelete').onclick = () => {
   if (!state.editingId) return;
   if (confirm('Delete this task?')) {
-    state.tasks = state.tasks.filter(t => t.id !== state.editingId);
+    const deletedId = state.editingId;
+    state.tasks = state.tasks.filter(t => t.id !== deletedId);
+    deleteTaskFromFirestore(deletedId);
     save(); rerender(); closeModal(); toast('Task deleted');
   }
 };
@@ -2165,11 +2782,17 @@ document.getElementById('projectDeleteBtn').onclick = () => {
   let msg = `Delete project "${p.name}"?`;
   if (taskCount > 0) msg += `\n\nThis will also delete ${taskCount} task${taskCount !== 1 ? 's' : ''}. This cannot be undone.`;
   if (!confirm(msg)) return;
+  // Capture IDs that need Firestore deletion before mutating state
+  const tasksToDelete = state.tasks.filter(t => t.projectId === editingProjectId).map(t => t.id);
+  const projectToDelete = editingProjectId;
   state.tasks = state.tasks.filter(t => t.projectId !== editingProjectId);
   state.projects = state.projects.filter(p => p.id !== editingProjectId);
   if (state.currentProjectId === editingProjectId) {
     state.currentProjectId = state.projects[0]?.id || null;
   }
+  // Fire deletes in Firestore (async, non-blocking)
+  tasksToDelete.forEach(tid => deleteTaskFromFirestore(tid));
+  deleteProjectFromFirestore(projectToDelete);
   save();
   rerender();
   closeProjectModal();
@@ -2211,6 +2834,18 @@ function refreshDataSummary() {
   const kb = (bytes / 1024).toFixed(1);
   document.getElementById('dataSummary').innerHTML =
     `${t} tasks (${open} open · ${done} done) · ${p} projects · ${a} assignees · ${s} snapshot${s !== 1 ? 's' : ''} <br>Storage used: ${kb} KB`;
+  // Workspace info
+  const wInfo = document.getElementById('workspaceInfo');
+  if (wInfo) {
+    if (currentUser && firestoreReady) {
+      const team = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
+      wInfo.innerHTML = `Signed in as <strong>${escapeHTML(currentUser.displayName)}</strong> · Live sync <span style="color:var(--ok);">●</span> ON<br>Team members: ${team.map(n => escapeHTML(n)).join(', ')}`;
+    } else if (currentUser) {
+      wInfo.innerHTML = `Signed in as <strong>${escapeHTML(currentUser.displayName)}</strong> · Live sync OFF (offline or Firebase unreachable)`;
+    } else {
+      wInfo.textContent = 'Not signed in. Local-only mode.';
+    }
+  }
 }
 
 function exportBackup() {
@@ -2261,7 +2896,7 @@ function downloadBlob(text, filename) {
 
 function importBackup(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
       const data = parsed.data || parsed;
@@ -2269,17 +2904,42 @@ function importBackup(file) {
         toast('Invalid backup file');
         return;
       }
-      const confirmMsg = `Replace current data with this backup?\n\nThis backup has ${data.tasks.length} tasks, ${data.projects?.length || 0} projects, ${data.snapshots?.length || 0} snapshots.\n\nYour current data (${state.tasks.length} tasks) will be replaced.`;
+      const fbActive = firestoreReady && currentUser;
+      let confirmMsg = `Replace current data with this backup?\n\nThis backup has ${data.tasks.length} tasks, ${data.projects?.length || 0} projects, ${data.snapshots?.length || 0} snapshots.\n\nYour current data (${state.tasks.length} tasks) will be replaced.`;
+      if (fbActive) confirmMsg += '\n\nThis will also push the data to the shared workspace — all team members will see this data.';
       if (!confirm(confirmMsg)) return;
+      // Update local state first
       if (data.tasks) state.tasks = data.tasks;
       if (data.projects) state.projects = data.projects;
       if (data.assignees) state.assignees = data.assignees;
       if (data.snapshots) state.snapshots = data.snapshots;
       if (data.currentProjectId) state.currentProjectId = data.currentProjectId;
-      save();
+      saveCache();
       rerender();
       closeSettings();
-      toast(`Restored ${data.tasks.length} tasks`);
+      if (fbActive) {
+        toast('Pushing to workspace…');
+        try {
+          // Briefly suppress listener-driven rerender during migration
+          suppressLocalRender = true;
+          await migrateToFirestore({
+            tasks: data.tasks || [],
+            projects: data.projects || [],
+            assignees: data.assignees || [],
+            snapshots: data.snapshots || [],
+            currentProjectId: data.currentProjectId,
+            teamMembers: state.teamMembers || DEFAULT_DISPLAY_NAMES
+          });
+          suppressLocalRender = false;
+          toast(`Restored ${data.tasks.length} tasks to workspace`);
+        } catch (e) {
+          suppressLocalRender = false;
+          console.error('Migration error', e);
+          toast('Restored locally, but workspace push failed. Retry.');
+        }
+      } else {
+        toast(`Restored ${data.tasks.length} tasks (local)`);
+      }
     } catch (err) {
       console.error(err);
       toast('Could not read backup file');
@@ -2426,6 +3086,7 @@ function refreshSnapshotList() {
       e.stopPropagation();
       if (!confirm('Delete this snapshot?')) return;
       state.snapshots = state.snapshots.filter(x => x.id !== s.id);
+      deleteSnapshotFromFirestore(s.id);
       save();
       refreshSnapshotList();
       refreshDataSummary();
@@ -2491,6 +3152,8 @@ function bulkDelete() {
   const ids = Array.from(state.selectedIds);
   if (!confirm(`Delete ${ids.length} task${ids.length !== 1 ? 's' : ''}? This cannot be undone.`)) return;
   state.tasks = state.tasks.filter(t => !state.selectedIds.has(t.id));
+  // Also delete from Firestore
+  ids.forEach(id => deleteTaskFromFirestore(id));
   save();
   toast(`${ids.length} deleted`);
   exitBulkMode();
@@ -2552,6 +3215,7 @@ document.getElementById('importFileInput').addEventListener('change', e => {
   e.target.value = ''; // reset
 });
 document.getElementById('resetSeedBtn').onclick = resetSeed;
+document.getElementById('signoutBtn').onclick = signOut;
 
 document.getElementById('takeSnapshotBtn').onclick = takeSnapshot;
 
@@ -2588,11 +3252,59 @@ document.getElementById('remindTask').onclick = () => {
 };
 
 /* ===== INIT ===== */
+
+// Always load local cache first for instant render (even before Firebase connects)
 loadOrSeed();
-maybeAutoSnapshot();
-processRecurringTasks();
 setDateMeta();
-renderDashboard();
+
+// Initialize Firebase
+const fbOk = initFirebase();
+
+if (!fbOk) {
+  // Firebase failed to load — fall back to local-only (still useful)
+  console.warn('Firebase unavailable — running in local-only mode');
+  maybeAutoSnapshot();
+  processRecurringTasks();
+  renderDashboard();
+} else {
+  // Check stored auth state
+  const stored = getStoredAuth();
+  if (stored && stored.signedIn && stored.displayName) {
+    // Already signed in — restore session and attach listeners
+    currentUser = { displayName: stored.displayName, signedInAt: stored.signedInAt };
+    // Render local cache immediately so UI isn't blank
+    renderDashboard();
+    // Then sign in to Firebase (anonymous) and attach listeners
+    firebaseAuth.signInAnonymously()
+      .then(async () => {
+        // Refresh member presence
+        try {
+          await firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('members').doc(firebaseAuth.currentUser.uid).set({
+            displayName: stored.displayName,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            uid: firebaseAuth.currentUser.uid
+          }, { merge: true });
+        } catch (e) {}
+        await attachFirestoreListeners();
+        maybeAutoSnapshot();
+        processRecurringTasks();
+      })
+      .catch(err => {
+        console.error('Auto sign-in failed', err);
+        // Show sign-in screen
+        showSigninScreen();
+      });
+  } else {
+    // Not signed in — show sign-in screen
+    showSigninScreen();
+  }
+}
+
+// Wire sign-in form
+document.getElementById('signinCodeBtn').onclick = submitWorkspaceCode;
+document.getElementById('signinCode').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitWorkspaceCode();
+});
 
 /* ===== SW + INSTALL ===== */
 if ('serviceWorker' in navigator) {
