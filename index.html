@@ -463,6 +463,107 @@
     margin-top: 1rem;
   }
 
+  /* ROLE-BASED VISIBILITY */
+  body.operator [data-admin-only="true"] { display: none !important; }
+
+  /* OPERATOR BADGE — small visual indicator in header */
+  .role-badge {
+    display: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+  }
+  body.operator .role-badge { display: inline-block; }
+  body.operator .role-badge.admin { display: none; }
+
+  /* EDIT ATTRIBUTION on tasks */
+  .task-attribution {
+    font-size: 0.66rem;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 0.25rem;
+    opacity: 0.7;
+  }
+  .task-attribution .by { color: var(--accent); }
+
+  /* AUDIT LOG */
+  .audit-entry {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 0.7rem 0.85rem;
+    margin-bottom: 0.55rem;
+  }
+  .audit-entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.35rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .audit-actor {
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+  .audit-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+  }
+  .audit-action {
+    font-size: 0.8rem;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+  }
+  .audit-action strong { color: var(--ink); font-weight: 600; }
+  .audit-changes {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .audit-changes .field-name { color: var(--ink-faint); }
+  .audit-changes .arrow { color: var(--ink-faint); margin: 0 0.3rem; }
+  .audit-changes .old { color: var(--crit); text-decoration: line-through; opacity: 0.7; }
+  .audit-changes .new { color: var(--ok); }
+  .audit-day-header {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 1rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .audit-day-header:first-child { margin-top: 0; }
+  .audit-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  /* OPERATOR view of status circle — make it look read-only */
+  body.operator .check {
+    cursor: default;
+    opacity: 0.65;
+  }
+  body.operator .check:hover {
+    transform: none;
+  }
+
   /* SETTINGS BUTTON */
   .settings-btn {
     background: none;
@@ -726,6 +827,7 @@
     <h1>TRACER<span>.</span></h1>
     <div style="display:flex;align-items:center;gap:0.7rem;">
       <div class="meta" id="dateMeta"></div>
+      <span class="role-badge" id="roleBadge">Operator</span>
       <button class="settings-btn" id="settingsBtn" aria-label="Settings">⚙</button>
     </div>
   </div>
@@ -736,6 +838,7 @@
     <button class="tab active" data-view="dashboard">Dashboard</button>
     <button class="tab" data-view="projects">Projects</button>
     <button class="tab" data-view="assignees">By Assignee</button>
+    <button class="tab" data-view="activity">Activity</button>
     <button class="tab" data-view="search" id="searchTab" style="display:none">Search</button>
   </nav>
 </header>
@@ -791,8 +894,8 @@
     <div style="display:flex;gap:0.5rem;margin-bottom:0.9rem;flex-wrap:wrap;align-items:center;">
       <button class="share-btn" id="shareFiltered"><span class="wa-ico"></span>Share this list</button>
       <button class="share-btn" id="shareProjectSummary"><span class="wa-ico"></span>Share project summary</button>
-      <button class="project-edit-link" id="editProjectLink">Rename / Delete</button>
-      <button class="project-edit-link" id="useTemplateBtn" style="color:var(--accent);">+ Use template</button>
+      <button class="project-edit-link" id="editProjectLink" data-admin-only="true">Rename / Delete</button>
+      <button class="project-edit-link" id="useTemplateBtn" data-admin-only="true" style="color:var(--accent);">+ Use template</button>
     </div>
     <div class="task-list" id="taskList"></div>
   </section>
@@ -807,6 +910,14 @@
       </select>
     </div>
     <div id="assigneeList"></div>
+  </section>
+
+  <section class="view" id="view-activity">
+    <div class="section-title">
+      <span>Activity log</span>
+      <span id="activityCount" style="font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--ink-faint);"></span>
+    </div>
+    <div id="activityList"></div>
   </section>
 
   <section class="view" id="view-search">
@@ -827,11 +938,11 @@
       <div class="field"><label>Project</label><select id="fProject"></select></div>
       <div class="field"><label>Section</label><input type="text" id="fSection" placeholder="e.g. Finance" autocomplete="off" /></div>
     </div>
-    <div class="field-row">
+    <div class="field-row" data-admin-only="true">
       <div class="field"><label>Assignee</label><select id="fAssignee"></select></div>
       <div class="field"><label>Due Date</label><input type="date" id="fDue" /></div>
     </div>
-    <div class="field">
+    <div class="field" data-admin-only="true">
       <label>Status</label>
       <div class="toggle-group" id="fStatus">
         <button data-s="todo">Not started</button>
@@ -840,7 +951,7 @@
         <button data-s="done">Done</button>
       </div>
     </div>
-    <div class="field">
+    <div class="field" data-admin-only="true">
       <label>Priority</label>
       <div class="toggle-group" id="fPriority">
         <button data-p="crit">Critical</button>
@@ -849,7 +960,7 @@
         <button data-p="low">Low</button>
       </div>
     </div>
-    <div class="field">
+    <div class="field" data-admin-only="true">
       <label>Recurring?</label>
       <select id="fRecurrence">
         <option value="">No, one-time task</option>
@@ -924,7 +1035,7 @@
       <h3>Backup &amp; Restore</h3>
       <div class="settings-row">
         <button class="btn primary" id="exportBackupBtn">Export Backup</button>
-        <button class="btn" id="importBackupBtn">Restore Backup</button>
+        <button class="btn" id="importBackupBtn" data-admin-only="true">Restore Backup</button>
       </div>
       <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
       <div class="settings-info">
@@ -957,15 +1068,6 @@
       </div>
     </div>
 
-    <div class="settings-section">
-      <h3>Danger Zone</h3>
-      <div class="settings-row">
-        <button class="btn danger" id="resetSeedBtn">Reset to Original Seed</button>
-      </div>
-      <div class="settings-info">
-        Replaces all current data with the 247 original tasks. Your edits will be lost unless you export a backup first.
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1022,6 +1124,7 @@ let unsubscribeTasks = null;
 let unsubscribeProjects = null;
 let unsubscribeMeta = null;
 let unsubscribeSnapshots = null;
+let unsubscribeAudit = null;
 let currentUser = null; // { displayName, signedInAt }
 let suppressLocalRender = false;
 
@@ -1149,6 +1252,8 @@ async function pickDisplayName(name) {
     }, { merge: true });
     // Ensure the name is in the global teamMembers list
     await ensureTeamMember(name);
+    // Bootstrap: first ever signin becomes admin
+    await ensureFirstAdmin();
   } catch (e) {
     console.warn('Member register failed', e);
     // Non-fatal — proceed
@@ -1182,6 +1287,7 @@ async function signOut() {
   if (unsubscribeProjects) { unsubscribeProjects(); unsubscribeProjects = null; }
   if (unsubscribeMeta) { unsubscribeMeta(); unsubscribeMeta = null; }
   if (unsubscribeSnapshots) { unsubscribeSnapshots(); unsubscribeSnapshots = null; }
+  if (unsubscribeAudit) { unsubscribeAudit(); unsubscribeAudit = null; }
   setStoredAuth(null);
   currentUser = null;
   try { await firebaseAuth.signOut(); } catch (e) {}
@@ -1217,6 +1323,10 @@ async function attachFirestoreListeners() {
     const tasks = [];
     snap.forEach(doc => {
       const d = doc.data();
+      // Convert Firestore Timestamp objects to ISO strings for our local use
+      if (d.lastEditedAt && d.lastEditedAt.toDate) {
+        d.lastEditedAt = d.lastEditedAt.toDate().toISOString();
+      }
       tasks.push({ ...d, id: doc.id });
     });
     state.tasks = tasks;
@@ -1242,6 +1352,10 @@ async function attachFirestoreListeners() {
     if (d.assignees) state.assignees = d.assignees;
     if (d.teamMembers) state.teamMembers = d.teamMembers;
     if (d.currentProjectId && !state.currentProjectId) state.currentProjectId = d.currentProjectId;
+    // Update admin list for role checks
+    _adminUids = d.admins || [];
+    state.adminNames = d.adminNames || [];
+    updateRoleUI();
     saveCache();
     if (!suppressLocalRender) rerender();
   }, err => console.warn('Meta sync error', err));
@@ -1256,6 +1370,23 @@ async function attachFirestoreListeners() {
     state.snapshots = snaps;
     saveCache();
   }, err => console.warn('Snapshots sync error', err));
+
+  // Audit log (last 200 entries)
+  unsubscribeAudit = auditColl().orderBy('at', 'desc').limit(200).onSnapshot(snap => {
+    const entries = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      entries.push({
+        id: doc.id,
+        ...d,
+        at: d.at?.toDate ? d.at.toDate() : null
+      });
+    });
+    state.audit = entries;
+    // If user is viewing the Activity tab, re-render
+    const activeView = document.querySelector('.tab.active')?.dataset.view;
+    if (activeView === 'activity') renderActivity();
+  }, err => console.warn('Audit sync error', err));
 }
 
 // Save current state to localStorage as offline cache
@@ -1376,7 +1507,9 @@ let state = {
   projects: SEED.projects.slice(),
   assignees: SEED.assignees.slice(),
   snapshots: [],   // [{ id, takenAt, totals, perProject }]
+  audit: [],       // [{ id, displayName, action, at, ... }] from Firestore
   teamMembers: DEFAULT_DISPLAY_NAMES.slice(), // Synced via Firestore once signed in
+  adminNames: [],
   currentProjectId: SEED.projects[0]?.id || 'mes',
   editingId: null,
   searchQuery: '',
@@ -1413,91 +1546,188 @@ function loadOrSeed() {
 }
 
 function save() {
-  // Always write the local cache for offline support and fast next-load
+  // Always write local cache only. Firestore writes happen at mutation sites via fsWrite* helpers.
   saveCache();
-  // If Firebase is up and we're signed in, also push the full state to Firestore.
-  // We use a debounced batch write so rapid sequential edits don't fire many requests.
-  if (firestoreReady && currentUser) scheduleFirestoreSync();
 }
 
-// Coalesce rapid save() calls into a single batch write
-let _syncTimer = null;
-let _syncQueued = false;
-function scheduleFirestoreSync() {
-  _syncQueued = true;
-  if (_syncTimer) return;
-  _syncTimer = setTimeout(async () => {
-    _syncTimer = null;
-    if (!_syncQueued) return;
-    _syncQueued = false;
-    try {
-      await pushStateToFirestore();
-    } catch (e) {
-      console.warn('Firestore sync failed (will retry on next change)', e);
-    }
-  }, 400); // 400ms debounce
-}
+/* ============================================================
+   PER-DOCUMENT FIRESTORE WRITES
+   These replace the buggy bulk overwrite. Each mutation calls
+   exactly one write — no risk of stale state overwriting fresh data.
+   ============================================================ */
 
-async function pushStateToFirestore() {
+async function fsWriteTask(taskId, patch, isCreate = false) {
   if (!firestoreReady || !currentUser) return;
   const stamp = editStamp();
-
-  // Batch all tasks (write the current task list authoritatively)
-  // We DON'T delete tasks that exist in Firestore but not in state — that's done explicitly via deleteTask
-  let batch = firebaseDb.batch();
-  let opCount = 0;
-  const FLUSH = 400;
-
-  for (const t of state.tasks) {
-    batch.set(tasksColl().doc(t.id), { ...t, ...stamp }, { merge: false });
-    opCount++;
-    if (opCount >= FLUSH) {
-      await batch.commit();
-      batch = firebaseDb.batch();
-      opCount = 0;
+  try {
+    if (isCreate) {
+      await tasksColl().doc(taskId).set({ ...patch, ...stamp, createdBy: currentUser.displayName });
+    } else {
+      await tasksColl().doc(taskId).set({ ...patch, ...stamp }, { merge: true });
     }
+  } catch (e) {
+    console.warn('Task write failed', e);
+    throw e; // Surface to caller for UI feedback
   }
-  // Projects
-  for (let i = 0; i < state.projects.length; i++) {
-    const p = state.projects[i];
-    batch.set(projectsColl().doc(p.id), { name: p.name, order: i, ...stamp }, { merge: false });
-    opCount++;
-    if (opCount >= FLUSH) {
-      await batch.commit();
-      batch = firebaseDb.batch();
-      opCount = 0;
-    }
-  }
-  // Meta
-  batch.set(workspaceDoc(), {
-    assignees: state.assignees,
-    teamMembers: state.teamMembers || DEFAULT_DISPLAY_NAMES,
-    currentProjectId: state.currentProjectId
-  }, { merge: true });
-  opCount++;
-
-  if (opCount > 0) await batch.commit();
 }
 
-// Explicit delete helpers — needed because pushStateToFirestore() above doesn't delete
+async function fsWriteProject(projectId, patch, isCreate = false) {
+  if (!firestoreReady || !currentUser) return;
+  const stamp = editStamp();
+  try {
+    if (isCreate) {
+      await projectsColl().doc(projectId).set({ ...patch, ...stamp });
+    } else {
+      await projectsColl().doc(projectId).set({ ...patch, ...stamp }, { merge: true });
+    }
+  } catch (e) {
+    console.warn('Project write failed', e);
+    throw e;
+  }
+}
+
+async function fsWriteMeta(patch) {
+  if (!firestoreReady || !currentUser) return;
+  try {
+    await workspaceDoc().set(patch, { merge: true });
+  } catch (e) {
+    console.warn('Meta write failed', e);
+    throw e;
+  }
+}
+
 async function deleteTaskFromFirestore(taskId) {
   if (!firestoreReady || !currentUser) return;
-  try { await tasksColl().doc(taskId).delete(); }
-  catch (e) { console.warn('Delete task failed', e); }
+  try {
+    await tasksColl().doc(taskId).delete();
+    await writeAuditLog('task_delete', { taskId, taskTitle: '(deleted)' });
+  } catch (e) { console.warn('Delete task failed', e); }
 }
+
 async function deleteProjectFromFirestore(projectId) {
   if (!firestoreReady || !currentUser) return;
-  try { await projectsColl().doc(projectId).delete(); }
-  catch (e) { console.warn('Delete project failed', e); }
+  try {
+    await projectsColl().doc(projectId).delete();
+    await writeAuditLog('project_delete', { projectId });
+  } catch (e) { console.warn('Delete project failed', e); }
 }
+
 async function deleteSnapshotFromFirestore(snapId) {
   if (!firestoreReady || !currentUser) return;
   try { await snapshotsColl().doc(snapId).delete(); }
   catch (e) { console.warn('Delete snapshot failed', e); }
 }
 
+/* ============================================================
+   AUDIT LOG
+   Every mutation writes an entry to the audit collection.
+   Shape: { actor, displayName, action, target, targetTitle,
+            changes: [{field, from, to}], at: serverTimestamp }
+   ============================================================ */
+
+function auditColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('audit'); }
+
+async function writeAuditLog(action, info) {
+  if (!firestoreReady || !currentUser) return;
+  try {
+    await auditColl().add({
+      actor: firebaseAuth.currentUser?.uid || null,
+      displayName: currentUser.displayName,
+      action,
+      ...info,
+      at: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (e) {
+    console.warn('Audit log write failed', e);
+    // Non-fatal — don't block the main action
+  }
+}
+
+// Compute a list of changed fields between two task objects.
+// Returns [{field, from, to}] for any field that meaningfully changed.
+function diffTask(oldTask, newTask) {
+  const fields = ['title', 'projectId', 'section', 'assignee', 'due', 'priority', 'status', 'notes'];
+  const changes = [];
+  for (const f of fields) {
+    const oldVal = oldTask?.[f] ?? null;
+    const newVal = newTask?.[f] ?? null;
+    if (oldVal !== newVal) {
+      changes.push({ field: f, from: oldVal, to: newVal });
+    }
+  }
+  // Recurrence is an object
+  const oldRecKey = recurrenceToKey(oldTask?.recurrence);
+  const newRecKey = recurrenceToKey(newTask?.recurrence);
+  if (oldRecKey !== newRecKey) {
+    changes.push({ field: 'recurrence', from: oldRecKey || 'none', to: newRecKey || 'none' });
+  }
+  return changes;
+}
+
+/* ============================================================
+   ROLES — Admin vs Operator
+   Stored as workspace.admins = [uid1, uid2, ...]
+   The first user to sign in becomes admin automatically.
+   ============================================================ */
+
+let _adminUids = []; // synced from workspace meta
+
+function isAdmin() {
+  if (!firebaseAuth?.currentUser) return false;
+  return _adminUids.includes(firebaseAuth.currentUser.uid);
+}
+
+function canEditStatus()      { return isAdmin(); }
+function canEditDueDate()     { return isAdmin(); }
+function canEditAssignee()    { return isAdmin(); }
+function canEditPriority()    { return isAdmin(); }
+function canDelete()          { return isAdmin(); }
+function canCreateProject()   { return isAdmin(); }
+function canModifyProject()   { return isAdmin(); }
+function canBulkActions()     { return isAdmin(); }
+function canRestoreBackup()   { return isAdmin(); }
+function canApplyTemplate()   { return isAdmin(); }
+// Operators CAN:
+function canCreateTask()      { return true; }    // both
+function canEditNotes()       { return true; }    // both
+function canTakeSnapshot()    { return true; }    // both
+function canExportBackup()    { return true; }    // both
+
+function updateRoleUI() {
+  if (isAdmin()) {
+    document.body.classList.remove('operator');
+    const badge = document.getElementById('roleBadge');
+    if (badge) badge.textContent = 'Admin';
+  } else {
+    document.body.classList.add('operator');
+    const badge = document.getElementById('roleBadge');
+    if (badge) badge.textContent = 'Operator';
+  }
+}
+
+/* Make first signed-in user the admin, if no admins exist yet */
+async function ensureFirstAdmin() {
+  if (!firestoreReady || !currentUser || !firebaseAuth.currentUser) return;
+  try {
+    const doc = await workspaceDoc().get();
+    const data = doc.data() || {};
+    const admins = data.admins || [];
+    if (admins.length === 0) {
+      await workspaceDoc().set({
+        admins: [firebaseAuth.currentUser.uid],
+        adminNames: [currentUser.displayName]
+      }, { merge: true });
+      console.log('Bootstrapped first admin:', currentUser.displayName);
+    }
+  } catch (e) {
+    console.warn('ensureFirstAdmin failed', e);
+  }
+}
+
 /* ===== UTILITIES ===== */
 function uid() { return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+
 
 function today() { const d = new Date(); d.setHours(0,0,0,0); return d; }
 
@@ -1977,11 +2207,13 @@ function renderProjects() {
     chips.appendChild(chip);
   });
   // Add-project chip
-  const addChip = document.createElement('button');
-  addChip.className = 'chip chip-add';
-  addChip.innerHTML = '+ New Project';
-  addChip.onclick = () => openProjectModal();
-  chips.appendChild(addChip);
+  if (isAdmin()) {
+    const addChip = document.createElement('button');
+    addChip.className = 'chip chip-add';
+    addChip.innerHTML = '+ New Project';
+    addChip.onclick = () => openProjectModal();
+    chips.appendChild(addChip);
+  }
 
   // Assignee filter
   const fA = document.getElementById('filterAssignee');
@@ -2080,6 +2312,22 @@ function escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function timeAgo(iso) {
+  if (!iso) return '';
+  const t = new Date(iso).getTime();
+  if (isNaN(t)) return '';
+  const diff = Date.now() - t;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} hr ago`;
+  const days = Math.floor(hr / 24);
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
 function taskCard(t, opts = {}) {
   const dc = dueClass(t.due, t.status === 'done');
   const card = document.createElement('div');
@@ -2097,6 +2345,7 @@ function taskCard(t, opts = {}) {
   let pressTimer = null;
   const handlePressStart = (e) => {
     if (state.bulkMode) return; // in bulk mode, tap toggles instead
+    if (!canBulkActions()) return; // operators can't enter bulk mode
     pressTimer = setTimeout(() => {
       // haptic via vibration if supported
       if (navigator.vibrate) navigator.vibrate(40);
@@ -2179,6 +2428,14 @@ function taskCard(t, opts = {}) {
     body.appendChild(upd);
   }
 
+  // Edit attribution
+  if (t.lastEditedBy && t.lastEditedAt) {
+    const attr = document.createElement('div');
+    attr.className = 'task-attribution';
+    attr.innerHTML = `Last edited by <span class="by">${escapeHTML(t.lastEditedBy)}</span> · ${timeAgo(t.lastEditedAt)}`;
+    body.appendChild(attr);
+  }
+
   const menuBtn = document.createElement('button');
   menuBtn.className = 'task-menu-btn';
   menuBtn.innerHTML = '⋯';
@@ -2196,19 +2453,28 @@ function taskCard(t, opts = {}) {
 }
 
 /* ===== STATUS CYCLE ===== */
-function cycleStatus(id) {
+async function cycleStatus(id) {
+  if (!canEditStatus()) { toast('Only admin can change task status'); return; }
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
+  const oldStatus = t.status;
+  const oldDue = t.due;
 
   // Recurring task: completing it advances the due date instead of marking done
   if (t.recurrence && (t.status === 'wip' || (t.status === 'todo' && t.due))) {
-    const oldDue = t.due;
     t.due = nextRecurrenceDate(t.due || new Date().toISOString().slice(0, 10), t.recurrence);
     t.status = 'todo';
     t.completedAt = null;
-    save();
+    saveCache();
     rerender();
     toast(`Recurring · next due ${dueLabel(t.due)}`);
+    try {
+      await fsWriteTask(t.id, { status: 'todo', due: t.due, completedAt: null });
+      await writeAuditLog('task_recur_advance', {
+        taskId: t.id, taskTitle: t.title,
+        changes: [{ field: 'due', from: oldDue, to: t.due }]
+      });
+    } catch (e) { console.warn(e); }
     return;
   }
 
@@ -2216,9 +2482,17 @@ function cycleStatus(id) {
   if (t.status === 'todo' || t.status === 'blocked') t.status = 'wip';
   else if (t.status === 'wip') { t.status = 'done'; t.completedAt = new Date().toISOString(); }
   else if (t.status === 'done') { t.status = 'todo'; t.completedAt = null; }
-  save();
+  saveCache();
   rerender();
   toast(`Set to ${STATUS_LABELS[t.status]}`);
+
+  try {
+    await fsWriteTask(t.id, { status: t.status, completedAt: t.completedAt });
+    await writeAuditLog('task_status', {
+      taskId: t.id, taskTitle: t.title,
+      changes: [{ field: 'status', from: oldStatus, to: t.status }]
+    });
+  } catch (e) { console.warn(e); }
 }
 
 /* ============================================================
@@ -2293,18 +2567,19 @@ function allTemplates() {
   return [...BUILTIN_TEMPLATES, ...(state.customTemplates || [])];
 }
 
-function applyTemplate(templateId, projectId) {
+async function applyTemplate(templateId, projectId) {
+  if (!canApplyTemplate()) { toast('Only admin can apply templates'); return; }
   const tpl = allTemplates().find(t => t.id === templateId);
   if (!tpl) { toast('Template not found'); return; }
   const proj = getProject(projectId);
   if (!proj) { toast('Project not found'); return; }
 
   const today = new Date();
-  let added = 0;
+  const newTasks = [];
   tpl.tasks.forEach((tplTask, i) => {
     const dueDate = new Date(today);
     dueDate.setDate(dueDate.getDate() + (tplTask.daysFromNow ?? 0));
-    state.tasks.push({
+    const task = {
       id: uid(),
       title: tplTask.title,
       projectId: projectId,
@@ -2316,12 +2591,24 @@ function applyTemplate(templateId, projectId) {
       notes: null,
       recurrence: tplTask.recurrence ? keyToRecurrence(tplTask.recurrence) : null,
       created: Date.now() + i
-    });
-    added++;
+    };
+    state.tasks.push(task);
+    newTasks.push(task);
   });
-  save();
+  saveCache();
   rerender();
-  toast(`Added ${added} tasks from "${tpl.name}"`);
+  toast(`Adding ${newTasks.length} tasks from "${tpl.name}"…`);
+  try {
+    await Promise.all(newTasks.map(t => fsWriteTask(t.id, t, true)));
+    await writeAuditLog('template_apply', {
+      templateName: tpl.name,
+      projectId,
+      taskCount: newTasks.length
+    });
+    toast(`Added ${newTasks.length} tasks from "${tpl.name}"`);
+  } catch (e) {
+    toast('Some tasks failed to sync');
+  }
 }
 
 function openTemplatesModal() {
@@ -2401,25 +2688,31 @@ function nextRecurrenceDate(fromDateStr, rec) {
 
 // Catch-up: if any recurring task has a due date in the past, fast-forward it
 // (called once on app open, after loadOrSeed)
-function processRecurringTasks() {
+async function processRecurringTasks() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  let advanced = 0;
+  const updates = [];
   state.tasks.forEach(t => {
     if (!t.recurrence || !t.due) return;
     if (t.status === 'done') return; // recurring + done is weird, leave alone
     let due = new Date(t.due);
     while (due < today) {
       due = new Date(nextRecurrenceDate(due.toISOString().slice(0, 10), t.recurrence));
-      advanced++;
     }
     const newDue = due.toISOString().slice(0, 10);
     if (newDue !== t.due) {
       t.due = newDue;
+      updates.push({ id: t.id, newDue });
     }
   });
-  if (advanced > 0) {
-    save();
+  if (updates.length > 0) {
+    saveCache();
+    // Only admin pushes auto-advances to Firestore (avoids many devices racing on background advances)
+    if (isAdmin()) {
+      try {
+        await Promise.all(updates.map(u => fsWriteTask(u.id, { due: u.newDue })));
+      } catch (e) { console.warn('Recurring auto-advance sync failed', e); }
+    }
   }
 }
 
@@ -2617,8 +2910,13 @@ document.getElementById('btnCancel').onclick = closeModal;
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 // "+ Add new assignee" inline flow
-document.getElementById('fAssignee').addEventListener('change', (e) => {
+document.getElementById('fAssignee').addEventListener('change', async (e) => {
   if (e.target.value !== '__ADD_NEW__') return;
+  if (!isAdmin()) {
+    toast('Only admin can add new assignees');
+    e.target.value = '';
+    return;
+  }
   const name = prompt('New assignee name:')?.trim();
   if (!name) {
     // User cancelled or empty — reset selection to unassigned
@@ -2635,7 +2933,7 @@ document.getElementById('fAssignee').addEventListener('change', (e) => {
   // Add and select
   state.assignees.push(name);
   state.assignees.sort();
-  save();
+  saveCache();
   // Rebuild dropdown
   const fA = e.target;
   const currentVal = name;
@@ -2648,10 +2946,14 @@ document.getElementById('fAssignee').addEventListener('change', (e) => {
   addOpt.textContent = '+ Add new assignee…';
   fA.appendChild(addOpt);
   fA.value = currentVal;
-  toast(`Added "${name}"`);
+  try {
+    await fsWriteMeta({ assignees: state.assignees });
+    await writeAuditLog('assignee_add', { name });
+    toast(`Added "${name}"`);
+  } catch (err) { toast('Sync failed'); }
 });
 
-document.getElementById('btnSave').onclick = () => {
+document.getElementById('btnSave').onclick = async () => {
   const title = document.getElementById('fTitle').value.trim();
   if (!title) { toast('Task title is required'); return; }
   const data = {
@@ -2665,37 +2967,128 @@ document.getElementById('btnSave').onclick = () => {
     notes: document.getElementById('fNotes').value.trim() || null,
     recurrence: keyToRecurrence(document.getElementById('fRecurrence').value)
   };
+
   if (state.editingId) {
+    // EDIT existing task
     const t = state.tasks.find(x => x.id === state.editingId);
-    Object.assign(t, data);
-    if (data.status === 'done' && !t.completedAt) t.completedAt = new Date().toISOString();
-    else if (data.status !== 'done') t.completedAt = null;
-    toast('Task updated');
+    if (!t) { toast('Task not found'); return; }
+
+    // Operator permission check: build a list of allowed fields
+    let allowedPatch = {};
+    if (isAdmin()) {
+      // Admin: everything goes through
+      allowedPatch = { ...data };
+    } else {
+      // Operator: only title + section + notes (notes is the critical one)
+      // We let title/section through because operators "edit comments" loosely interpreted
+      // But we BLOCK changes to status, due, assignee, priority, recurrence, projectId
+      const blocked = [];
+      if (data.status !== t.status) blocked.push('status');
+      if (data.due !== (t.due || null)) blocked.push('due date');
+      if ((data.assignee || null) !== (t.assignee || null)) blocked.push('assignee');
+      if (data.priority !== t.priority) blocked.push('priority');
+      if (recurrenceToKey(data.recurrence) !== recurrenceToKey(t.recurrence)) blocked.push('recurrence');
+      if (data.projectId !== t.projectId) blocked.push('project');
+      if (blocked.length > 0) {
+        toast(`Only admin can change ${blocked.join(', ')}`);
+        return;
+      }
+      // Allowed for operators
+      allowedPatch = {
+        title: data.title,
+        section: data.section,
+        notes: data.notes
+      };
+    }
+
+    // Compute audit diff BEFORE mutating local state
+    const proposedTask = { ...t, ...allowedPatch };
+    const changes = diffTask(t, proposedTask);
+
+    // Apply locally
+    Object.assign(t, allowedPatch);
+    if (allowedPatch.status === 'done' && !t.completedAt) t.completedAt = new Date().toISOString();
+    else if (allowedPatch.status && allowedPatch.status !== 'done') t.completedAt = null;
+
+    saveCache();
+    rerender();
+    closeModal();
+
+    // Write to Firestore (per-doc) + audit log
+    try {
+      await fsWriteTask(t.id, allowedPatch);
+      if (changes.length > 0) {
+        await writeAuditLog('task_edit', {
+          taskId: t.id,
+          taskTitle: t.title,
+          changes
+        });
+      }
+      toast('Task updated');
+    } catch (e) {
+      toast('Update failed — check connection');
+    }
   } else {
-    // Auto-add new assignee to roster
-    if (data.assignee && !state.assignees.includes(data.assignee)) {
+    // CREATE new task
+    if (!canCreateTask()) { toast('Permission denied'); return; }
+
+    // Auto-add new assignee to roster (admin only)
+    if (data.assignee && !state.assignees.includes(data.assignee) && isAdmin()) {
       state.assignees.push(data.assignee);
       state.assignees.sort();
+      fsWriteMeta({ assignees: state.assignees }).catch(() => {});
     }
-    state.tasks.push({
+    const newTask = {
       id: uid(), ...data,
       completedAt: data.status === 'done' ? new Date().toISOString() : null,
       created: Date.now()
-    });
-    toast('Task added');
+    };
+    // Operator restriction: force defaults on create — status=todo, no due date, no assignee, med priority, no recurrence
+    if (!isAdmin()) {
+      newTask.status = 'todo';
+      newTask.priority = 'med';
+      newTask.due = null;
+      newTask.assignee = null;
+      newTask.recurrence = null;
+      newTask.completedAt = null;
+    }
+    state.tasks.push(newTask);
+    saveCache();
+    rerender();
+    closeModal();
+
+    try {
+      await fsWriteTask(newTask.id, newTask, /* isCreate */ true);
+      await writeAuditLog('task_create', {
+        taskId: newTask.id,
+        taskTitle: newTask.title,
+        projectId: newTask.projectId
+      });
+      toast('Task added');
+    } catch (e) {
+      toast('Create failed — check connection');
+    }
   }
-  save();
-  rerender();
-  closeModal();
 };
 
-document.getElementById('btnDelete').onclick = () => {
+document.getElementById('btnDelete').onclick = async () => {
   if (!state.editingId) return;
+  if (!canDelete()) { toast('Only admin can delete tasks'); return; }
   if (confirm('Delete this task?')) {
     const deletedId = state.editingId;
+    const deletedTask = state.tasks.find(t => t.id === deletedId);
     state.tasks = state.tasks.filter(t => t.id !== deletedId);
-    deleteTaskFromFirestore(deletedId);
-    save(); rerender(); closeModal(); toast('Task deleted');
+    saveCache(); rerender(); closeModal();
+    try {
+      await tasksColl().doc(deletedId).delete();
+      await writeAuditLog('task_delete', {
+        taskId: deletedId,
+        taskTitle: deletedTask?.title || '(unknown)'
+      });
+      toast('Task deleted');
+    } catch (e) {
+      toast('Delete failed');
+    }
   }
 };
 
@@ -2704,7 +3097,107 @@ function rerender() {
   if (active === 'dashboard') renderDashboard();
   if (active === 'projects') renderProjects();
   if (active === 'assignees') renderAssignees();
+  if (active === 'activity') renderActivity();
   if (active === 'search') renderSearch();
+}
+
+/* ============================================================
+   ACTIVITY LOG RENDERER
+   ============================================================ */
+function renderActivity() {
+  const list = document.getElementById('activityList');
+  const count = document.getElementById('activityCount');
+  if (!list) return;
+  const entries = state.audit || [];
+  count.textContent = `${entries.length} recent`;
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="audit-empty">No activity yet. Edits and changes will appear here.</div>';
+    return;
+  }
+  // Group by day
+  const byDay = {};
+  entries.forEach(e => {
+    if (!e.at) return;
+    const day = e.at.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+    if (!byDay[day]) byDay[day] = [];
+    byDay[day].push(e);
+  });
+  const html = [];
+  Object.entries(byDay).forEach(([day, dayEntries]) => {
+    html.push(`<div class="audit-day-header">${escapeHTML(day)}</div>`);
+    dayEntries.forEach(e => {
+      html.push(renderAuditEntry(e));
+    });
+  });
+  list.innerHTML = html.join('');
+}
+
+function renderAuditEntry(e) {
+  const time = e.at ? e.at.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : '—';
+  const actor = escapeHTML(e.displayName || 'Unknown');
+  const actionLabel = humanAction(e);
+  let changesHTML = '';
+  if (e.changes && e.changes.length > 0) {
+    changesHTML = '<div class="audit-changes">' + e.changes.map(c => {
+      const field = `<span class="field-name">${escapeHTML(humanField(c.field))}:</span>`;
+      const from = c.from != null ? `<span class="old">${escapeHTML(humanValue(c.field, c.from))}</span>` : '';
+      const arrow = c.from != null && c.to != null ? '<span class="arrow">→</span>' : '';
+      const to = c.to != null ? `<span class="new">${escapeHTML(humanValue(c.field, c.to))}</span>` : '<span class="old">(cleared)</span>';
+      return `<div>${field} ${from}${arrow}${to}</div>`;
+    }).join('') + '</div>';
+  }
+  return `
+    <div class="audit-entry">
+      <div class="audit-entry-head">
+        <span class="audit-actor">${actor}</span>
+        <span class="audit-time">${escapeHTML(time)}</span>
+      </div>
+      <div class="audit-action">${actionLabel}</div>
+      ${changesHTML}
+    </div>
+  `;
+}
+
+function humanAction(e) {
+  const target = e.taskTitle ? `<strong>${escapeHTML(e.taskTitle)}</strong>` :
+                 e.name ? `<strong>${escapeHTML(e.name)}</strong>` : '';
+  switch (e.action) {
+    case 'task_create':       return `Created task ${target}`;
+    case 'task_edit':         return `Edited task ${target}`;
+    case 'task_status':       return `Changed status of ${target}`;
+    case 'task_delete':       return `Deleted task ${target}`;
+    case 'task_recur_advance':return `Marked recurring task ${target} done — advanced due date`;
+    case 'project_create':    return `Created project ${target}`;
+    case 'project_rename':    return `Renamed project`;
+    case 'project_delete':    return `Deleted project ${target}${e.cascadedTaskCount ? ` (with ${e.cascadedTaskCount} tasks)` : ''}`;
+    case 'assignee_add':      return `Added assignee ${target}`;
+    case 'snapshot_taken':    return `Took a snapshot · ${e.totalOpen ?? '?'} open · ${e.totalOverdue ?? '?'} overdue`;
+    case 'bulk_mark_done':    return `Marked <strong>${e.count}</strong> tasks done in bulk`;
+    case 'bulk_delete':       return `Deleted <strong>${e.count}</strong> tasks in bulk`;
+    case 'bulk_reassign':     return `Reassigned <strong>${e.count}</strong> tasks to <strong>${escapeHTML(e.newAssignee || 'Unassigned')}</strong>`;
+    case 'bulk_shift_date':   return `Shifted <strong>${e.count}</strong> task due dates by <strong>${e.days > 0 ? '+' : ''}${e.days}d</strong>`;
+    case 'template_apply':    return `Applied template <strong>${escapeHTML(e.templateName || '')}</strong> — added ${e.taskCount} tasks`;
+    default:                  return escapeHTML(e.action || 'Unknown action');
+  }
+}
+
+function humanField(f) {
+  return ({
+    title: 'Title', projectId: 'Project', section: 'Section', assignee: 'Assignee',
+    due: 'Due date', priority: 'Priority', status: 'Status', notes: 'Notes', recurrence: 'Recurrence', name: 'Name'
+  })[f] || f;
+}
+
+function humanValue(field, v) {
+  if (v == null || v === '') return '(empty)';
+  if (field === 'status')   return ({todo: 'Not started', wip: 'In progress', blocked: 'Blocked', done: 'Done'})[v] || v;
+  if (field === 'priority') return ({crit: 'Critical', high: 'High', med: 'Medium', low: 'Low'})[v] || v;
+  if (field === 'projectId') {
+    const p = state.projects.find(x => x.id === v);
+    return p ? p.name : v;
+  }
+  if (field === 'notes' && typeof v === 'string' && v.length > 60) return v.slice(0, 60) + '…';
+  return String(v);
 }
 
 /* ===== PROJECT MANAGEMENT ===== */
@@ -2757,46 +3250,64 @@ document.getElementById('projectModal').addEventListener('click', e => {
   if (e.target.id === 'projectModal') closeProjectModal();
 });
 
-document.getElementById('projectSaveBtn').onclick = () => {
+document.getElementById('projectSaveBtn').onclick = async () => {
+  if (!canModifyProject()) { toast('Only admin can manage projects'); return; }
   const name = document.getElementById('fProjectName').value.trim();
   if (!name) { toast('Project name required'); return; }
   if (editingProjectId) {
     const p = getProject(editingProjectId);
+    const oldName = p.name;
     p.name = name;
-    toast('Project renamed');
+    saveCache(); rerender(); closeProjectModal();
+    try {
+      await fsWriteProject(p.id, { name });
+      await writeAuditLog('project_rename', {
+        projectId: p.id,
+        changes: [{ field: 'name', from: oldName, to: name }]
+      });
+      toast('Project renamed');
+    } catch (e) { toast('Rename failed'); }
   } else {
     const id = makeProjectId(name);
-    state.projects.push({ id, name });
+    const order = state.projects.length;
+    state.projects.push({ id, name, order });
     state.currentProjectId = id;
-    toast('Project added');
+    saveCache(); rerender(); closeProjectModal();
+    try {
+      await fsWriteProject(id, { name, order }, true);
+      await writeAuditLog('project_create', { projectId: id, name });
+      toast('Project added');
+    } catch (e) { toast('Create failed'); }
   }
-  save();
-  rerender();
-  closeProjectModal();
 };
 
-document.getElementById('projectDeleteBtn').onclick = () => {
+document.getElementById('projectDeleteBtn').onclick = async () => {
+  if (!canModifyProject()) { toast('Only admin can delete projects'); return; }
   if (!editingProjectId) return;
   const p = getProject(editingProjectId);
   const taskCount = state.tasks.filter(t => t.projectId === editingProjectId).length;
   let msg = `Delete project "${p.name}"?`;
   if (taskCount > 0) msg += `\n\nThis will also delete ${taskCount} task${taskCount !== 1 ? 's' : ''}. This cannot be undone.`;
   if (!confirm(msg)) return;
-  // Capture IDs that need Firestore deletion before mutating state
   const tasksToDelete = state.tasks.filter(t => t.projectId === editingProjectId).map(t => t.id);
   const projectToDelete = editingProjectId;
+  const projectName = p.name;
   state.tasks = state.tasks.filter(t => t.projectId !== editingProjectId);
   state.projects = state.projects.filter(p => p.id !== editingProjectId);
   if (state.currentProjectId === editingProjectId) {
     state.currentProjectId = state.projects[0]?.id || null;
   }
-  // Fire deletes in Firestore (async, non-blocking)
-  tasksToDelete.forEach(tid => deleteTaskFromFirestore(tid));
-  deleteProjectFromFirestore(projectToDelete);
-  save();
-  rerender();
-  closeProjectModal();
-  toast('Project deleted');
+  saveCache(); rerender(); closeProjectModal();
+  try {
+    await Promise.all(tasksToDelete.map(tid => tasksColl().doc(tid).delete()));
+    await projectsColl().doc(projectToDelete).delete();
+    await writeAuditLog('project_delete', {
+      projectId: projectToDelete,
+      name: projectName,
+      cascadedTaskCount: tasksToDelete.length
+    });
+    toast('Project deleted');
+  } catch (e) { toast('Some deletes failed'); }
 };
 
 document.getElementById('editProjectLink').onclick = () => {
@@ -2895,6 +3406,7 @@ function downloadBlob(text, filename) {
 }
 
 function importBackup(file) {
+  if (!canRestoreBackup()) { toast('Only admin can restore backups'); return; }
   const reader = new FileReader();
   reader.onload = async (e) => {
     try {
@@ -2948,21 +3460,6 @@ function importBackup(file) {
   reader.readAsText(file);
 }
 
-function resetSeed() {
-  if (!confirm('Reset to original 247 seeded tasks?\n\nAll your edits, new tasks, and snapshots will be lost. Export a backup first if needed.')) return;
-  if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
-  const now = Date.now();
-  state.tasks = SEED.tasks.map((t, i) => ({ ...t, created: now - (SEED.tasks.length - i) * 60000 }));
-  state.projects = SEED.projects.slice();
-  state.assignees = SEED.assignees.slice();
-  state.snapshots = [];
-  state.currentProjectId = SEED.projects[0]?.id || 'mes';
-  save();
-  rerender();
-  closeSettings();
-  toast('Reset to seed');
-}
-
 /* ============================================================
    SNAPSHOTS
    ============================================================ */
@@ -3000,11 +3497,22 @@ function buildSnapshotObject(isAuto = false) {
   };
 }
 
-function takeSnapshot(isAuto = false) {
+async function takeSnapshot(isAuto = false) {
   const snap = buildSnapshotObject(isAuto);
   state.snapshots.unshift(snap); // newest first
   if (state.snapshots.length > 52) state.snapshots = state.snapshots.slice(0, 52);
-  save();
+  saveCache();
+  // Push to Firestore (snapshots are shared with team)
+  try {
+    await fsCreateSnapshot(snap);
+    if (!isAuto) {
+      await writeAuditLog('snapshot_taken', {
+        snapshotId: snap.id,
+        totalOpen: snap.totals.open,
+        totalOverdue: snap.totals.overdue
+      });
+    }
+  } catch (e) { console.warn('Snapshot sync failed', e); }
   // Only refresh modal list if it's currently open
   if (document.getElementById('settingsModal').classList.contains('show')) {
     refreshSnapshotList();
@@ -3014,6 +3522,8 @@ function takeSnapshot(isAuto = false) {
 }
 
 function maybeAutoSnapshot() {
+  // Only admin auto-snapshots (to avoid multiple devices racing on the same week)
+  if (!isAdmin()) return;
   // Auto-snapshot if last one was more than 7 days ago (or no snapshots exist)
   const last = state.snapshots[0];
   const now = Date.now();
@@ -3102,6 +3612,7 @@ function refreshSnapshotList() {
 let longPressTimer = null;
 
 function enterBulkMode(initialTaskId) {
+  if (!canBulkActions()) { toast('Only admin can use bulk operations'); return; }
   state.bulkMode = true;
   state.selectedIds = new Set();
   if (initialTaskId) state.selectedIds.add(initialTaskId);
@@ -3134,33 +3645,44 @@ function updateBulkBar() {
   document.getElementById('bulkBar').classList.add('show');
 }
 
-function bulkMarkDone() {
+async function bulkMarkDone() {
+  if (!canEditStatus()) { toast('Only admin can mark done'); return; }
   const ids = Array.from(state.selectedIds);
+  const completedAt = new Date().toISOString();
   ids.forEach(id => {
     const t = state.tasks.find(x => x.id === id);
-    if (t) {
-      t.status = 'done';
-      t.completedAt = new Date().toISOString();
-    }
+    if (t) { t.status = 'done'; t.completedAt = completedAt; }
   });
-  save();
+  saveCache();
   toast(`${ids.length} marked done`);
   exitBulkMode();
+  // Firestore writes in parallel
+  try {
+    await Promise.all(ids.map(id => fsWriteTask(id, { status: 'done', completedAt })));
+    await writeAuditLog('bulk_mark_done', {
+      count: ids.length,
+      taskIds: ids
+    });
+  } catch (e) { console.warn(e); }
 }
 
-function bulkDelete() {
+async function bulkDelete() {
+  if (!canDelete()) { toast('Only admin can delete'); return; }
   const ids = Array.from(state.selectedIds);
   if (!confirm(`Delete ${ids.length} task${ids.length !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+  const titles = ids.map(id => state.tasks.find(t => t.id === id)?.title).filter(Boolean);
   state.tasks = state.tasks.filter(t => !state.selectedIds.has(t.id));
-  // Also delete from Firestore
-  ids.forEach(id => deleteTaskFromFirestore(id));
-  save();
-  toast(`${ids.length} deleted`);
+  saveCache();
   exitBulkMode();
+  try {
+    await Promise.all(ids.map(id => tasksColl().doc(id).delete()));
+    await writeAuditLog('bulk_delete', { count: ids.length, titles });
+    toast(`${ids.length} deleted`);
+  } catch (e) { toast('Some deletes failed'); }
 }
 
-function bulkReassign() {
-  // Show simple prompt with list of assignees
+async function bulkReassign() {
+  if (!canEditAssignee()) { toast('Only admin can reassign'); return; }
   const assigneeOptions = ['— Unassigned —', ...state.assignees];
   const list = assigneeOptions.map((a, i) => `${i + 1}. ${a}`).join('\n');
   const choice = prompt(`Reassign ${state.selectedIds.size} tasks to:\n\n${list}\n\nEnter number:`);
@@ -3171,32 +3693,46 @@ function bulkReassign() {
     return;
   }
   const newAssignee = idx === 0 ? null : assigneeOptions[idx];
+  const ids = Array.from(state.selectedIds);
   state.tasks.forEach(t => {
     if (state.selectedIds.has(t.id)) t.assignee = newAssignee;
   });
-  save();
-  toast(`Reassigned to ${newAssignee || 'Unassigned'}`);
+  saveCache();
   exitBulkMode();
+  try {
+    await Promise.all(ids.map(id => fsWriteTask(id, { assignee: newAssignee })));
+    await writeAuditLog('bulk_reassign', {
+      count: ids.length,
+      newAssignee: newAssignee || 'Unassigned'
+    });
+    toast(`Reassigned to ${newAssignee || 'Unassigned'}`);
+  } catch (e) { console.warn(e); }
 }
 
-function bulkShift() {
+async function bulkShift() {
+  if (!canEditDueDate()) { toast('Only admin can shift dates'); return; }
   const choice = prompt(`Shift due dates of ${state.selectedIds.size} tasks by:\n\n1. +1 day\n2. +3 days\n3. +7 days\n4. +14 days\n5. +30 days\n6. -1 day\n7. -7 days\n\nEnter number:`);
   if (!choice) return;
   const shifts = { '1': 1, '2': 3, '3': 7, '4': 14, '5': 30, '6': -1, '7': -7 };
   const days = shifts[choice];
   if (days === undefined) { toast('Invalid choice'); return; }
-  let shifted = 0;
+  const updates = [];
   state.tasks.forEach(t => {
     if (state.selectedIds.has(t.id) && t.due) {
       const d = new Date(t.due);
       d.setDate(d.getDate() + days);
-      t.due = d.toISOString().slice(0, 10);
-      shifted++;
+      const newDue = d.toISOString().slice(0, 10);
+      t.due = newDue;
+      updates.push({ id: t.id, due: newDue });
     }
   });
-  save();
-  toast(`Shifted ${shifted} task${shifted !== 1 ? 's' : ''} by ${days > 0 ? '+' : ''}${days}d`);
+  saveCache();
   exitBulkMode();
+  try {
+    await Promise.all(updates.map(u => fsWriteTask(u.id, { due: u.due })));
+    await writeAuditLog('bulk_shift_date', { count: updates.length, days });
+    toast(`Shifted ${updates.length} task${updates.length !== 1 ? 's' : ''} by ${days > 0 ? '+' : ''}${days}d`);
+  } catch (e) { console.warn(e); }
 }
 
 /* ===== WIRING (settings, snapshots, bulk) ===== */
@@ -3214,7 +3750,6 @@ document.getElementById('importFileInput').addEventListener('change', e => {
   if (file) importBackup(file);
   e.target.value = ''; // reset
 });
-document.getElementById('resetSeedBtn').onclick = resetSeed;
 document.getElementById('signoutBtn').onclick = signOut;
 
 document.getElementById('takeSnapshotBtn').onclick = takeSnapshot;
@@ -3284,6 +3819,7 @@ if (!fbOk) {
             lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
             uid: firebaseAuth.currentUser.uid
           }, { merge: true });
+          await ensureFirstAdmin();
         } catch (e) {}
         await attachFirestoreListeners();
         maybeAutoSnapshot();
