@@ -1712,13 +1712,37 @@ async function ensureFirstAdmin() {
     const doc = await workspaceDoc().get();
     const data = doc.data() || {};
     const admins = data.admins || [];
+    const adminNames = data.adminNames || [];
+    const myUid = firebaseAuth.currentUser.uid;
+    const myName = currentUser.displayName;
+
+    // Case 1: No admins exist yet → bootstrap me as first admin
     if (admins.length === 0) {
       await workspaceDoc().set({
-        admins: [firebaseAuth.currentUser.uid],
-        adminNames: [currentUser.displayName]
+        admins: [myUid],
+        adminNames: [myName]
       }, { merge: true });
-      console.log('Bootstrapped first admin:', currentUser.displayName);
+      console.log('Bootstrapped first admin:', myName);
+      return;
     }
+
+    // Case 2: I'm already in the admins array → nothing to do
+    if (admins.includes(myUid)) {
+      return;
+    }
+
+    // Case 3: My display name is in adminNames, but my UID is new (e.g., I signed in fresh on a new device)
+    // → auto-promote my new UID to admin. This handles the "same person on multiple devices" case.
+    if (adminNames.includes(myName)) {
+      const updatedAdmins = [...admins, myUid];
+      await workspaceDoc().set({
+        admins: updatedAdmins
+      }, { merge: true });
+      console.log('Auto-promoted', myName, 'to admin on new device');
+      return;
+    }
+
+    // Case 4: I'm a new person — stay as operator (no action)
   } catch (e) {
     console.warn('ensureFirstAdmin failed', e);
   }
