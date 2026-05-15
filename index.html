@@ -1177,14 +1177,29 @@ function hideSigninScreen() {
   document.getElementById('signinOverlay').classList.remove('show');
 }
 
-function showNamePicker() {
+async function showNamePicker() {
   document.getElementById('signinStep1').style.display = 'none';
   document.getElementById('signinStep2').style.display = '';
   document.getElementById('signinLoading').style.display = 'none';
-  // Populate names from team members (will hydrate from firestore after sign-in)
   const list = document.getElementById('signinNames');
+  list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink-faint);font-size:0.85rem;">Loading team members…</div>';
+
+  // Fetch the workspace doc to get the latest teamMembers (the source of truth, not local cache)
+  let names = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
+  try {
+    if (firestoreReady && firebaseAuth.currentUser) {
+      const doc = await workspaceDoc().get();
+      const data = doc.data() || {};
+      if (data.teamMembers && data.teamMembers.length) {
+        names = data.teamMembers;
+        state.teamMembers = data.teamMembers; // sync into state for future use
+      }
+    }
+  } catch (e) {
+    console.warn('Could not fetch team members from Firebase, falling back to defaults', e);
+  }
+
   list.innerHTML = '';
-  const names = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
   names.forEach(name => {
     const btn = document.createElement('button');
     btn.className = 'signin-name';
@@ -1383,10 +1398,13 @@ async function attachFirestoreListeners() {
       });
     });
     state.audit = entries;
-    // If user is viewing the Activity tab, re-render
-    const activeView = document.querySelector('.tab.active')?.dataset.view;
-    if (activeView === 'activity') renderActivity();
+    // Always render — if user is on Activity tab they'll see the update;
+    // if not, the DOM is updated for when they switch to it
+    try { renderActivity(); } catch (e) { /* render fails before DOM ready — ignore */ }
   }, err => console.warn('Audit sync error', err));
+
+  // Also: include metadata changes so cached/server-only states both trigger renders
+  // (helps when local cache has data but listener hasn't confirmed yet)
 }
 
 // Save current state to localStorage as offline cache
@@ -2103,6 +2121,7 @@ function switchView(view) {
   if (view === 'dashboard') renderDashboard();
   if (view === 'projects') renderProjects();
   if (view === 'assignees') renderAssignees();
+  if (view === 'activity') renderActivity();
   if (view === 'search') renderSearch();
   window.scrollTo(0, 0);
 }
@@ -3138,15 +3157,24 @@ function renderActivity() {
     list.innerHTML = '<div class="audit-empty">No activity yet. Edits and changes will appear here.</div>';
     return;
   }
-  // Group by day
+  // Group by day (entries without a timestamp go under "Recent")
   const byDay = {};
+  const undated = [];
   entries.forEach(e => {
-    if (!e.at) return;
+    if (!e.at) {
+      undated.push(e);
+      return;
+    }
     const day = e.at.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
     if (!byDay[day]) byDay[day] = [];
     byDay[day].push(e);
   });
   const html = [];
+  // Show undated entries first (these are pending writes that haven't yet confirmed)
+  if (undated.length > 0) {
+    html.push(`<div class="audit-day-header">Just now (syncing…)</div>`);
+    undated.forEach(e => html.push(renderAuditEntry(e)));
+  }
   Object.entries(byDay).forEach(([day, dayEntries]) => {
     html.push(`<div class="audit-day-header">${escapeHTML(day)}</div>`);
     dayEntries.forEach(e => {
