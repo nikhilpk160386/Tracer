@@ -39,22 +39,53 @@
     --info-soft: rgba(106, 176, 212, 0.18);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
-  body { display: flex; flex-direction: column; min-height: 100vh; padding-top: env(safe-area-inset-top, 0); }
+  
+  /* Responsive base font-size: scales with device class.
+     Tuned for BOTH iOS and Android phone size ranges:
+     - ≤359px:    foldables folded / ancient devices → 15.5px base (preserves density)
+     - 360-480px: ALL standard phones (iPhone, Samsung Galaxy, Pixel, OnePlus, etc) → 17px
+     - 481-834px: iPad portrait, Android tablets, foldables unfolded, large phones landscape → 17.5px
+     - 835-1280px (portrait/normal): iPad landscape, small desktop → 18px
+     - ≥1281px:   large desktop → 18.5px
+     - Special case: any device in landscape with height ≤500px = phone-in-landscape, treat as phone class
+     All rem-based sizes throughout the app scale proportionally off this base. */
+  html { font-size: 17px; }
+  
+  /* Tiny screens — foldables folded, ancient Android, very small viewports */
+  @media (max-width: 359px) { html { font-size: 15.5px; } }
+  
+  /* Tablet portrait — iPad portrait, Android tablets, foldables unfolded */
+  @media (min-width: 481px) and (max-width: 834px) { html { font-size: 17.5px; } }
+  
+  /* Tablet landscape / small desktop */
+  @media (min-width: 835px) and (max-width: 1280px) { html { font-size: 18px; } }
+  
+  /* Large desktop */
+  @media (min-width: 1281px) { html { font-size: 18.5px; } }
+  
+  /* PHONE-IN-LANDSCAPE override: if viewport is short, it's a phone regardless of width.
+     This catches Android phones held sideways (Pixel 7 landscape: 851×393, which would
+     otherwise be classified as iPad landscape and get 18px base). */
+  @media (max-height: 500px) and (orientation: landscape) {
+    html { font-size: 17px; }
+  }
+  
+  html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overscroll-behavior: none; text-rendering: optimizeLegibility; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { display: flex; flex-direction: column; min-height: 100vh; padding-top: env(safe-area-inset-top, 0); font-size: 1rem; line-height: 1.5; }
 
   /* HEADER */
   .header { padding: 1rem 1.25rem 0; border-bottom: 1px solid var(--line-soft); }
   .brand { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem; }
   .brand h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.5rem; letter-spacing: 0.08em; }
   .brand h1 span { color: var(--accent); }
-  .brand .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--ink-faint); letter-spacing: 0.06em; }
+  .brand .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--ink-faint); letter-spacing: 0.06em; }
 
   /* SEARCH */
   .search-wrap { margin: 0 0 0.5rem; }
   .search-wrap input {
     width: 100%; background: var(--bg-elev); border: 1px solid var(--line-soft);
-    color: var(--ink); padding: 0.5rem 0.75rem; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none;
+    color: var(--ink); padding: 0.55rem 0.75rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 16px; outline: none;
     -webkit-appearance: none;
   }
   .search-wrap input::placeholder { color: var(--ink-faint); }
@@ -66,14 +97,35 @@
   .tab {
     background: none; border: none; color: var(--ink-faint);
     padding: 0.6rem 0.9rem 0.8rem; font-family: 'Inter', sans-serif;
-    font-size: 0.76rem; font-weight: 500; letter-spacing: 0.06em;
+    font-size: 0.84rem; font-weight: 500; letter-spacing: 0.05em;
     text-transform: uppercase; cursor: pointer; position: relative; white-space: nowrap; transition: color 0.2s;
   }
   .tab.active { color: var(--ink); }
   .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0.4rem; right: 0.4rem; height: 2px; background: var(--accent); }
 
   /* MAIN */
-  main { flex: 1; overflow-y: auto; padding: 1rem 1.25rem calc(env(safe-area-inset-bottom, 0) + 6rem); }
+  main { 
+    flex: 1; overflow-y: auto; 
+    padding: 1rem 1.25rem calc(env(safe-area-inset-bottom, 0) + 6rem);
+    /* Desktop constraint — prevent the app from sprawling across wide screens.
+       Cards and lists are designed for handheld viewing; keep them readable on desktop. */
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  @media (min-width: 835px) {
+    main { padding: 1.25rem 1.5rem calc(env(safe-area-inset-bottom, 0) + 6rem); }
+    .header { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .bulk-bar { max-width: 720px; left: 50%; right: auto; transform: translateX(-50%); width: 100%; }
+    /* FAB stays anchored near the right edge of the centered content column, not the viewport */
+    .fab { 
+      right: calc(50% - 360px + 1.25rem); 
+    }
+  }
+  @media (min-width: 1441px) {
+    /* On very wide screens, push FAB so it sits just outside the right edge of the 720px column */
+    .fab { right: calc(50% - 360px - 4rem); }
+  }
   .view { display: none; animation: fade 0.25s ease; }
   .view.active { display: block; }
   @keyframes fade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
@@ -81,39 +133,39 @@
   /* KPIs */
   .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-bottom: 1.25rem; }
   .kpi { background: var(--bg-elev); border: 1px solid var(--line-soft); border-radius: 10px; padding: 0.85rem 0.95rem; }
-  .kpi .label { font-size: 0.62rem; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; }
+  .kpi .label { font-size: 0.72rem; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; }
   .kpi .value { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 400; line-height: 1; }
   .kpi .value.crit { color: var(--crit); }
   .kpi .value.warn { color: var(--warn); }
   .kpi .value.ok { color: var(--ok); }
-  .kpi .delta { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--ink-faint); margin-top: 0.3rem; }
+  .kpi .delta { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--ink-faint); margin-top: 0.3rem; }
 
-  .section-title { font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 1.4rem 0 0.6rem; display: flex; justify-content: space-between; align-items: center; }
+  .section-title { font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 1.4rem 0 0.6rem; display: flex; justify-content: space-between; align-items: center; }
 
   /* Dashboard project list */
   .project-health { background: var(--bg-elev); border: 1px solid var(--line-soft); border-radius: 10px; overflow: hidden; }
   .ph-row { display: flex; align-items: center; padding: 0.7rem 0.95rem; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: background 0.15s; }
   .ph-row:last-child { border-bottom: none; }
   .ph-row:active { background: var(--bg-elev-2); }
-  .ph-name { flex: 1; font-size: 0.85rem; font-weight: 500; color: var(--ink); margin-right: 0.5rem; }
+  .ph-name { flex: 1; font-size: 0.92rem; font-weight: 500; color: var(--ink); margin-right: 0.5rem; }
   .ph-bar { width: 56px; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; margin-right: 0.7rem; }
   .ph-bar-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
-  .ph-count { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--ink-soft); min-width: 50px; text-align: right; }
+  .ph-count { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--ink-soft); min-width: 50px; text-align: right; }
   .ph-count .overdue { color: var(--crit); font-weight: 500; }
 
   /* Project selector chips */
   .project-selector { display: flex; gap: 0.4rem; overflow-x: auto; margin: 0 -1.25rem 0.9rem; padding: 0 1.25rem 0.25rem; scrollbar-width: none; }
   .project-selector::-webkit-scrollbar { display: none; }
-  .chip { background: var(--bg-elev); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.38rem 0.8rem; border-radius: 999px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all 0.15s; }
+  .chip { background: var(--bg-elev); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.42rem 0.85rem; border-radius: 999px; font-size: 0.82rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all 0.15s; }
   .chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
   .chip.chip-add { border-style: dashed; color: var(--ink-faint); }
   .chip.chip-add:hover, .chip.chip-add:active { color: var(--accent); border-color: var(--accent); }
-  .project-edit-link { background: none; border: none; color: var(--ink-faint); font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; text-decoration: underline; font-family: 'Inter', sans-serif; }
+  .project-edit-link { background: none; border: none; color: var(--ink-faint); font-size: 0.78rem; cursor: pointer; padding: 0.25rem 0.4rem; text-decoration: underline; font-family: 'Inter', sans-serif; }
   .project-edit-link:hover { color: var(--accent); }
-  .chip .num { opacity: 0.6; margin-left: 0.3rem; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
+  .chip .num { opacity: 0.6; margin-left: 0.3rem; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
 
   .filters { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; align-items: center; flex-wrap: wrap; }
-  .filters select { background: var(--bg-elev); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.4rem 0.55rem; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.74rem; outline: none; -webkit-appearance: none; appearance: none; }
+  .filters select { background: var(--bg-elev); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.45rem 0.65rem; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; -webkit-appearance: none; appearance: none; }
 
   .project-meta { background: var(--bg-elev); border: 1px solid var(--line-soft); border-radius: 10px; padding: 0.85rem 0.6rem; margin-bottom: 0.9rem; display: flex; }
   .pm-stat { flex: 1; text-align: center; padding: 0 0.3rem; border-right: 1px solid var(--line-soft); }
@@ -125,7 +177,7 @@
   .pm-stat .l { font-size: 0.58rem; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.3rem; }
 
   /* Section divider for grouping within projects */
-  .section-divider { padding: 0.6rem 0 0.4rem; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-top: 0.4rem; display: flex; justify-content: space-between; align-items: center; }
+  .section-divider { padding: 0.6rem 0 0.4rem; font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-top: 0.4rem; display: flex; justify-content: space-between; align-items: center; }
   .section-divider:first-child { padding-top: 0.2rem; }
   .section-divider .count { font-family: 'JetBrains Mono', monospace; color: var(--ink-faint); }
 
@@ -155,20 +207,92 @@
 
   .task-body { flex: 1; min-width: 0; cursor: pointer; }
   .task-title {
-    font-size: 0.88rem; font-weight: 500; color: var(--ink); line-height: 1.35;
+    font-size: 0.95rem; font-weight: 500; color: var(--ink); line-height: 1.35;
     margin-bottom: 0.3rem; word-break: break-word;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
   .task-title.done { color: var(--ink-faint); text-decoration: line-through; }
 
-  .task-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.68rem; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; }
+  .task-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.76rem; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; }
   .task-meta .tag { display: inline-flex; align-items: center; gap: 0.25rem; }
   .task-meta .due { color: var(--ink-soft); }
   .task-meta .due.overdue { color: var(--crit); font-weight: 500; }
   .task-meta .due.soon { color: var(--warn); }
-  .task-meta .stat-tag { padding: 0.06rem 0.4rem; border-radius: 3px; font-size: 0.62rem; letter-spacing: 0.04em; }
+  .task-meta .stat-tag { padding: 0.1rem 0.45rem; border-radius: 3px; font-size: 0.7rem; letter-spacing: 0.04em; }
   .task-meta .stat-tag.wip { background: var(--warn-soft); color: var(--warn); }
   .task-meta .stat-tag.blocked { background: var(--info-soft); color: var(--info); }
+  .task-meta .stat-tag.ready { background: rgba(216,166,87,0.15); color: var(--accent); font-weight: 600; }
+  .task-meta .stat-tag.postpone { background: rgba(95,164,247,0.14); color: var(--info); font-weight: 600; }
+
+  /* PHASE 4 — Postponement queue rows */
+  .postpone-row {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--info);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.6rem;
+  }
+  .postpone-row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .postpone-row-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .postpone-row-meta {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+  .postpone-row-body {
+    margin-bottom: 0.7rem;
+  }
+  .postpone-dates {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    margin-bottom: 0.45rem;
+  }
+  .postpone-from { color: var(--ink-faint); text-decoration: line-through; }
+  .postpone-arrow { color: var(--info); font-weight: 600; }
+  .postpone-to { color: var(--ink); font-weight: 600; }
+  .postpone-reason {
+    font-style: italic;
+    color: var(--ink-2);
+    background: rgba(95,164,247,0.05);
+    border-left: 2px solid rgba(95,164,247,0.3);
+    padding: 0.4rem 0.7rem;
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .postpone-meta-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+  }
+  .postpone-row-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .postpone-row-actions .btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
 
   .priority-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hold); display: inline-block; }
   .priority-dot.crit { background: var(--crit); }
@@ -176,7 +300,7 @@
   .priority-dot.med { background: var(--accent); opacity: 0.7; }
   .priority-dot.low { background: var(--ok); }
 
-  .task-menu-btn { background: none; border: none; color: var(--ink-faint); cursor: pointer; padding: 0.2rem 0.4rem; font-size: 1.1rem; line-height: 1; border-radius: 4px; align-self: flex-start; }
+  .task-menu-btn { background: none; border: none; color: var(--ink-faint); cursor: pointer; padding: 0.5rem 0.65rem; font-size: 1.2rem; line-height: 1; border-radius: 4px; align-self: flex-start; min-height: 44px; min-width: 44px; }
   .task-menu-btn:hover { color: var(--ink); background: var(--bg-elev-2); }
 
   /* Update note inside task */
@@ -192,10 +316,10 @@
   .assignee-head { padding: 0.7rem 0.95rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--line-soft); transition: background 0.15s; }
   .assignee-head:active { background: var(--bg-elev-2); }
   .assignee-group.collapsed .assignee-head { border-bottom: none; }
-  .assignee-name { font-size: 0.88rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
-  .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; flex-shrink: 0; }
-  .assignee-counts { display: flex; gap: 0.4rem; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
-  .badge { background: var(--line); color: var(--ink-soft); padding: 0.12rem 0.42rem; border-radius: 4px; font-size: 0.66rem; }
+  .assignee-name { font-size: 1rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 600; flex-shrink: 0; }
+  .assignee-counts { display: flex; gap: 0.4rem; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
+  .badge { background: var(--line); color: var(--ink-soft); padding: 0.14rem 0.48rem; border-radius: 4px; font-size: 0.74rem; }
   .badge.crit { background: var(--crit-soft); color: var(--crit); }
   .badge.warn { background: var(--warn-soft); color: var(--warn); }
   .chevron { color: var(--ink-faint); font-size: 0.65rem; margin-left: 0.25rem; transition: transform 0.2s; }
@@ -216,22 +340,22 @@
   @media (min-width: 640px) { .modal-backdrop { align-items: center; } .modal { border-radius: 16px; max-width: 500px; } }
   .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .modal-head h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.2rem; }
-  .modal-close { background: none; border: none; color: var(--ink-faint); font-size: 1.4rem; cursor: pointer; padding: 0.25rem 0.5rem; line-height: 1; }
+  .modal-close { background: none; border: none; color: var(--ink-faint); font-size: 1.5rem; cursor: pointer; padding: 0.5rem 0.75rem; line-height: 1; min-height: 44px; min-width: 44px; border-radius: 6px; }
   .field { margin-bottom: 0.85rem; }
-  .field label { display: block; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.3rem; }
-  .field input[type="text"], .field input[type="date"], .field textarea, .field select { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 0.6rem 0.7rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+  .field label { display: block; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.3rem; }
+  .field input[type="text"], .field input[type="date"], .field textarea, .field select { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 0.65rem 0.75rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
   .field textarea { resize: vertical; min-height: 64px; }
   .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
   .field-row { display: flex; gap: 0.55rem; }
   .field-row .field { flex: 1; }
   .toggle-group { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .toggle-group button { flex: 1 1 auto; min-width: 0; background: var(--bg); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.45rem 0.3rem; border-radius: 6px; font-size: 0.74rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .toggle-group button { flex: 1 1 auto; min-width: 0; background: var(--bg); border: 1px solid var(--line); color: var(--ink-soft); padding: 0.5rem 0.35rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .toggle-group button.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
   .modal-actions { display: flex; gap: 0.55rem; margin-top: 1.1rem; }
-  .btn { flex: 1; padding: 0.7rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--ink-soft); transition: all 0.15s; }
+  .btn { flex: 1; padding: 0.75rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--ink-soft); transition: all 0.15s; }
   .btn:hover { color: var(--ink); }
   .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
-  .btn.danger { color: var(--crit); border-color: rgba(217, 119, 102, 0.4); flex: 0 0 auto; padding: 0.7rem 0.9rem; }
+  .btn.danger { color: var(--crit); border-color: rgba(217, 119, 102, 0.4); flex: 0 0 auto; padding: 0.75rem 0.95rem; }
 
   /* DUE-WINDOW BUCKET TABS */
   .bucket-tabs {
@@ -266,8 +390,8 @@
     color: var(--accent);
   }
   .bucket-tab .bt-label {
-    font-size: 0.62rem;
-    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     font-weight: 500;
     white-space: nowrap;
@@ -311,8 +435,8 @@
             mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z'/></svg>") no-repeat center;
     flex-shrink: 0;
   }
-  .share-btn.compact { padding: 0.28rem 0.4rem; font-size: 0; }
-  .share-btn.compact .wa-ico { width: 14px; height: 14px; }
+  .share-btn.compact { padding: 0.45rem 0.55rem; font-size: 0; min-height: 36px; min-width: 36px; display: inline-flex; align-items: center; justify-content: center; }
+  .share-btn.compact .wa-ico { width: 16px; height: 16px; }
 
   /* Reminders button - iOS-blue */
   .reminder-btn {
@@ -493,6 +617,287 @@
     opacity: 0.7;
   }
   .task-attribution .by { color: var(--accent); }
+
+  /* PHASE 3.1d — PERFORMANCE VIEW */
+  .perf-hero {
+    text-align: center;
+    padding: 1.5rem 1rem 1.25rem;
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 1.25rem;
+  }
+  .perf-hero .greeting {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 0.6rem;
+  }
+  .perf-hero .score-num {
+    font-family: 'Fraunces', serif;
+    font-size: 4rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .perf-hero .score-num.high { color: var(--ok); }
+  .perf-hero .score-num.mid { color: var(--accent); }
+  .perf-hero .score-num.low { color: var(--warn); }
+  .perf-hero .score-num.bad { color: var(--crit); }
+  .perf-hero .rank-pill {
+    display: inline-block;
+    background: rgba(216,166,87,0.10);
+    border: 1px solid rgba(216,166,87,0.30);
+    border-radius: 16px;
+    padding: 0.3rem 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    margin-top: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  
+  .perf-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-bottom: 1.25rem;
+  }
+  .perf-stat {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 0.85rem;
+  }
+  .perf-stat .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+  .perf-stat .val {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  .perf-stat .val.ok { color: var(--ok); }
+  .perf-stat .val.warn { color: var(--warn); }
+  .perf-stat .val.bad { color: var(--crit); }
+  .perf-stat .sub {
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    margin-top: 0.15rem;
+  }
+
+  /* Leaderboard */
+  .perf-leaderboard {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .perf-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .perf-row:last-child { border-bottom: none; }
+  .perf-row.you {
+    background: rgba(216,166,87,0.06);
+  }
+  .perf-row .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+  .perf-row .rank.top { color: var(--accent); font-weight: 700; }
+  .perf-row .name {
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .perf-row .you-marker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    background: rgba(216,166,87,0.18);
+    color: var(--accent);
+    padding: 0.12rem 0.45rem;
+    border-radius: 3px;
+    margin-left: 0.35rem;
+    letter-spacing: 0.06em;
+    vertical-align: 2px;
+  }
+  .perf-row .meta-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    margin-top: 0.2rem;
+    letter-spacing: 0.03em;
+  }
+  .perf-row .score {
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    text-align: right;
+    min-width: 56px;
+  }
+  .perf-row .score.high { color: var(--ok); }
+  .perf-row .score.mid { color: var(--accent); }
+  .perf-row .score.low { color: var(--warn); }
+  .perf-row .score.bad { color: var(--crit); }
+  .perf-row .capped-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    background: rgba(255,93,108,0.12);
+    color: var(--crit);
+    padding: 0.12rem 0.42rem;
+    border-radius: 3px;
+    margin-left: 0.35rem;
+    letter-spacing: 0.06em;
+    vertical-align: 2px;
+  }
+
+  .perf-alert {
+    background: rgba(255,93,108,0.08);
+    border: 1px solid rgba(255,93,108,0.25);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .perf-alert .ah {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--crit);
+    margin-bottom: 0.5rem;
+  }
+  .perf-alert .item {
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+    color: var(--ink);
+  }
+  .perf-alert .item .what {
+    color: var(--ink-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    margin-left: 0.5rem;
+  }
+
+  .perf-section-h {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin: 1.25rem 0 0.6rem;
+  }
+  .perf-section-h .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    font-weight: 400;
+    margin-left: 0.4rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* PHASE 3.2 — Badges */
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .perf-badge {
+    background: rgba(216,166,87,0.10);
+    border: 1px solid rgba(216,166,87,0.30);
+    border-radius: 18px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .perf-badge .b-ic {
+    font-size: 0.95rem;
+  }
+  .perf-badge .b-lbl {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .perf-badge .b-desc {
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    margin-left: 0.2rem;
+  }
+
+  /* PHASE 3.2 — Streak banner */
+  .streak-banner {
+    background: linear-gradient(135deg, rgba(216,166,87,0.12), rgba(216,166,87,0.04));
+    border: 1px solid rgba(216,166,87,0.30);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin: 0.5rem 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .streak-banner .s-ic { font-size: 1.6rem; }
+  .streak-banner .s-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .streak-banner .s-lbl {
+    font-size: 0.78rem;
+    color: var(--ink-2);
+    margin-top: 0.15rem;
+  }
+
+  /* PHASE 3.2 — Weekly recap card */
+  .recap-card {
+    background: linear-gradient(135deg, rgba(216,166,87,0.10), rgba(216,166,87,0.02));
+    border: 1px solid rgba(216,166,87,0.25);
+    border-radius: 10px;
+    padding: 0.95rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .recap-card .r-h {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .recap-card .r-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+  .recap-card .r-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+  }
+  .recap-card .r-item .val {
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+  }
+  .recap-card .r-item .val.bad { color: var(--crit); }
+  .recap-card .r-item .val.ok { color: var(--ok); }
 
   /* AUDIT LOG */
   .audit-entry {
@@ -735,10 +1140,10 @@
     background: var(--bg);
     border: 1px solid var(--line);
     color: var(--ink-soft);
-    padding: 0.55rem 0.6rem;
+    padding: 0.6rem 0.65rem;
     border-radius: 6px;
     font-family: 'Inter', sans-serif;
-    font-size: 0.76rem;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     min-width: 0;
@@ -839,6 +1244,7 @@
     <button class="tab" data-view="projects">Projects</button>
     <button class="tab" data-view="assignees">By Assignee</button>
     <button class="tab" data-view="activity">Activity</button>
+    <button class="tab" data-view="performance">Performance</button>
     <button class="tab" data-view="search" id="searchTab" style="display:none">Search</button>
   </nav>
 </header>
@@ -856,10 +1262,37 @@
       <div class="kpi"><div class="label">Completed</div><div class="value ok" id="kpiDone">0</div><div class="delta">all-time</div></div>
     </div>
 
-    <div class="section-title"><span>Project Health</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.66rem;">% complete · overdue</span></div>
+    <!-- Phase 3.1b — Ready Queue (admin-only) -->
+    <div id="readyQueueSection" data-admin-only="true" style="display:none;">
+      <div class="section-title">
+        <span>🟡 Ready for Closure <span id="readyQueueCount" style="color:var(--accent);font-weight:600;"></span></span>
+        <span style="display:inline-flex;align-items:center;gap:0.5rem;">
+          <button class="share-btn compact" id="shareReadyQueueBtn" aria-label="Share Ready Queue via WhatsApp" title="Share via WhatsApp"><span class="wa-ico"></span></button>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;">operators signalled</span>
+        </span>
+      </div>
+      <div class="task-list" id="readyQueueList"></div>
+    </div>
+
+    <!-- Phase 4 — Postponement Requests (admin-only) -->
+    <div id="postponeQueueSection" data-admin-only="true" style="display:none;">
+      <div class="section-title">
+        <span>📅 Postponement Requests <span id="postponeQueueCount" style="color:var(--info);font-weight:600;"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;">operators waiting</span>
+      </div>
+      <div id="postponeQueueList"></div>
+    </div>
+
+    <div class="section-title"><span>Project Health</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;">% complete · overdue</span></div>
     <div class="project-health" id="projectHealth"></div>
 
-    <div class="section-title"><span>Due Window</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.66rem;" id="bucketTotal"></span></div>
+    <div class="section-title">
+      <span>Due Window</span>
+      <span style="display:inline-flex;align-items:center;gap:0.5rem;">
+        <button class="share-btn compact" id="shareBucketBtn" aria-label="Share these tasks via WhatsApp" title="Share via WhatsApp"><span class="wa-ico"></span></button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;" id="bucketTotal"></span>
+      </span>
+    </div>
     <div class="bucket-tabs" id="bucketTabs">
       <button class="bucket-tab active" data-bucket="overdue"><span class="bt-label">Overdue</span><span class="bt-count" id="cnt-overdue">0</span></button>
       <button class="bucket-tab" data-bucket="today"><span class="bt-label">Today</span><span class="bt-count" id="cnt-today">0</span></button>
@@ -915,13 +1348,24 @@
   <section class="view" id="view-activity">
     <div class="section-title">
       <span>Activity log</span>
-      <span id="activityCount" style="font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--ink-faint);"></span>
+      <span id="activityCount" style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;color:var(--ink-faint);"></span>
     </div>
     <div id="activityList"></div>
   </section>
 
+  <!-- Phase 3.1d — Performance view -->
+  <section class="view" id="view-performance">
+    <div id="performanceContent"></div>
+  </section>
+
   <section class="view" id="view-search">
-    <div class="section-title"><span>Search results</span><span id="searchCount" style="font-family:'JetBrains Mono',monospace;font-size:0.66rem;"></span></div>
+    <div class="section-title">
+      <span>Search results</span>
+      <span style="display:inline-flex;align-items:center;gap:0.5rem;">
+        <button class="share-btn compact" id="shareSearchBtn" aria-label="Share search results via WhatsApp" title="Share via WhatsApp"><span class="wa-ico"></span></button>
+        <span id="searchCount" style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;"></span>
+      </span>
+    </div>
     <div class="task-list" id="searchList"></div>
   </section>
 </main>
@@ -941,6 +1385,12 @@
     <div class="field-row" data-admin-only="true">
       <div class="field"><label>Assignee</label><select id="fAssignee"></select></div>
       <div class="field"><label>Due Date</label><input type="date" id="fDue" /></div>
+    </div>
+    <div class="field" data-admin-only="true">
+      <label>Coordinator <span style="font-weight:400;color:var(--ink-faint);font-size:0.78rem;">(HO team member who tracks this in app)</span></label>
+      <select id="fCoordinator">
+        <option value="">— None —</option>
+      </select>
     </div>
     <div class="field" data-admin-only="true">
       <label>Status</label>
@@ -971,9 +1421,52 @@
         <option value="quarterly">Repeats every 3 months</option>
         <option value="yearly">Repeats every year</option>
       </select>
-      <div style="font-size:0.7rem;color:var(--ink-faint);margin-top:0.3rem;">When you mark it done, due date advances instead of completing.</div>
+      <div style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.3rem;">When you mark it done, due date advances instead of completing.</div>
     </div>
     <div class="field"><label>Latest Update / Notes</label><textarea id="fNotes" placeholder="Last status update, blockers, context…"></textarea></div>
+    
+    <!-- Phase 3.1b — Ready for Closure section (HO operators only, non-done tasks) -->
+    <div id="readyForClosureSection" style="display:none;border-top:1px solid var(--line);margin-top:0.8rem;padding-top:0.8rem;">
+      <div id="readyAlreadySignalled" style="display:none;background:rgba(216,166,87,0.10);border:1px solid rgba(216,166,87,0.25);border-radius:6px;padding:0.6rem 0.8rem;margin-bottom:0.5rem;">
+        <div style="font-size:0.8rem;color:var(--accent);font-weight:600;letter-spacing:0.06em;margin-bottom:0.2rem;">🟡 READY FOR CLOSURE</div>
+        <div id="readyMeta" style="font-size:0.78rem;color:var(--ink-2);"></div>
+      </div>
+      <button class="btn" id="btnMarkReady" style="width:100%;background:rgba(216,166,87,0.10);color:var(--accent);border:1px solid rgba(216,166,87,0.30);">
+        🟡 Mark Ready for Closure
+      </button>
+      <button class="btn" id="btnCancelReady" style="display:none;width:100%;color:var(--ink-faint);">
+        Cancel Ready Signal
+      </button>
+      <div style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.4rem;line-height:1.4;">
+        Signals admin that work is complete. Admin reviews notes and closes the task. Detailed notes earn full performance credit.
+      </div>
+    </div>
+
+    <!-- Phase 4 — Postponement Request section (HO operators, non-done tasks) -->
+    <div id="postponeRequestSection" style="display:none;border-top:1px solid var(--line);margin-top:0.8rem;padding-top:0.8rem;">
+      <div id="pendingPostponeBanner" style="display:none;background:rgba(95,164,247,0.10);border:1px solid rgba(95,164,247,0.28);border-radius:6px;padding:0.6rem 0.8rem;margin-bottom:0.5rem;">
+        <div style="font-size:0.8rem;color:var(--info);font-weight:600;letter-spacing:0.06em;margin-bottom:0.3rem;">📅 POSTPONEMENT REQUESTED · AWAITING ADMIN</div>
+        <div id="pendingPostponeMeta" style="font-size:0.78rem;color:var(--ink-2);line-height:1.4;"></div>
+      </div>
+      <button class="btn" id="btnRequestPostpone" style="width:100%;background:rgba(95,164,247,0.08);color:var(--info);border:1px solid rgba(95,164,247,0.25);">
+        📅 Request Postponement
+      </button>
+      <button class="btn" id="btnCancelPostpone" style="display:none;width:100%;color:var(--ink-faint);">
+        Cancel Postpone Request
+      </button>
+      <div style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.4rem;line-height:1.4;">
+        Use only with genuine reasons (vendor change, weather, external approval). Admin reviews and decides.
+      </div>
+    </div>
+
+    <!-- Phase 4 — Postponement History (shown to everyone if task has been postponed) -->
+    <div id="postponeHistorySection" style="display:none;border-top:1px solid var(--line);margin-top:0.8rem;padding-top:0.8rem;">
+      <div style="font-size:0.78rem;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;">
+        📜 Postponement History
+      </div>
+      <div id="postponeHistoryList" style="font-size:0.78rem;color:var(--ink-2);line-height:1.5;"></div>
+    </div>
+    
     <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
       <button class="reminder-btn" id="remindTask" style="display:none;">Send to Reminders</button>
       <button class="share-btn" id="shareTask" style="display:none;"><span class="wa-ico"></span>Share this task</button>
@@ -1079,6 +1572,7 @@
   </div>
   <div class="bulk-actions">
     <button class="bulk-action primary" id="bulkDoneBtn">Mark Done</button>
+    <button class="bulk-action" id="bulkShareBtn"><span class="wa-ico" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:0.25rem;"></span>Share</button>
     <button class="bulk-action" id="bulkReassignBtn">Reassign</button>
     <button class="bulk-action" id="bulkShiftBtn">Shift Date</button>
     <button class="bulk-action danger" id="bulkDeleteBtn">Delete</button>
@@ -1094,7 +1588,7 @@
 
 const STORAGE_KEY = 'tracer.data.v2';
 const SEED_VERSION_KEY = 'tracer.seedVersion';
-const CURRENT_SEED_VERSION = '2026-05-13-247';
+const CURRENT_SEED_VERSION = '2026-05-16-phase4';
 
 /* ============================================================
    FIREBASE CONFIGURATION
@@ -1112,6 +1606,54 @@ const FIREBASE_CONFIG = {
 const WORKSPACE_CODE = 'nikhil16$'; // lowercase for comparison
 const WORKSPACE_ID = 'main'; // single workspace document
 const DEFAULT_DISPLAY_NAMES = ['Nikhil', 'PUK', 'Laxmikant', 'Bhushan', 'Ketaki', 'Ragini', 'Vrushali', 'Paresh'];
+
+/* ============================================================
+   PHASE 3 — PERFORMANCE SYSTEM CONSTANTS
+   ============================================================ */
+// HO team — these names have app access and can be coordinators
+// Mirrors DEFAULT_DISPLAY_NAMES but kept separate so they can diverge later
+const HO_TEAM = ['Nikhil', 'PUK', 'Laxmikant', 'Bhushan', 'Ketaki', 'Ragini', 'Vrushali', 'Paresh'];
+
+// Site/field assignees — do NOT have app access, listed for assignment only
+const SITE_PEOPLE = ['Korhale', 'Aditya More', 'Aditya Patil', 'Danekar', 'Mangesh', 'Dinkar', 'Ganesh K', 'Shukla', 'SI', 'ZAD', 'Vishwanath'];
+
+// Returns true if a name string represents an HO team member (case-insensitive trim)
+function isHO(name) {
+  if (!name) return false;
+  const trimmed = String(name).trim();
+  return HO_TEAM.some(ho => ho.toLowerCase() === trimmed.toLowerCase());
+}
+
+// Given an assignee string (possibly combined "X & Y" or "X / Y"), pick the smart-default coordinator
+// Per Section 8 of the lock document
+function smartDefaultCoordinator(assignee) {
+  if (!assignee) return null;
+  const raw = String(assignee).trim();
+  if (!raw) return null;
+  
+  // Rule 1: Single HO person — coordinator is themselves
+  if (isHO(raw)) {
+    // Find exact-case match
+    return HO_TEAM.find(ho => ho.toLowerCase() === raw.toLowerCase()) || raw;
+  }
+  
+  // Split on common separators to handle combined assignees
+  const parts = raw.split(/\s*[&/]\s*/).map(s => s.trim()).filter(Boolean);
+  
+  // Rule 3: Combined assignment — find HO person in the pair
+  for (const part of parts) {
+    if (isHO(part)) {
+      return HO_TEAM.find(ho => ho.toLowerCase() === part.toLowerCase()) || part;
+    }
+  }
+  
+  // Rule 2 & 4: Single site person or pure site combo
+  // Special case: procurement tasks default to Vrushali if she's not the assignee
+  // (since Vrushali handles procurement coordination by default)
+  // Otherwise fallback to Nikhil
+  // Rule 5: fallback
+  return 'Nikhil';
+}
 
 // Local storage keys for auth state (per-device, not synced)
 const AUTH_KEY = 'tracer.auth.v1'; // { signedIn: true, displayName: 'Nikhil', signedInAt: ISO }
@@ -1345,6 +1887,9 @@ async function attachFirestoreListeners() {
       tasks.push({ ...d, id: doc.id });
     });
     state.tasks = tasks;
+    // Phase 3.1a — ensure new fields exist on tasks coming from Firestore too
+    // Tasks created before Phase 3.1a deployed won't have coordinator etc.
+    migrateTasksForPhase3a();
     saveCache();
     if (!suppressLocalRender) rerender();
   }, err => console.warn('Tasks sync error', err));
@@ -1540,7 +2085,7 @@ function loadOrSeed() {
   const savedVersion = localStorage.getItem(SEED_VERSION_KEY);
   const raw = localStorage.getItem(STORAGE_KEY);
 
-  if (raw && savedVersion === CURRENT_SEED_VERSION) {
+  if (raw) {
     try {
       const parsed = JSON.parse(raw);
       if (parsed.tasks) state.tasks = parsed.tasks;
@@ -1549,18 +2094,58 @@ function loadOrSeed() {
       if (parsed.snapshots) state.snapshots = parsed.snapshots;
       if (parsed.teamMembers) state.teamMembers = parsed.teamMembers;
       if (parsed.currentProjectId) state.currentProjectId = parsed.currentProjectId;
+
+      // Phase 3.1a migration: ensure Performance fields exist on all tasks without wiping live data
+      // Runs once when version key mismatches; idempotent — safe to run multiple times
+      if (savedVersion !== CURRENT_SEED_VERSION) {
+        migrateTasksForPhase3a();
+        localStorage.setItem(SEED_VERSION_KEY, CURRENT_SEED_VERSION);
+        save();
+        console.log('[Phase 3.1a] Migrated', state.tasks.length, 'tasks for Performance fields');
+      }
       return;
     } catch (e) { console.warn('Load failed, re-seeding', e); }
   }
 
-  // First load OR seed updated — seed from embedded data
+  // First load — no local data at all — seed from embedded data
   const now = Date.now();
   state.tasks = SEED.tasks.map((t, i) => ({
     ...t,
     created: now - (SEED.tasks.length - i) * 60000
   }));
+  migrateTasksForPhase3a(); // also apply Phase 3 fields to fresh seed
   localStorage.setItem(SEED_VERSION_KEY, CURRENT_SEED_VERSION);
   save();
+}
+
+/* Phase 3.1a — One-time migration to populate Performance fields on existing tasks.
+   Idempotent: only sets fields if they don't already exist.
+   Smart-default coordinator: HO assignee→self, combined→HO in pair, site-only→Nikhil. */
+function migrateTasksForPhase3a() {
+  if (!state.tasks || !state.tasks.length) return;
+  for (const t of state.tasks) {
+    // Coordinator: auto-assigned via smart defaults; admin can edit in-app later
+    if (t.coordinator === undefined) {
+      t.coordinator = smartDefaultCoordinator(t.assignee);
+    }
+    // readyAt: timestamp when operator signals task is ready for closure (Phase 3.1b)
+    if (t.readyAt === undefined) t.readyAt = null;
+    // readyBy: who signalled Ready (Phase 3.1b)
+    if (t.readyBy === undefined) t.readyBy = null;
+    // score: cached computed score for performance dashboard (Phase 3.1c)
+    if (t.score === undefined) t.score = null;
+    // coordBonus: cached +3 bonus credit when coordinator differs from assignee (Phase 3.1c)
+    if (t.coordBonus === undefined) t.coordBonus = null;
+    // Phase 4 — Postponement audit trail
+    // postponements: array of { from, to, reason, by, at } records — every time due date moves later
+    if (t.postponements === undefined) t.postponements = [];
+    // pendingPostpone: operator request waiting on admin approval
+    // shape: { requestedDate, reason, requestedBy, requestedAt } or null
+    if (t.pendingPostpone === undefined) t.pendingPostpone = null;
+    // originalDue: the FIRST due date ever set on this task — used to compute "delta from original"
+    // Captured lazily: first time a postpone is recorded, this gets set to what the due was BEFORE that move
+    if (t.originalDue === undefined) t.originalDue = null;
+  }
 }
 
 function save() {
@@ -1664,7 +2249,7 @@ async function writeAuditLog(action, info) {
 // Compute a list of changed fields between two task objects.
 // Returns [{field, from, to}] for any field that meaningfully changed.
 function diffTask(oldTask, newTask) {
-  const fields = ['title', 'projectId', 'section', 'assignee', 'due', 'priority', 'status', 'notes'];
+  const fields = ['title', 'projectId', 'section', 'assignee', 'coordinator', 'due', 'priority', 'status', 'notes'];
   const changes = [];
   for (const f of fields) {
     const oldVal = oldTask?.[f] ?? null;
@@ -1703,6 +2288,8 @@ function canDelete()          { return isAdmin(); }
 function canCreateProject()   { return isAdmin(); }
 function canModifyProject()   { return isAdmin(); }
 function canBulkActions()     { return isAdmin(); }
+// Phase 3.2 — Allow HO operators to enter bulk mode for sharing-only purposes
+function canBulkShare()        { return isAdmin() || (currentUser?.displayName && isHO(currentUser.displayName)); }
 function canRestoreBackup()   { return isAdmin(); }
 function canApplyTemplate()   { return isAdmin(); }
 // Operators CAN:
@@ -1969,6 +2556,167 @@ function buildAssigneeMessage(name) {
   return lines.join('\n');
 }
 
+/* Generic builder: takes any array of tasks and produces a WhatsApp-friendly message.
+   Used by bulk-selection share, dashboard bucket share, search-results share, Ready Queue share. */
+function buildTasksMessage(tasks, headerLabel) {
+  // Sort by due then priority for consistent ordering
+  const sorted = [...tasks].sort((a, b) => {
+    if (a.due && b.due) return a.due.localeCompare(b.due);
+    if (a.due) return -1; if (b.due) return 1;
+    return (PRIO_ORDER[a.priority] ?? 2) - (PRIO_ORDER[b.priority] ?? 2);
+  });
+
+  const lines = [
+    `📋 *${headerLabel || 'Tasks'}*`,
+    `📅 ${dateHeader()} · ${sorted.length} item${sorted.length !== 1 ? 's' : ''}`,
+    ''
+  ];
+
+  if (sorted.length === 0) {
+    lines.push('_No tasks._');
+  } else {
+    const show = sorted.slice(0, 25);
+    show.forEach(t => {
+      const meta = [];
+      const proj = getProject(t.projectId);
+      if (proj) meta.push(proj.name);
+      if (t.assignee) meta.push(t.assignee);
+      if (t.due) meta.push(fmtDue(t.due));
+      lines.push(`${prioEmoji(t.priority)} ${t.title}`);
+      if (meta.length) lines.push(`   ${meta.join(' · ')}`);
+      // Include notes if present (truncated)
+      if (t.notes) {
+        const note = t.notes.length > 80 ? t.notes.substring(0, 80) + '…' : t.notes;
+        lines.push(`   📝 ${note}`);
+      }
+    });
+    if (sorted.length > 25) lines.push(`... +${sorted.length - 25} more`);
+  }
+  lines.push('');
+  lines.push('_via TRACER_');
+  return lines.join('\n');
+}
+
+/* Phase 4 — Reminder-style message (different tone from export-style buildTasksMessage)
+   Conversational opener · urgency grouping (overdue called out) · soft sign-off.
+   If all tasks belong to one assignee, addresses them directly by name. */
+function buildReminderMessage(tasks, opts = {}) {
+  if (!tasks || tasks.length === 0) {
+    return '_No tasks to send._';
+  }
+  
+  // Detect whether all selected tasks share one assignee — if so, address them
+  const assignees = [...new Set(tasks.map(t => t.assignee).filter(Boolean))];
+  const singleAssignee = assignees.length === 1 ? assignees[0] : null;
+  const recipientName = (singleAssignee && singleAssignee.split(/\s*[&/]\s*/)[0].trim()) || null;
+  
+  // Sender (the person sharing — pulled from currentUser if available)
+  const sender = (currentUser?.displayName || '').trim();
+  const senderFirstName = sender ? sender.split(/\s+/)[0] : null;
+  
+  // Bucket tasks by urgency
+  const today = new Date();
+  const overdue = [];
+  const dueSoon = []; // next 3 days
+  const later = [];
+  tasks.forEach(t => {
+    if (!t.due) { later.push(t); return; }
+    const days = daysUntil(t.due);
+    if (days < 0) overdue.push(t);
+    else if (days <= 3) dueSoon.push(t);
+    else later.push(t);
+  });
+  
+  // Sort each bucket by priority then due date
+  const byPrioThenDue = (a, b) => {
+    const pDiff = (PRIO_ORDER[a.priority] ?? 2) - (PRIO_ORDER[b.priority] ?? 2);
+    if (pDiff !== 0) return pDiff;
+    return (a.due || '').localeCompare(b.due || '');
+  };
+  overdue.sort(byPrioThenDue);
+  dueSoon.sort(byPrioThenDue);
+  later.sort(byPrioThenDue);
+  
+  const lines = [];
+  
+  // Conversational opener
+  if (recipientName) {
+    lines.push(`Hi ${recipientName},`);
+  } else {
+    lines.push(`Hi,`);
+  }
+  lines.push('');
+  
+  // Context sentence based on what's in the bundle
+  if (overdue.length > 0 && (dueSoon.length > 0 || later.length > 0)) {
+    lines.push(`Just a quick reminder on ${tasks.length} task${tasks.length !== 1 ? 's' : ''} — a few are overdue, would appreciate an update.`);
+  } else if (overdue.length > 0) {
+    lines.push(`Quick reminder — ${overdue.length === 1 ? 'this is' : 'these are'} overdue. Could you update on status?`);
+  } else if (dueSoon.length > 0) {
+    lines.push(`A quick heads-up — ${dueSoon.length === 1 ? 'this is' : 'these are'} due in the next few days.`);
+  } else {
+    lines.push(`Wanted to flag ${tasks.length === 1 ? 'this task' : 'these tasks'} for your attention.`);
+  }
+  lines.push('');
+  
+  // Render each bucket
+  const renderBucket = (label, items, emoji) => {
+    if (items.length === 0) return;
+    lines.push(`${emoji} *${label}*`);
+    items.forEach(t => {
+      const proj = getProject(t.projectId);
+      lines.push(`• ${t.title}`);
+      const meta = [];
+      if (proj) meta.push(proj.name);
+      if (t.section && !proj) meta.push(t.section);
+      if (t.due) meta.push(fmtDue(t.due));
+      if (meta.length) lines.push(`  _${meta.join(' · ')}_`);
+    });
+    lines.push('');
+  };
+  
+  renderBucket('OVERDUE', overdue, '🔴');
+  renderBucket('Due this week', dueSoon, '🟡');
+  renderBucket('Upcoming', later, '⚪');
+  
+  // Soft sign-off
+  if (overdue.length > 0) {
+    lines.push(`Let me know if anything is blocked or you need help unblocking.`);
+  } else {
+    lines.push(`Let me know if you need any help on these.`);
+  }
+  
+  if (senderFirstName) {
+    lines.push('');
+    lines.push(`Thanks,`);
+    lines.push(senderFirstName);
+  }
+  
+  return lines.join('\n');
+}
+
+/* Phase 4 — Picker: ask user whether they want reminder tone or task-list export
+   Returns the formatted message string, or null if user cancelled.
+   Picker UI uses native confirm() with two options for simplicity. */
+function pickShareFormatAndBuild(tasks, headerLabel) {
+  if (!tasks || tasks.length === 0) return null;
+  
+  // Default to reminder if all tasks share one assignee (most likely use-case),
+  // task-list export otherwise.
+  const assignees = [...new Set(tasks.map(t => t.assignee).filter(Boolean))];
+  const isReminderLikely = assignees.length === 1;
+  
+  // Use confirm() with descriptive prompt. OK = the suggested default, Cancel = the other.
+  const prompt = isReminderLikely
+    ? `Send as a friendly reminder to ${assignees[0]}?\n\n• OK = Reminder (Hi ${assignees[0].split(/[&/]/)[0].trim()}, quick reminder...)\n• Cancel = Task list export (📋 formatted bullet list)`
+    : `Send as a task list export?\n\n• OK = Task list (📋 formatted bullet list)\n• Cancel = Friendly reminder (conversational tone)`;
+  
+  const choseDefault = window.confirm(prompt);
+  const useReminder = choseDefault ? isReminderLikely : !isReminderLikely;
+  
+  return useReminder ? buildReminderMessage(tasks) : buildTasksMessage(tasks, headerLabel);
+}
+
 // 3. Filtered list (current Projects view) — uses what's visible
 function buildFilteredListMessage() {
   const proj = getProject(state.currentProjectId);
@@ -2122,6 +2870,7 @@ function switchView(view) {
   if (view === 'projects') renderProjects();
   if (view === 'assignees') renderAssignees();
   if (view === 'activity') renderActivity();
+  if (view === 'performance') renderPerformance();
   if (view === 'search') renderSearch();
   window.scrollTo(0, 0);
 }
@@ -2141,6 +2890,12 @@ function renderDashboard() {
 
   const active = state.projects.filter(p => tasks.some(t => t.projectId === p.id));
   document.getElementById('kpiOpenDelta').textContent = `${active.length} active project${active.length !== 1 ? 's' : ''}`;
+
+  // Phase 3.1b — Ready Queue (admin only)
+  renderReadyQueue();
+  
+  // Phase 4 — Postponement Requests (admin only)
+  renderPostponeQueue();
 
   // Project health
   const container = document.getElementById('projectHealth');
@@ -2172,6 +2927,207 @@ function renderDashboard() {
 
   // Due-window buckets
   renderBuckets();
+}
+
+/* Phase 3.1b — Ready Queue (admin-only)
+   Shows tasks signalled Ready, sorted oldest first (longest waiting). */
+function renderReadyQueue() {
+  const section = document.getElementById('readyQueueSection');
+  const list = document.getElementById('readyQueueList');
+  const countEl = document.getElementById('readyQueueCount');
+  if (!section || !list) return;
+  
+  // Only admins see this section
+  if (!isAdmin()) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  const ready = state.tasks.filter(t => t.readyAt && t.status !== 'done');
+  if (ready.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  countEl.textContent = `(${ready.length})`;
+  
+  // Sort by readyAt ascending (oldest waiting first)
+  ready.sort((a, b) => (a.readyAt || '').localeCompare(b.readyAt || ''));
+  
+  list.innerHTML = '';
+  ready.forEach(t => list.appendChild(taskCard(t, { showProject: true })));
+}
+
+/* Phase 4 — Postponement Queue (admin-only)
+   Shows tasks where an operator has requested postponement, with inline Approve/Reject buttons. */
+function renderPostponeQueue() {
+  const section = document.getElementById('postponeQueueSection');
+  const list = document.getElementById('postponeQueueList');
+  const countEl = document.getElementById('postponeQueueCount');
+  if (!section || !list) return;
+  
+  if (!isAdmin()) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  const pending = state.tasks.filter(t => t.pendingPostpone && t.status !== 'done');
+  if (pending.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  countEl.textContent = `(${pending.length})`;
+  
+  // Sort by request time, oldest first
+  pending.sort((a, b) => (a.pendingPostpone?.requestedAt || '').localeCompare(b.pendingPostpone?.requestedAt || ''));
+  
+  list.innerHTML = '';
+  pending.forEach(t => {
+    const p = t.pendingPostpone;
+    const proj = getProject(t.projectId);
+    const row = document.createElement('div');
+    row.className = 'postpone-row';
+    row.innerHTML = `
+      <div class="postpone-row-head">
+        <div class="postpone-row-title">${escapeHTML(t.title)}</div>
+        <div class="postpone-row-meta">
+          ${proj ? `<span class="tag" style="opacity:0.7;">${escapeHTML(proj.name)}</span>` : ''}
+          ${t.assignee ? `<span class="tag">${escapeHTML(t.assignee)}</span>` : ''}
+        </div>
+      </div>
+      <div class="postpone-row-body">
+        <div class="postpone-dates">
+          <span class="postpone-from">${escapeHTML(t.due || '(no due)')}</span>
+          <span class="postpone-arrow">→</span>
+          <span class="postpone-to">${escapeHTML(p.requestedDate || '?')}</span>
+        </div>
+        <div class="postpone-reason">"${escapeHTML(p.reason || '')}"</div>
+        <div class="postpone-meta-line">Requested by ${escapeHTML(p.requestedBy || 'someone')} · ${timeAgo(p.requestedAt)}</div>
+      </div>
+      <div class="postpone-row-actions">
+        <button class="btn primary postpone-approve" data-task-id="${t.id}">Approve</button>
+        <button class="btn postpone-reject" data-task-id="${t.id}">Reject</button>
+        <button class="btn postpone-open" data-task-id="${t.id}" style="opacity:0.7;">Open task</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  
+  // Wire buttons
+  list.querySelectorAll('.postpone-approve').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      approvePostponement(btn.dataset.taskId);
+    };
+  });
+  list.querySelectorAll('.postpone-reject').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      rejectPostponement(btn.dataset.taskId);
+    };
+  });
+  list.querySelectorAll('.postpone-open').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const t = state.tasks.find(x => x.id === btn.dataset.taskId);
+      if (t) openTaskModal(t);
+    };
+  });
+}
+
+async function approvePostponement(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t || !t.pendingPostpone) return;
+  
+  const p = t.pendingPostpone;
+  const oldDue = t.due || null;
+  const newDue = p.requestedDate;
+  
+  // Optional: admin can add an admin note to the postponement reason
+  const adminNote = window.prompt(
+    `Approve postponement?\n\n${t.title}\n${oldDue || '(no due)'} → ${newDue}\nReason: ${p.reason}\nRequested by: ${p.requestedBy}\n\nAdd admin note (optional, blank to accept as-is):`,
+    ''
+  );
+  if (adminNote === null) return; // cancelled
+  
+  const finalReason = adminNote.trim() ? `${p.reason} | Admin: ${adminNote.trim()}` : p.reason;
+  
+  // Build patch
+  const patch = {
+    due: newDue,
+    pendingPostpone: null
+  };
+  // Capture original due if not already
+  if (!t.originalDue && oldDue) {
+    patch.originalDue = oldDue;
+  }
+  // Append to postponements
+  const record = {
+    from: oldDue,
+    to: newDue,
+    reason: finalReason,
+    by: currentUser?.displayName || 'admin',
+    requestedBy: p.requestedBy,
+    at: new Date().toISOString(),
+    via: 'request_approved'
+  };
+  patch.postponements = [...(t.postponements || []), record];
+  
+  Object.assign(t, patch);
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, patch);
+    await writeAuditLog('postpone_approved', {
+      taskId: t.id,
+      taskTitle: t.title,
+      approver: currentUser?.displayName || 'admin',
+      changes: [
+        { field: 'due', from: oldDue || '(none)', to: newDue },
+        { field: 'reason', from: '', to: finalReason }
+      ]
+    });
+    toast('✓ Postponement approved');
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
+}
+
+async function rejectPostponement(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t || !t.pendingPostpone) return;
+  
+  const note = window.prompt(
+    `Reject postponement?\n\n${t.title}\nRequested by: ${t.pendingPostpone.requestedBy}\n\nReason for rejection (will be visible to the requester, optional):`,
+    ''
+  );
+  if (note === null) return;
+  
+  const rejectedRequest = { ...t.pendingPostpone, rejectedBy: currentUser?.displayName || 'admin', rejectedAt: new Date().toISOString(), rejectionNote: note.trim() || null };
+  
+  t.pendingPostpone = null;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { pendingPostpone: null });
+    await writeAuditLog('postpone_rejected', {
+      taskId: t.id,
+      taskTitle: t.title,
+      rejecter: currentUser?.displayName || 'admin',
+      changes: [
+        { field: 'requested_due', from: rejectedRequest.requestedDate, to: 'rejected' },
+        { field: 'note', from: '', to: note.trim() || '(no note)' }
+      ]
+    });
+    toast('Postponement rejected');
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
 }
 
 let currentBucket = 'overdue';
@@ -2371,6 +3327,553 @@ function timeAgo(iso) {
   return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
+/* ============================================================
+   PHASE 3.1c — PERFORMANCE SCORING ENGINE
+   Pure functions. No side effects on state.
+   Reads task data + audit log, returns scores.
+   ============================================================ */
+
+// Phase 3 launch date — only tasks completed AT OR AFTER this date count for scoring.
+// Historical pre-PWA done tasks (41 of them) have completedAt=null and are excluded automatically anyway.
+// This date is the official Performance feature go-live for additional safety.
+const PHASE3_LAUNCH = '2026-05-16'; // ISO date
+
+// Priority multipliers (Section 3 of locked design)
+const PRIO_WEIGHT = { crit: 3.0, high: 1.8, med: 1.0, low: 0.6 };
+
+// Returns the timeliness multiplier for a given task using readyAt if present, else completedAt
+function calcTimelinessMultiplier(task) {
+  if (!task.due) return 1.0; // no due date → neutral
+  const eventIso = task.readyAt || task.completedAt;
+  if (!eventIso) return 0; // task not yet closed/ready — won't score until then
+  const dueMs = new Date(task.due + 'T23:59:59').getTime();
+  const eventMs = new Date(eventIso).getTime();
+  const daysOffset = (eventMs - dueMs) / 86400000;
+  // daysOffset < 0 means EARLY (negative number of days late)
+  // daysOffset > 0 means LATE
+  if (daysOffset <= -3) return 1.5;        // 3+ days early
+  if (daysOffset <= 1) return 1.3;          // on-time or up to 1 day late (grace)
+  if (daysOffset <= 3) return 0.7;          // 1-3 days late
+  if (daysOffset <= 7) return 0.4;          // 4-7 days late
+  return 0.1;                                // > 7 days late
+}
+
+// Returns the effort multiplier based on notes content
+function calcEffortMultiplier(task) {
+  const notes = (task.notes || '').trim();
+  if (!notes) return 0.5;                                    // no notes
+  if (notes.length < 20) return 0.9;                          // brief
+  if (notes.length < 100) return 1.0;                          // substantive
+  // Detailed: >100 chars OR contains dates / amounts / refs
+  if (notes.length >= 100) return 1.2;
+  return 1.0;
+}
+
+// Calculate task score for a closed (done) task
+// Returns { taskScore, coordBonus, breakdown }
+function scoreClosedTask(task) {
+  if (task.status !== 'done') return null;
+  if (!task.completedAt) return null; // can't score without completion timestamp
+  // Honor Phase 3 launch cutoff
+  if (task.completedAt < PHASE3_LAUNCH) return null;
+  
+  const base = 10;
+  const timeliness = calcTimelinessMultiplier(task);
+  const priority = PRIO_WEIGHT[task.priority] || 1.0;
+  const effort = calcEffortMultiplier(task);
+  
+  const taskScore = Math.round(base * timeliness * priority * effort * 10) / 10;
+  
+  // Coordinator bonus +3, only when coordinator != assignee (and coordinator is HO)
+  const coordBonus = (task.coordinator && task.coordinator !== task.assignee && isHO(task.coordinator)) ? 3 : 0;
+  
+  return {
+    taskScore,
+    coordBonus,
+    breakdown: { base, timeliness, priority, effort }
+  };
+}
+
+// Calculate the live overdue penalty for a still-open task
+// Returns { dailyPenalty, totalPenalty, isCritClawback }
+function calcOverduePenalty(task, today = new Date()) {
+  if (task.status === 'done') return { dailyPenalty: 0, totalPenalty: 0, isCritClawback: false };
+  if (!task.due) return { dailyPenalty: 0, totalPenalty: 0, isCritClawback: false };
+  
+  const dueMs = new Date(task.due + 'T23:59:59').getTime();
+  const todayMs = today.getTime();
+  if (todayMs <= dueMs) return { dailyPenalty: 0, totalPenalty: 0, isCritClawback: false }; // not yet overdue
+  
+  const daysLate = Math.floor((todayMs - dueMs) / 86400000);
+  const priorityWeight = PRIO_WEIGHT[task.priority] || 1.0;
+  
+  // Standard penalty: -5 per week × priority weight
+  const weeksLate = daysLate / 7;
+  let totalPenalty = -5 * weeksLate * priorityWeight;
+  let isCritClawback = false;
+  let dailyPenalty = 0;
+  
+  // Critical claw-back: -10/day if critical and >7 days late
+  if (task.priority === 'crit' && daysLate > 7) {
+    const extraDays = daysLate - 7;
+    totalPenalty += -10 * extraDays;
+    isCritClawback = true;
+    dailyPenalty = -10;
+  }
+  
+  return {
+    dailyPenalty,
+    totalPenalty: Math.round(totalPenalty * 10) / 10,
+    isCritClawback,
+    daysLate
+  };
+}
+
+/* Compute a complete performance snapshot for ALL people who have any task data.
+   Returns: { 
+     scores: { name: { score, completedTasks, coordTasks, openTasks, overdueTasks, critOverdue7d, capped, breakdown } },
+     teamMedianHO, topScoreHO, fieldTopScore
+   }
+   
+   Two types of people tracked:
+   - HO team (in HO_TEAM): coordinator-scored + assignee-scored where applicable
+   - Site people: assignee-scored only, shown in admin's Site / Project leaderboard
+*/
+function computePerformanceSnapshot(today = new Date()) {
+  const scores = {}; // name → object
+  
+  function ensure(name) {
+    if (!scores[name]) {
+      scores[name] = {
+        name,
+        score: 0,
+        rawScore: 0,    // before any capping
+        completedTasks: 0,
+        coordTasks: 0,
+        coordBonus: 0,
+        openTasks: 0,
+        overdueTasks: 0,
+        critOverdue7d: 0,
+        capped: false,
+        critOverdueList: [], // task IDs that triggered claw-back
+        isHO: isHO(name)
+      };
+    }
+    return scores[name];
+  }
+  
+  // Pass 1: closed tasks since Phase 3 launch — task score → assignee, +3 → coordinator (if different & HO)
+  for (const t of state.tasks) {
+    if (t.status === 'done' && t.completedAt && t.completedAt >= PHASE3_LAUNCH) {
+      const result = scoreClosedTask(t);
+      if (result) {
+        if (t.assignee) {
+          const a = ensure(String(t.assignee).trim());
+          a.score += result.taskScore;
+          a.rawScore += result.taskScore;
+          a.completedTasks++;
+        }
+        if (result.coordBonus > 0 && t.coordinator) {
+          const c = ensure(String(t.coordinator).trim());
+          c.coordBonus += result.coordBonus;
+          c.score += result.coordBonus;
+          c.rawScore += result.coordBonus;
+          c.coordTasks++;
+        }
+      }
+    } else if (t.status !== 'done') {
+      // Pass 2: open tasks — count open tasks and apply overdue penalty
+      if (t.assignee) {
+        const a = ensure(String(t.assignee).trim());
+        a.openTasks++;
+        const pen = calcOverduePenalty(t, today);
+        if (pen.totalPenalty < 0) {
+          a.overdueTasks++;
+          a.score += pen.totalPenalty;
+          a.rawScore += pen.totalPenalty;
+          if (pen.isCritClawback) {
+            a.critOverdue7d++;
+            a.critOverdueList.push(t.id);
+          }
+        }
+      }
+    }
+  }
+  
+  // Apply critical claw-back cap: any person with critOverdue7d > 0 has score capped at 60
+  for (const name in scores) {
+    const s = scores[name];
+    if (s.critOverdue7d > 0 && s.score > 60) {
+      s.score = 60;
+      s.capped = true;
+    }
+    // Round for display
+    s.score = Math.round(s.score * 10) / 10;
+    s.rawScore = Math.round(s.rawScore * 10) / 10;
+    s.coordBonus = Math.round(s.coordBonus * 10) / 10;
+  }
+  
+  // Compute HO team aggregates
+  const hoScores = Object.values(scores).filter(s => s.isHO).map(s => s.score);
+  const teamMedianHO = hoScores.length ? median(hoScores) : 0;
+  const topScoreHO = hoScores.length ? Math.max(...hoScores) : 0;
+  const fieldTopScore = Object.values(scores).length ? Math.max(...Object.values(scores).map(s => s.score)) : 0;
+  
+  return {
+    scores,
+    teamMedianHO: Math.round(teamMedianHO * 10) / 10,
+    topScoreHO: Math.round(topScoreHO * 10) / 10,
+    fieldTopScore: Math.round(fieldTopScore * 10) / 10
+  };
+}
+
+function median(arr) {
+  if (!arr.length) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+// Format score for display: integers as integers, otherwise 1 decimal
+function fmtScore(n) {
+  if (n === null || n === undefined) return '—';
+  if (Number.isInteger(n)) return String(n);
+  return n.toFixed(1);
+}
+
+/* ============================================================
+   PHASE 3.2 — POLISH LAYER
+   Streaks, Badges, Weekly Recap, Notes Quality diagnostic
+   ============================================================ */
+
+// Calculate current streak (consecutive days with at least one closed task) for a person
+// Returns { current, longest }
+function calcStreaks(name) {
+  if (!name) return { current: 0, longest: 0 };
+  
+  // Get all completedAt dates for tasks where this person is assignee
+  const dates = state.tasks
+    .filter(t => t.assignee && String(t.assignee).trim() === name.trim() && t.completedAt && t.completedAt >= PHASE3_LAUNCH)
+    .map(t => t.completedAt.slice(0, 10)) // YYYY-MM-DD
+    .filter(d => d);
+  
+  if (dates.length === 0) return { current: 0, longest: 0 };
+  
+  // Unique sorted dates
+  const uniqueDates = [...new Set(dates)].sort();
+  
+  // Compute streaks
+  let longest = 1;
+  let currentRun = 1;
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const prev = new Date(uniqueDates[i - 1]);
+    const curr = new Date(uniqueDates[i]);
+    const diffDays = Math.round((curr - prev) / 86400000);
+    if (diffDays === 1) {
+      currentRun++;
+      longest = Math.max(longest, currentRun);
+    } else {
+      currentRun = 1;
+    }
+  }
+  
+  // Current streak: is the most recent date today or yesterday?
+  const lastDate = uniqueDates[uniqueDates.length - 1];
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const isActive = lastDate === today || lastDate === yesterday;
+  
+  return { current: isActive ? currentRun : 0, longest };
+}
+
+// Calculate earned badges for a person based on their stats
+function calcBadges(name, snap) {
+  if (!name) return [];
+  const me = snap.scores[name];
+  if (!me) return [];
+  
+  const earned = [];
+  const streaks = calcStreaks(name);
+  
+  // 🔥 Streak Master — 10+ consecutive days with at least one completion
+  if (streaks.longest >= 10) {
+    earned.push({ icon: '🔥', label: 'Streak Master', desc: `${streaks.longest}-day streak` });
+  } else if (streaks.current >= 3) {
+    // Mini-version: show current streak even before reaching Streak Master
+    earned.push({ icon: '🔥', label: `${streaks.current}-Day Streak`, desc: 'keep it going' });
+  }
+  
+  // ⚡ Early Bird — 5+ tasks completed before due date in last 30 days
+  const earlyTasks = state.tasks.filter(t => {
+    if (!t.assignee || String(t.assignee).trim() !== name.trim()) return false;
+    if (t.status !== 'done' || !t.completedAt || !t.due) return false;
+    if (t.completedAt < PHASE3_LAUNCH) return false;
+    return calcTimelinessMultiplier(t) >= 1.3;
+  });
+  if (earlyTasks.length >= 5) {
+    earned.push({ icon: '⚡', label: 'Early Bird', desc: `${earlyTasks.length} on-time/early` });
+  }
+  
+  // 🎯 Sniper — 90%+ on-time rate (needs at least 5 completed tasks)
+  if (me.completedTasks >= 5) {
+    const myDoneTasks = state.tasks.filter(t => 
+      t.assignee && String(t.assignee).trim() === name.trim() &&
+      t.status === 'done' && t.completedAt && t.completedAt >= PHASE3_LAUNCH && t.due
+    );
+    const onTime = myDoneTasks.filter(t => calcTimelinessMultiplier(t) >= 1.3).length;
+    const onTimeRate = myDoneTasks.length > 0 ? onTime / myDoneTasks.length : 0;
+    if (onTimeRate >= 0.9) {
+      earned.push({ icon: '🎯', label: 'Sniper', desc: `${Math.round(onTimeRate * 100)}% on-time` });
+    }
+  }
+  
+  // 🏗️ Project Hero — most tasks completed on a specific project
+  // For simplicity: 5+ done on one project earns this
+  const projectCounts = {};
+  state.tasks.forEach(t => {
+    if (t.assignee && String(t.assignee).trim() === name.trim() && t.status === 'done' && t.completedAt >= PHASE3_LAUNCH) {
+      projectCounts[t.projectId] = (projectCounts[t.projectId] || 0) + 1;
+    }
+  });
+  const topProj = Object.entries(projectCounts).sort((a, b) => b[1] - a[1])[0];
+  if (topProj && topProj[1] >= 5) {
+    const proj = state.projects.find(p => p.id === topProj[0]);
+    earned.push({ icon: '🏗️', label: 'Project Hero', desc: proj ? proj.name : 'multi-task closer' });
+  }
+  
+  // 🚀 Closer — 20+ tasks closed lifetime since Phase 3 launch
+  if (me.completedTasks >= 20) {
+    earned.push({ icon: '🚀', label: 'Closer', desc: `${me.completedTasks} closed` });
+  } else if (me.completedTasks >= 10) {
+    earned.push({ icon: '🚀', label: 'Closer-10', desc: `${me.completedTasks} closed` });
+  }
+  
+  // 🆙 Coordinator's Cup — for HO members who coordinated 10+ tasks
+  if (me.isHO && me.coordTasks >= 10) {
+    earned.push({ icon: '🆙', label: "Coordinator's Cup", desc: `${me.coordTasks} coordinated` });
+  }
+  
+  return earned;
+}
+
+// Calculate weekly recap data — runs every time admin opens dashboard
+function computeWeeklyRecap() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 = Sunday
+  // Week starts Monday: go back to most recent Monday
+  const daysBack = (dayOfWeek + 6) % 7;
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - daysBack);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekStartIso = weekStart.toISOString();
+  
+  // Tasks completed this week
+  const closedThisWeek = state.tasks.filter(t =>
+    t.status === 'done' && t.completedAt && t.completedAt >= weekStartIso && t.completedAt >= PHASE3_LAUNCH
+  );
+  
+  // Tasks completed last week (for comparison)
+  const lastWeekStart = new Date(weekStart);
+  lastWeekStart.setDate(weekStart.getDate() - 7);
+  const lastWeekStartIso = lastWeekStart.toISOString();
+  const closedLastWeek = state.tasks.filter(t =>
+    t.status === 'done' && t.completedAt && t.completedAt >= lastWeekStartIso && t.completedAt < weekStartIso && t.completedAt >= PHASE3_LAUNCH
+  );
+  
+  // Weekly MVP: who closed the most + has best timeliness
+  const closesByPerson = {};
+  closedThisWeek.forEach(t => {
+    if (!t.assignee) return;
+    const name = String(t.assignee).trim();
+    if (!closesByPerson[name]) closesByPerson[name] = { count: 0, onTime: 0 };
+    closesByPerson[name].count++;
+    if (calcTimelinessMultiplier(t) >= 1.3) closesByPerson[name].onTime++;
+  });
+  const mvpEntry = Object.entries(closesByPerson)
+    .sort((a, b) => b[1].count - a[1].count || b[1].onTime - a[1].onTime)[0];
+  
+  // Critical tasks slipping (still open, due date passed, critical priority)
+  const criticalSlipping = state.tasks.filter(t =>
+    t.status !== 'done' && t.priority === 'crit' && t.due && new Date(t.due) < now
+  );
+  
+  // Format week label
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  const weekLabel = `${fmt(weekStart)} – ${fmt(weekEnd)}`;
+  
+  return {
+    weekLabel,
+    closedThisWeek: closedThisWeek.length,
+    closedLastWeek: closedLastWeek.length,
+    diff: closedThisWeek.length - closedLastWeek.length,
+    mvp: mvpEntry ? { name: mvpEntry[0], count: mvpEntry[1].count, onTime: mvpEntry[1].onTime } : null,
+    criticalSlipping: criticalSlipping.length
+  };
+}
+
+// Notes quality diagnostic for HO coordinators (admin-only)
+// Returns avg effort multiplier across tasks coordinated by each HO member
+function computeNotesQualityByCoordinator() {
+  const stats = {}; // name → { totalEffort, count, avgEffort }
+  state.tasks.forEach(t => {
+    if (t.coordinator && isHO(t.coordinator) && t.status === 'done' && t.completedAt >= PHASE3_LAUNCH) {
+      const name = String(t.coordinator).trim();
+      if (!stats[name]) stats[name] = { totalEffort: 0, count: 0 };
+      stats[name].totalEffort += calcEffortMultiplier(t);
+      stats[name].count++;
+    }
+  });
+  Object.keys(stats).forEach(name => {
+    stats[name].avgEffort = stats[name].count > 0 ? stats[name].totalEffort / stats[name].count : 0;
+  });
+  return stats;
+}
+
+/* ============================================================
+   PHASE 4 — POSTPONEMENT ANALYSIS
+   Aggregates postponement records across all tasks for admin review.
+   ============================================================ */
+function analyzePostponements(daysWindow = 30) {
+  const cutoff = new Date(Date.now() - daysWindow * 86400000).toISOString();
+  
+  const all = []; // every postponement record with task context
+  const byPerson = {}; // person → { count, totalDays, tasks: Set }
+  const multiPostpone = []; // tasks postponed 3+ times overall
+  
+  state.tasks.forEach(t => {
+    if (!t.postponements || t.postponements.length === 0) return;
+    
+    // For multi-postpone red flag (lifetime count, not just window)
+    if (t.postponements.length >= 3) {
+      multiPostpone.push({
+        task: t,
+        count: t.postponements.length,
+        originalDue: t.originalDue || t.postponements[0]?.from || '?',
+        currentDue: t.due
+      });
+    }
+    
+    t.postponements.forEach(p => {
+      if (!p.at || p.at < cutoff) return;
+      
+      const record = { ...p, task: t };
+      all.push(record);
+      
+      // Aggregate by assignee
+      if (t.assignee) {
+        const name = String(t.assignee).trim();
+        if (!byPerson[name]) byPerson[name] = { count: 0, totalDays: 0, tasks: new Set() };
+        byPerson[name].count++;
+        byPerson[name].tasks.add(t.id);
+        // Compute days postponed
+        if (p.from && p.to) {
+          const diff = Math.round((new Date(p.to) - new Date(p.from)) / 86400000);
+          byPerson[name].totalDays += Math.max(0, diff);
+        }
+      }
+    });
+  });
+  
+  // Build per-person summary
+  const perPerson = Object.entries(byPerson).map(([name, s]) => ({
+    name,
+    count: s.count,
+    uniqueTasks: s.tasks.size,
+    totalDays: s.totalDays,
+    avgDays: s.count > 0 ? Math.round(s.totalDays / s.count) : 0
+  })).sort((a, b) => b.count - a.count);
+  
+  // Recent records, newest first
+  const recentRecords = all.sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 10);
+  
+  return {
+    totalPostponements: all.length,
+    perPerson,
+    multiPostpone: multiPostpone.sort((a, b) => b.count - a.count).slice(0, 8),
+    recentRecords
+  };
+}
+
+function renderPostponementsReviewHTML(analysis) {
+  let html = '';
+  
+  // Summary KPIs
+  html += `<div class="kpi-grid" style="margin-bottom:0.85rem;">
+    <div class="kpi"><div class="label">Total (30d)</div><div class="value">${analysis.totalPostponements}</div><div class="delta">postpone events</div></div>
+    <div class="kpi"><div class="label">People affected</div><div class="value">${analysis.perPerson.length}</div><div class="delta">had postponements</div></div>
+    <div class="kpi"><div class="label">Multi-postpone tasks</div><div class="value ${analysis.multiPostpone.length > 0 ? 'crit' : ''}">${analysis.multiPostpone.length}</div><div class="delta">3+ times each</div></div>
+    <div class="kpi"><div class="label">Avg delay</div><div class="value">${analysis.perPerson.length > 0 ? Math.round(analysis.perPerson.reduce((sum, p) => sum + p.avgDays, 0) / analysis.perPerson.length) : 0}d</div><div class="delta">per postponement</div></div>
+  </div>`;
+  
+  // Per-person leaderboard
+  if (analysis.perPerson.length > 0) {
+    html += `<div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;margin-top:0.85rem;">By assignee</div>`;
+    html += '<div class="perf-leaderboard">';
+    analysis.perPerson.forEach((p, idx) => {
+      const cls = p.count >= 5 ? 'bad' : (p.count >= 3 ? 'low' : 'mid');
+      html += `
+        <div class="perf-row">
+          <div class="rank">${String(idx + 1).padStart(2, '0')}</div>
+          <div>
+            <div class="name">${escapeHTML(p.name)}</div>
+            <div class="meta-line">${p.uniqueTasks} task${p.uniqueTasks !== 1 ? 's' : ''} · ${p.totalDays}d total delay · ${p.avgDays}d avg</div>
+          </div>
+          <div class="score ${cls}">${p.count}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  // Multi-postpone red flags
+  if (analysis.multiPostpone.length > 0) {
+    html += `<div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--crit);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;margin-top:0.85rem;">⚠ Tasks postponed 3+ times</div>`;
+    html += '<div style="background:rgba(255,93,108,0.06);border:1px solid rgba(255,93,108,0.2);border-radius:8px;overflow:hidden;">';
+    analysis.multiPostpone.forEach(item => {
+      const proj = getProject(item.task.projectId);
+      html += `
+        <div style="padding:0.7rem 0.9rem;border-bottom:1px solid var(--line-soft);">
+          <div style="font-weight:500;margin-bottom:0.2rem;">${escapeHTML(item.task.title)}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);">
+            ${item.count} postponements · ${escapeHTML(item.originalDue)} → ${escapeHTML(item.currentDue || '?')}
+            ${proj ? ` · ${escapeHTML(proj.name)}` : ''}
+            ${item.task.assignee ? ` · ${escapeHTML(item.task.assignee)}` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  // Recent postponements with reasons
+  if (analysis.recentRecords.length > 0) {
+    html += `<div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;margin-top:0.85rem;">Recent postponements</div>`;
+    html += '<div style="background:var(--bg-elev-2);border:1px solid var(--line-soft);border-radius:8px;overflow:hidden;">';
+    analysis.recentRecords.forEach(r => {
+      const proj = getProject(r.task.projectId);
+      html += `
+        <div style="padding:0.7rem 0.9rem;border-bottom:1px solid var(--line-soft);">
+          <div style="font-weight:500;margin-bottom:0.2rem;font-size:0.88rem;">${escapeHTML(r.task.title)}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--info);margin-bottom:0.2rem;">
+            ${escapeHTML(r.from || '?')} → ${escapeHTML(r.to || '?')}
+          </div>
+          <div style="font-size:0.8rem;color:var(--ink-2);font-style:italic;margin-bottom:0.2rem;">"${escapeHTML(r.reason || '(no reason)')}"</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;color:var(--ink-faint);">
+            by ${escapeHTML(r.by || 'someone')} ${r.requestedBy && r.requestedBy !== r.by ? `(req by ${escapeHTML(r.requestedBy)})` : ''} · ${timeAgo(r.at)}
+            ${proj ? ` · ${escapeHTML(proj.name)}` : ''}
+            ${r.task.assignee ? ` · ${escapeHTML(r.task.assignee)}` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  return html;
+}
+
 function taskCard(t, opts = {}) {
   const dc = dueClass(t.due, t.status === 'done');
   const card = document.createElement('div');
@@ -2388,7 +3891,7 @@ function taskCard(t, opts = {}) {
   let pressTimer = null;
   const handlePressStart = (e) => {
     if (state.bulkMode) return; // in bulk mode, tap toggles instead
-    if (!canBulkActions()) return; // operators can't enter bulk mode
+    if (!canBulkShare()) return; // HO operators can enter for share-only; non-HO cannot
     pressTimer = setTimeout(() => {
       // haptic via vibration if supported
       if (navigator.vibrate) navigator.vibrate(40);
@@ -2450,8 +3953,16 @@ function taskCard(t, opts = {}) {
   if (t.priority) metaHTML += `<span class="tag"><span class="priority-dot ${t.priority}"></span>${PRIO_LABELS[t.priority] || t.priority}</span>`;
   if (t.status === 'wip') metaHTML += `<span class="stat-tag wip">WIP</span>`;
   else if (t.status === 'blocked') metaHTML += `<span class="stat-tag blocked">BLOCKED</span>`;
+  // Phase 3.1b — Ready for Closure badge
+  if (t.readyAt && t.status !== 'done') metaHTML += `<span class="stat-tag ready">🟡 READY</span>`;
+  // Phase 4 — Postpone requested badge
+  if (t.pendingPostpone && t.status !== 'done') metaHTML += `<span class="stat-tag postpone">📅 POSTPONE REQ</span>`;
   if (t.recurrence) metaHTML += `<span class="tag" style="opacity:0.7;">🔁 ${escapeHTML(recurrenceLabel(t.recurrence))}</span>`;
   if (t.assignee) metaHTML += `<span class="tag">${escapeHTML(t.assignee)}</span>`;
+  // Phase 3.1a — show coordinator tag only when distinct from assignee (avoids visual noise)
+  if (t.coordinator && t.coordinator !== t.assignee) {
+    metaHTML += `<span class="tag" style="opacity:0.65;">⚙ ${escapeHTML(t.coordinator)}</span>`;
+  }
   if (t.due) metaHTML += `<span class="due ${dc}">${dueLabel(t.due)}</span>`;
   if (t.section && !opts.showProject) metaHTML += `<span class="tag" style="opacity:0.6;">${escapeHTML(t.section)}</span>`;
   if (opts.showProject && proj) metaHTML += `<span class="tag" style="opacity:0.7;">${escapeHTML(proj.name)}</span>`;
@@ -2524,13 +4035,25 @@ async function cycleStatus(id) {
   // Normal task: todo -> wip -> done -> todo
   if (t.status === 'todo' || t.status === 'blocked') t.status = 'wip';
   else if (t.status === 'wip') { t.status = 'done'; t.completedAt = new Date().toISOString(); }
-  else if (t.status === 'done') { t.status = 'todo'; t.completedAt = null; }
+  else if (t.status === 'done') { 
+    t.status = 'todo'; 
+    t.completedAt = null;
+    // Phase 3.1b — clear Ready signal when reverting from done back to todo
+    t.readyAt = null;
+    t.readyBy = null;
+  }
   saveCache();
   rerender();
   toast(`Set to ${STATUS_LABELS[t.status]}`);
 
   try {
-    await fsWriteTask(t.id, { status: t.status, completedAt: t.completedAt });
+    const patch = { status: t.status, completedAt: t.completedAt };
+    // If we reverted from done → todo, include readyAt clearing in the Firestore write
+    if (oldStatus === 'done' && t.status === 'todo') {
+      patch.readyAt = null;
+      patch.readyBy = null;
+    }
+    await fsWriteTask(t.id, patch);
     await writeAuditLog('task_status', {
       taskId: t.id, taskTitle: t.title,
       changes: [{ field: 'status', from: oldStatus, to: t.status }]
@@ -2814,7 +4337,16 @@ function renderAssignees() {
     const shareBtn = head.querySelector('[data-share-assignee]');
     shareBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      shareToWhatsApp(buildAssigneeMessage(name));
+      // Phase 4 — picker: reminder tone (default for single person) vs export
+      const openTasks = state.tasks.filter(t => isOpen(t) && t.assignee === name);
+      if (openTasks.length === 0) {
+        // Keep the existing "all clear" message
+        shareToWhatsApp(buildAssigneeMessage(name));
+        return;
+      }
+      const message = pickShareFormatAndBuild(openTasks, `Tasks for ${name}`);
+      if (!message) return;
+      shareToWhatsApp(message);
     });
     head.onclick = (e) => {
       // Don't toggle if the share button was clicked
@@ -2903,11 +4435,21 @@ function openTaskModal(task = null) {
   addOpt.textContent = '+ Add new assignee…';
   fA.appendChild(addOpt);
 
+  // Phase 3.1a — Coordinator dropdown (HO team only, plus None)
+  const fC = document.getElementById('fCoordinator');
+  if (fC) {
+    fC.innerHTML = '<option value="">— None —</option>';
+    HO_TEAM.forEach(name => {
+      const o = document.createElement('option'); o.value = name; o.textContent = name; fC.appendChild(o);
+    });
+  }
+
   if (task) {
     document.getElementById('fTitle').value = task.title;
     fP.value = task.projectId;
     document.getElementById('fSection').value = task.section || '';
     fA.value = task.assignee || '';
+    if (fC) fC.value = task.coordinator || '';
     document.getElementById('fDue').value = task.due || '';
     document.getElementById('fNotes').value = task.notes || '';
     document.getElementById('fRecurrence').value = task.recurrence ? recurrenceToKey(task.recurrence) : '';
@@ -2918,6 +4460,7 @@ function openTaskModal(task = null) {
     fP.value = state.currentProjectId;
     document.getElementById('fSection').value = '';
     fA.value = '';
+    if (fC) fC.value = '';
     document.getElementById('fDue').value = '';
     document.getElementById('fNotes').value = '';
     document.getElementById('fRecurrence').value = '';
@@ -2928,8 +4471,151 @@ function openTaskModal(task = null) {
   document.querySelectorAll('#fPriority button').forEach(b => b.classList.toggle('active', b.dataset.p === selectedPriority));
   document.querySelectorAll('#fStatus button').forEach(b => b.classList.toggle('active', b.dataset.s === selectedStatus));
 
+  // Phase 3.1b — Show Ready for Closure section for HO operators on non-done tasks
+  updateReadyForClosureUI(task);
+  // Phase 4 — Postpone request UI
+  updatePostponeRequestUI(task);
+  updatePostponeHistoryUI(task);
+
   modal.classList.add('show');
   setTimeout(() => document.getElementById('fTitle').focus(), 100);
+}
+
+/* Phase 3.1b — Update visibility and content of Ready for Closure UI */
+function updateReadyForClosureUI(task) {
+  const section = document.getElementById('readyForClosureSection');
+  const alreadySignalled = document.getElementById('readyAlreadySignalled');
+  const btnMark = document.getElementById('btnMarkReady');
+  const btnCancel = document.getElementById('btnCancelReady');
+  const readyMeta = document.getElementById('readyMeta');
+  if (!section || !btnMark) return;
+
+  // Only show for existing tasks that are NOT done, AND viewer is an HO operator (admin doesn't need this)
+  // Admin closes tasks via the Status toggle instead
+  const userName = currentUser?.displayName;
+  const isHOOperator = userName && isHO(userName) && !isAdmin();
+
+  if (!task || task.status === 'done' || !isHOOperator) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  if (task.readyAt) {
+    // Already signalled
+    alreadySignalled.style.display = 'block';
+    btnMark.style.display = 'none';
+    btnCancel.style.display = 'block';
+    readyMeta.textContent = `Signalled by ${task.readyBy || 'someone'} · ${timeAgo(task.readyAt)}`;
+  } else {
+    alreadySignalled.style.display = 'none';
+    btnMark.style.display = 'block';
+    btnCancel.style.display = 'none';
+  }
+}
+
+/* Phase 4 — Postpone Request UI (operators see request button; admin sees pending request with approve/reject) */
+function updatePostponeRequestUI(task) {
+  const section = document.getElementById('postponeRequestSection');
+  const banner = document.getElementById('pendingPostponeBanner');
+  const meta = document.getElementById('pendingPostponeMeta');
+  const btnReq = document.getElementById('btnRequestPostpone');
+  const btnCancel = document.getElementById('btnCancelPostpone');
+  if (!section || !btnReq) return;
+  
+  if (!task || task.status === 'done') {
+    section.style.display = 'none';
+    return;
+  }
+  
+  const userName = currentUser?.displayName;
+  const isHOOperator = userName && isHO(userName) && !isAdmin();
+  const adminViewingPending = isAdmin() && task.pendingPostpone;
+  
+  // Show section to: HO operators (always for non-done tasks), OR admin when a request is pending
+  if (!isHOOperator && !adminViewingPending) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  
+  if (task.pendingPostpone) {
+    // Pending request exists — show banner to both operator AND admin
+    banner.style.display = 'block';
+    btnReq.style.display = 'none';
+    btnCancel.style.display = isHOOperator ? 'block' : 'none';
+    const p = task.pendingPostpone;
+    let bannerHTML = `
+      <div><strong>Requested new date:</strong> ${escapeHTML(p.requestedDate || '?')}</div>
+      <div><strong>Reason:</strong> ${escapeHTML(p.reason || '')}</div>
+      <div style="opacity:0.7;margin-top:0.25rem;">By ${escapeHTML(p.requestedBy || 'someone')} · ${timeAgo(p.requestedAt)}</div>
+    `;
+    if (isAdmin()) {
+      // Admin gets inline approve/reject buttons in the modal too
+      bannerHTML += `
+        <div style="display:flex;gap:0.4rem;margin-top:0.65rem;">
+          <button class="btn primary" id="modalApprovePostpone" style="flex:1;">Approve</button>
+          <button class="btn" id="modalRejectPostpone" style="flex:1;">Reject</button>
+        </div>
+      `;
+    }
+    meta.innerHTML = bannerHTML;
+    
+    // Wire admin's inline approve/reject buttons (must re-wire each open since innerHTML rewrite removes them)
+    if (isAdmin()) {
+      const approveBtn = document.getElementById('modalApprovePostpone');
+      const rejectBtn = document.getElementById('modalRejectPostpone');
+      if (approveBtn) approveBtn.onclick = async (e) => {
+        e.preventDefault();
+        closeModal();
+        await approvePostponement(task.id);
+      };
+      if (rejectBtn) rejectBtn.onclick = async (e) => {
+        e.preventDefault();
+        closeModal();
+        await rejectPostponement(task.id);
+      };
+    }
+  } else {
+    // No pending request
+    banner.style.display = 'none';
+    btnReq.style.display = isHOOperator ? 'block' : 'none';
+    btnCancel.style.display = 'none';
+  }
+}
+
+/* Phase 4 — Postponement History display (visible to everyone if task has any postponements) */
+function updatePostponeHistoryUI(task) {
+  const section = document.getElementById('postponeHistorySection');
+  const list = document.getElementById('postponeHistoryList');
+  if (!section || !list) return;
+  
+  if (!task || !task.postponements || task.postponements.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  
+  // Show most recent first
+  const sorted = [...task.postponements].sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+  let html = '';
+  if (task.originalDue) {
+    html += `<div style="margin-bottom:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);">Original due: ${escapeHTML(task.originalDue)}</div>`;
+  }
+  sorted.forEach((p, idx) => {
+    html += `
+      <div style="border-left:2px solid var(--line);padding-left:0.7rem;margin-bottom:0.55rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);">
+          ${escapeHTML(p.from || '?')} → <strong style="color:var(--ink-2);">${escapeHTML(p.to || '?')}</strong>
+        </div>
+        <div style="margin-top:0.2rem;">${escapeHTML(p.reason || '(no reason)')}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--ink-faint);margin-top:0.15rem;">
+          by ${escapeHTML(p.by || 'someone')} · ${p.at ? timeAgo(p.at) : ''}
+        </div>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
 }
 
 function closeModal() { modal.classList.remove('show'); state.editingId = null; }
@@ -2951,6 +4637,173 @@ document.getElementById('addBtn').onclick = () => openTaskModal();
 document.getElementById('modalClose').onclick = closeModal;
 document.getElementById('btnCancel').onclick = closeModal;
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+// Phase 3.1b — Mark Ready for Closure handler
+document.getElementById('btnMarkReady').onclick = async () => {
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (!t) return;
+  if (t.status === 'done') { toast('Already done'); return; }
+  
+  // Soft warning if no notes — let user proceed with reduced points
+  const currentNotes = document.getElementById('fNotes').value.trim();
+  if (!currentNotes) {
+    const proceed = confirm('No notes on this task yet.\n\nMarking ready without notes earns only 50% of potential points.\n\nContinue anyway?');
+    if (!proceed) return;
+  }
+  
+  // Save any unsaved notes first
+  const newNotes = currentNotes || null;
+  if (newNotes !== (t.notes || null)) {
+    t.notes = newNotes;
+    try { await fsWriteTask(t.id, { notes: newNotes }); } catch (e) { console.warn('Notes save failed', e); }
+  }
+  
+  // Apply Ready signal
+  const now = new Date().toISOString();
+  const who = currentUser?.displayName || 'someone';
+  t.readyAt = now;
+  t.readyBy = who;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { readyAt: now, readyBy: who });
+    await writeAuditLog('task_ready', {
+      taskId: t.id,
+      taskTitle: t.title,
+      signaller: who
+    });
+    toast('🟡 Signalled ready for admin closure');
+    closeModal();
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
+};
+
+// Phase 3.1b — Cancel Ready signal handler
+document.getElementById('btnCancelReady').onclick = async () => {
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (!t || !t.readyAt) return;
+  
+  t.readyAt = null;
+  t.readyBy = null;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { readyAt: null, readyBy: null });
+    await writeAuditLog('task_ready_cancel', {
+      taskId: t.id,
+      taskTitle: t.title,
+      canceller: currentUser?.displayName || 'someone'
+    });
+    toast('Ready signal cancelled');
+    closeModal();
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
+};
+
+// Phase 4 — Operator Request Postponement handler
+document.getElementById('btnRequestPostpone').onclick = async () => {
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (!t) return;
+  if (t.status === 'done') { toast('Task already done'); return; }
+  if (t.pendingPostpone) { toast('Already requested'); return; }
+  
+  // Compute default suggested date (current due + 7 days, or today + 14 if no due)
+  let defaultDate = '';
+  if (t.due) {
+    const d = new Date(t.due);
+    d.setDate(d.getDate() + 7);
+    defaultDate = d.toISOString().slice(0, 10);
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    defaultDate = d.toISOString().slice(0, 10);
+  }
+  
+  const newDate = window.prompt(
+    `Request postponement\n\n${t.title}\nCurrent due: ${t.due || '(no due)'}\n\nProposed new due date (YYYY-MM-DD):`,
+    defaultDate
+  );
+  if (newDate === null) return;
+  const trimmedDate = newDate.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmedDate)) {
+    toast('Invalid date format. Use YYYY-MM-DD.');
+    return;
+  }
+  if (t.due && trimmedDate <= t.due) {
+    toast('New date must be later than current due date');
+    return;
+  }
+  
+  const reason = window.prompt(
+    `Reason for postponement (required, min 10 characters):\n\nExamples:\n• Vendor revised quote, better pricing available\n• Site rain damage, work blocked\n• Department approval still pending\n• External dependency on PWD permission`,
+    ''
+  );
+  if (reason === null) return;
+  const trimmedReason = reason.trim();
+  if (trimmedReason.length < 10) {
+    toast('Reason must be at least 10 characters');
+    return;
+  }
+  
+  const now = new Date().toISOString();
+  const who = currentUser?.displayName || 'someone';
+  const request = {
+    requestedDate: trimmedDate,
+    reason: trimmedReason,
+    requestedBy: who,
+    requestedAt: now
+  };
+  t.pendingPostpone = request;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { pendingPostpone: request });
+    await writeAuditLog('postpone_requested', {
+      taskId: t.id,
+      taskTitle: t.title,
+      requester: who,
+      changes: [
+        { field: 'requested_due', from: t.due || '(none)', to: trimmedDate },
+        { field: 'reason', from: '', to: trimmedReason }
+      ]
+    });
+    toast('📅 Postponement requested — awaiting admin review');
+    closeModal();
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
+};
+
+// Phase 4 — Cancel postpone request (operator changed their mind)
+document.getElementById('btnCancelPostpone').onclick = async () => {
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if (!t || !t.pendingPostpone) return;
+  
+  const ok = confirm('Cancel this postponement request?');
+  if (!ok) return;
+  
+  t.pendingPostpone = null;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { pendingPostpone: null });
+    await writeAuditLog('postpone_cancelled', {
+      taskId: t.id,
+      taskTitle: t.title,
+      canceller: currentUser?.displayName || 'someone'
+    });
+    toast('Postponement request cancelled');
+    closeModal();
+    rerender();
+  } catch (e) {
+    toast('Sync failed — try again');
+  }
+};
 
 // "+ Add new assignee" inline flow
 document.getElementById('fAssignee').addEventListener('change', async (e) => {
@@ -3004,6 +4857,7 @@ document.getElementById('btnSave').onclick = async () => {
     projectId: document.getElementById('fProject').value,
     section: document.getElementById('fSection').value.trim() || null,
     assignee: document.getElementById('fAssignee').value || null,
+    coordinator: document.getElementById('fCoordinator')?.value || null,
     due: document.getElementById('fDue').value || null,
     priority: selectedPriority,
     status: selectedStatus,
@@ -3019,16 +4873,55 @@ document.getElementById('btnSave').onclick = async () => {
     // Operator permission check: build a list of allowed fields
     let allowedPatch = {};
     if (isAdmin()) {
-      // Admin: everything goes through
+      // Admin: everything goes through, but capture reason if due date moved later
       allowedPatch = { ...data };
+      
+      // Phase 4 — Capture postponement reason when admin moves due date LATER
+      const oldDue = t.due || null;
+      const newDue = data.due || null;
+      if (oldDue && newDue && newDue > oldDue) {
+        // Date moved later — this is a postponement
+        const reason = window.prompt(
+          `Postpone reason required\n\n${t.title}\n\nFrom: ${oldDue}\nTo: ${newDue}\n\nWhy is this being postponed? (e.g., "vendor revised quote", "site rain delay", "approval pending")`,
+          ''
+        );
+        if (reason === null) {
+          // User cancelled prompt — abort the save
+          toast('Save cancelled');
+          return;
+        }
+        const trimmedReason = reason.trim();
+        if (trimmedReason.length < 5) {
+          toast('Reason required (min 5 characters). Save cancelled.');
+          return;
+        }
+        // Capture original due (only if not already captured)
+        if (!t.originalDue) {
+          allowedPatch.originalDue = oldDue;
+        }
+        // Append postponement record
+        const newRecord = {
+          from: oldDue,
+          to: newDue,
+          reason: trimmedReason,
+          by: currentUser?.displayName || 'admin',
+          at: new Date().toISOString()
+        };
+        allowedPatch.postponements = [...(t.postponements || []), newRecord];
+        // Clear any pending postpone request since admin is acting
+        if (t.pendingPostpone) {
+          allowedPatch.pendingPostpone = null;
+        }
+      }
     } else {
       // Operator: only title + section + notes (notes is the critical one)
       // We let title/section through because operators "edit comments" loosely interpreted
-      // But we BLOCK changes to status, due, assignee, priority, recurrence, projectId
+      // But we BLOCK changes to status, due, assignee, priority, recurrence, projectId, coordinator
       const blocked = [];
       if (data.status !== t.status) blocked.push('status');
       if (data.due !== (t.due || null)) blocked.push('due date');
       if ((data.assignee || null) !== (t.assignee || null)) blocked.push('assignee');
+      if ((data.coordinator || null) !== (t.coordinator || null)) blocked.push('coordinator');
       if (data.priority !== t.priority) blocked.push('priority');
       if (recurrenceToKey(data.recurrence) !== recurrenceToKey(t.recurrence)) blocked.push('recurrence');
       if (data.projectId !== t.projectId) blocked.push('project');
@@ -3052,6 +4945,14 @@ document.getElementById('btnSave').onclick = async () => {
     Object.assign(t, allowedPatch);
     if (allowedPatch.status === 'done' && !t.completedAt) t.completedAt = new Date().toISOString();
     else if (allowedPatch.status && allowedPatch.status !== 'done') t.completedAt = null;
+    
+    // Phase 3.1b — if admin moves task back to todo/blocked, clear Ready signal (it no longer reflects reality)
+    if (allowedPatch.status && allowedPatch.status !== 'done' && allowedPatch.status !== 'wip' && t.readyAt) {
+      t.readyAt = null;
+      t.readyBy = null;
+      allowedPatch.readyAt = null;
+      allowedPatch.readyBy = null;
+    }
 
     saveCache();
     rerender();
@@ -3084,8 +4985,25 @@ document.getElementById('btnSave').onclick = async () => {
     const newTask = {
       id: uid(), ...data,
       completedAt: data.status === 'done' ? new Date().toISOString() : null,
-      created: Date.now()
+      created: Date.now(),
+      // Phase 3.1a — Performance fields
+      readyAt: null,
+      readyBy: null,
+      score: null,
+      coordBonus: null
     };
+
+    // Phase 3.1a — Coordinator assignment per locked design:
+    // Operators set their own name as coordinator when creating tasks
+    // Admin can pick anyone (data.coordinator from form) or smart-default
+    if (!isAdmin()) {
+      // Operator creating task — they're the coordinator
+      newTask.coordinator = currentUser?.displayName || null;
+    } else {
+      // Admin — use explicit pick from form, or smart-default from assignee
+      newTask.coordinator = data.coordinator || smartDefaultCoordinator(data.assignee);
+    }
+
     // Operator restriction: force defaults on create — status=todo, no due date, no assignee, med priority, no recurrence
     if (!isAdmin()) {
       newTask.status = 'todo';
@@ -3142,6 +5060,273 @@ function rerender() {
   if (active === 'assignees') renderAssignees();
   if (active === 'activity') renderActivity();
   if (active === 'search') renderSearch();
+}
+
+/* ============================================================
+   PHASE 3.1d — PERFORMANCE TAB
+   Two leaderboards for admin (HO + Site/Project)
+   Self-view for HO operators (their score, stats, partial peer context)
+   ============================================================ */
+function renderPerformance() {
+  const container = document.getElementById('performanceContent');
+  if (!container) return;
+  const snap = computePerformanceSnapshot();
+  
+  if (isAdmin()) {
+    renderPerformanceAdmin(container, snap);
+  } else {
+    renderPerformanceOperator(container, snap);
+  }
+}
+
+function scoreColorClass(score) {
+  if (score >= 80) return 'high';
+  if (score >= 40) return 'mid';
+  if (score >= 0) return 'low';
+  return 'bad';
+}
+
+function renderPerformanceAdmin(container, snap) {
+  const allScores = Object.values(snap.scores);
+  allScores.sort((a, b) => b.score - a.score);
+  
+  const hoScores = allScores.filter(s => s.isHO);
+  const cappedPeople = allScores.filter(s => s.capped);
+  
+  let html = `
+    <div class="section-title">
+      <span>Performance Dashboard</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;color:var(--ink-faint);">ADMIN VIEW · 30-day rolling</span>
+    </div>
+  `;
+  
+  // Phase 3.2 — Weekly recap card at top of admin view
+  const recap = computeWeeklyRecap();
+  if (recap.closedThisWeek > 0 || recap.closedLastWeek > 0 || recap.criticalSlipping > 0) {
+    const diffDisplay = recap.diff > 0 ? `+${recap.diff}` : `${recap.diff}`;
+    const diffClass = recap.diff > 0 ? 'ok' : (recap.diff < 0 ? 'bad' : '');
+    html += `
+      <div class="recap-card">
+        <div class="r-h">◆ Weekly Snapshot</div>
+        <div class="r-title">${escapeHTML(recap.weekLabel)}</div>
+        <div class="r-item"><span>Tasks closed this week</span><span class="val">${recap.closedThisWeek} <span class="${diffClass}">(${diffDisplay} vs last week)</span></span></div>
+        ${recap.mvp ? `<div class="r-item"><span>MVP of the week</span><span class="val">${escapeHTML(recap.mvp.name)} (${recap.mvp.count} closed${recap.mvp.onTime ? `, ${recap.mvp.onTime} on-time` : ''})</span></div>` : ''}
+        <div class="r-item"><span>Critical tasks slipping</span><span class="val ${recap.criticalSlipping > 0 ? 'bad' : 'ok'}">${recap.criticalSlipping}</span></div>
+      </div>
+    `;
+  }
+  
+  const totalDone = allScores.reduce((sum, s) => sum + s.completedTasks, 0);
+  html += `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="label">HO Median</div><div class="value">${fmtScore(snap.teamMedianHO)}</div><div class="delta">${hoScores.length} HO members</div></div>
+      <div class="kpi"><div class="label">Top Score</div><div class="value ok">${fmtScore(snap.fieldTopScore)}</div><div class="delta">all assignees</div></div>
+      <div class="kpi"><div class="label">Capped</div><div class="value crit">${cappedPeople.length}</div><div class="delta">critical &gt;7d overdue</div></div>
+      <div class="kpi"><div class="label">Closed since launch</div><div class="value">${totalDone}</div><div class="delta">scored tasks</div></div>
+    </div>
+  `;
+  
+  if (cappedPeople.length > 0) {
+    html += `<div class="perf-alert"><div class="ah">◆ Performance Concerns · Critical Claw-Back Active</div>`;
+    cappedPeople.forEach(s => {
+      html += `<div class="item"><span class="who">${escapeHTML(s.name)}</span><span class="what">${s.critOverdue7d} critical overdue &gt;7d · score capped at 60</span></div>`;
+    });
+    html += `</div>`;
+  }
+  
+  html += `<div class="perf-section-h">HO Leaderboard <span class="sub">8 app users</span></div>`;
+  html += renderLeaderboardHTML(hoScores, null);
+  
+  // Phase 3.2 — Notes Quality diagnostic (admin-only)
+  const notesQuality = computeNotesQualityByCoordinator();
+  const nqEntries = Object.entries(notesQuality)
+    .filter(([_, s]) => s.count > 0)
+    .sort((a, b) => b[1].avgEffort - a[1].avgEffort);
+  if (nqEntries.length > 0) {
+    html += `<div class="perf-section-h">Notes Quality Diagnostic <span class="sub">avg effort multiplier · admin-only</span></div>`;
+    html += '<div class="perf-leaderboard">';
+    nqEntries.forEach(([name, s], idx) => {
+      const cls = s.avgEffort >= 1.1 ? 'high' : (s.avgEffort >= 0.95 ? 'mid' : 'low');
+      const interpretation = s.avgEffort >= 1.15 ? 'detailed' : (s.avgEffort >= 0.95 ? 'substantive' : (s.avgEffort >= 0.7 ? 'brief' : 'sparse'));
+      html += `
+        <div class="perf-row">
+          <div class="rank">${String(idx + 1).padStart(2, '0')}</div>
+          <div>
+            <div class="name">${escapeHTML(name)}</div>
+            <div class="meta-line">${s.count} task${s.count !== 1 ? 's' : ''} coordinated · ${interpretation}</div>
+          </div>
+          <div class="score ${cls}">${s.avgEffort.toFixed(2)}×</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  html += `<div class="perf-section-h">Site / Project Leaderboard <span class="sub">all assignees including site</span></div>`;
+  html += renderLeaderboardHTML(allScores, null);
+  
+  // Phase 4 — Postponements Review (last 30 days)
+  const postponeAnalysis = analyzePostponements(30);
+  if (postponeAnalysis.totalPostponements > 0 || postponeAnalysis.recentRecords.length > 0) {
+    html += `<div class="perf-section-h">📅 Postponements Review <span class="sub">last 30 days · admin-only</span></div>`;
+    html += renderPostponementsReviewHTML(postponeAnalysis);
+  }
+  
+  if (totalDone === 0) {
+    html += `<div style="background:var(--bg-elev-2);border:1px solid var(--line-soft);border-radius:8px;padding:1rem;margin-top:1rem;font-size:0.85rem;color:var(--ink-2);">
+      <strong style="color:var(--ink);">No closed tasks yet since Phase 3 launch.</strong><br>
+      Scores will start populating as soon as you close tasks via the Ready Queue. Overdue penalties already showing live.
+    </div>`;
+  }
+  
+  container.innerHTML = html;
+}
+
+function renderPerformanceOperator(container, snap) {
+  const myName = currentUser?.displayName;
+  const my = snap.scores[myName] || {
+    name: myName, score: 0, completedTasks: 0, coordTasks: 0,
+    coordBonus: 0, openTasks: 0, overdueTasks: 0, critOverdue7d: 0,
+    capped: false, isHO: isHO(myName)
+  };
+  
+  const hoScores = Object.values(snap.scores).filter(s => s.isHO).sort((a, b) => b.score - a.score);
+  const myRank = hoScores.findIndex(s => s.name === myName) + 1;
+  const totalHO = hoScores.length || HO_TEAM.length;
+  
+  const scoreCls = scoreColorClass(my.score);
+  
+  // Phase 3.2 — Streak + badges
+  const streaks = calcStreaks(myName);
+  const badges = calcBadges(myName, snap);
+  
+  let html = `
+    <div class="perf-hero">
+      <div class="greeting">YOUR SCORE · 30-DAY ROLLING</div>
+      <div class="score-num ${scoreCls}">${fmtScore(my.score)}</div>
+      ${my.capped ? `<div style="margin-top:0.5rem;font-size:0.75rem;color:var(--crit);font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;">⚠ CAPPED</div>` : ''}
+      <div class="rank-pill">${myRank ? `Rank ${myRank} of ${totalHO}` : 'Not yet ranked'}</div>
+    </div>
+  `;
+  
+  // Phase 3.2 — Streak banner (if active streak exists)
+  if (streaks.current >= 2) {
+    html += `
+      <div class="streak-banner">
+        <div class="s-ic">🔥</div>
+        <div>
+          <div class="s-num">${streaks.current} day${streaks.current !== 1 ? 's' : ''}</div>
+          <div class="s-lbl">Active streak${streaks.longest > streaks.current ? ` · longest ${streaks.longest}` : ''}</div>
+        </div>
+      </div>
+    `;
+  }
+  
+  if (my.capped) {
+    html += `
+      <div class="perf-alert">
+        <div class="ah">⚠ SCORE CAPPED AT 60</div>
+        <div style="font-size:0.85rem;color:var(--ink-2);line-height:1.5;">
+          You have ${my.critOverdue7d} critical task${my.critOverdue7d !== 1 ? 's' : ''} overdue more than 7 days. Your monthly score cannot rise above 60 until the backlog clears. Talk to admin if you're blocked.
+        </div>
+      </div>
+    `;
+  }
+  
+  html += `
+    <div class="perf-stats">
+      <div class="perf-stat">
+        <div class="lbl">Done since launch</div>
+        <div class="val ${my.completedTasks > 0 ? 'ok' : ''}">${my.completedTasks}</div>
+        <div class="sub">tasks closed</div>
+      </div>
+      <div class="perf-stat">
+        <div class="lbl">Coordination</div>
+        <div class="val">${my.coordTasks}</div>
+        <div class="sub">+${fmtScore(my.coordBonus)} bonus</div>
+      </div>
+      <div class="perf-stat">
+        <div class="lbl">Open tasks</div>
+        <div class="val">${my.openTasks}</div>
+        <div class="sub">${my.overdueTasks} overdue</div>
+      </div>
+      <div class="perf-stat">
+        <div class="lbl">Critical &gt;7d</div>
+        <div class="val ${my.critOverdue7d > 0 ? 'bad' : ''}">${my.critOverdue7d}</div>
+        <div class="sub">${my.critOverdue7d > 0 ? 'claw-back active' : 'no concerns'}</div>
+      </div>
+    </div>
+  `;
+  
+  html += `<div class="perf-section-h">HO Leaderboard <span class="sub">your position</span></div>`;
+  html += `
+    <div class="perf-leaderboard">
+      <div class="perf-row you">
+        <div class="rank top">${myRank || '—'}</div>
+        <div><div class="name">You</div></div>
+        <div class="score ${scoreCls}">${fmtScore(my.score)}</div>
+      </div>
+      <div class="perf-row">
+        <div class="rank">—</div>
+        <div><div class="name">Team median</div></div>
+        <div class="score mid">${fmtScore(snap.teamMedianHO)}</div>
+      </div>
+      <div class="perf-row">
+        <div class="rank">★</div>
+        <div><div class="name">Top performer (HO)</div></div>
+        <div class="score high">${fmtScore(snap.topScoreHO)}</div>
+      </div>
+    </div>
+  `;
+  
+  // Phase 3.2 — Badges earned
+  if (badges.length > 0) {
+    html += `<div class="perf-section-h">Achievements <span class="sub">earned</span></div>`;
+    html += '<div class="badge-row">';
+    badges.forEach(b => {
+      html += `<div class="perf-badge"><span class="b-ic">${b.icon}</span><span class="b-lbl">${escapeHTML(b.label)}</span><span class="b-desc">${escapeHTML(b.desc)}</span></div>`;
+    });
+    html += '</div>';
+  }
+  
+  if (my.completedTasks === 0 && my.coordTasks === 0) {
+    html += `
+      <div style="background:var(--bg-elev-2);border:1px solid var(--line-soft);border-radius:8px;padding:1rem;margin-top:1rem;font-size:0.85rem;color:var(--ink-2);">
+        <strong style="color:var(--ink);">No scored tasks yet.</strong><br>
+        Score earns when admin closes a task you completed (assignee) or coordinated (notes + Ready signal). Open tasks count when overdue.
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+}
+
+function renderLeaderboardHTML(scoresList, myName) {
+  if (scoresList.length === 0) {
+    return `<div style="background:var(--bg-elev-2);border:1px solid var(--line-soft);border-radius:8px;padding:1rem;text-align:center;color:var(--ink-faint);font-size:0.85rem;">No scores yet</div>`;
+  }
+  let html = '<div class="perf-leaderboard">';
+  scoresList.forEach((s, idx) => {
+    const rank = idx + 1;
+    const cls = scoreColorClass(s.score);
+    const youMarker = (s.name === myName) ? '<span class="you-marker">YOU</span>' : '';
+    const cappedTag = s.capped ? '<span class="capped-tag">CAPPED</span>' : '';
+    const rankCls = rank <= 3 ? 'rank top' : 'rank';
+    const youCls = (s.name === myName) ? ' you' : '';
+    const ho = s.isHO ? 'HO' : 'Site';
+    html += `
+      <div class="perf-row${youCls}">
+        <div class="${rankCls}">${String(rank).padStart(2, '0')}</div>
+        <div>
+          <div class="name">${escapeHTML(s.name)}${youMarker}${cappedTag}</div>
+          <div class="meta-line">${s.completedTasks} done · ${s.openTasks} open · ${s.overdueTasks} OD · ${s.critOverdue7d} crit&gt;7d · ${ho}</div>
+        </div>
+        <div class="score ${cls}">${fmtScore(s.score)}</div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  return html;
 }
 
 /* ============================================================
@@ -3664,11 +5849,19 @@ function refreshSnapshotList() {
 let longPressTimer = null;
 
 function enterBulkMode(initialTaskId) {
-  if (!canBulkActions()) { toast('Only admin can use bulk operations'); return; }
+  if (!canBulkShare()) { toast('Only HO team members can use bulk select'); return; }
   state.bulkMode = true;
   state.selectedIds = new Set();
   if (initialTaskId) state.selectedIds.add(initialTaskId);
   document.body.classList.add('bulk-mode');
+  // Hide admin-only bulk actions for non-admin HO operators
+  const isAdminUser = isAdmin();
+  document.getElementById('bulkDoneBtn').style.display = isAdminUser ? '' : 'none';
+  document.getElementById('bulkReassignBtn').style.display = isAdminUser ? '' : 'none';
+  document.getElementById('bulkShiftBtn').style.display = isAdminUser ? '' : 'none';
+  document.getElementById('bulkDeleteBtn').style.display = isAdminUser ? '' : 'none';
+  // Share button visible to all who can enter bulk mode
+  document.getElementById('bulkShareBtn').style.display = '';
   updateBulkBar();
   rerender();
 }
@@ -3695,6 +5888,20 @@ function toggleSelection(taskId) {
 function updateBulkBar() {
   document.getElementById('bulkCountNum').textContent = state.selectedIds.size;
   document.getElementById('bulkBar').classList.add('show');
+}
+
+function bulkShare() {
+  const ids = Array.from(state.selectedIds);
+  if (ids.length === 0) { toast('No tasks selected'); return; }
+  const tasks = ids.map(id => state.tasks.find(x => x.id === id)).filter(Boolean);
+  if (tasks.length === 0) return;
+  const label = `Selected tasks · ${tasks.length}`;
+  // Phase 4 — ask user whether to send as reminder or task-list export
+  const message = pickShareFormatAndBuild(tasks, label);
+  if (!message) return;
+  shareToWhatsApp(message);
+  // Stay in bulk mode so user can re-share or continue; just toast acknowledgement
+  toast(`Shared ${tasks.length} task${tasks.length !== 1 ? 's' : ''}`);
 }
 
 async function bulkMarkDone() {
@@ -3768,21 +5975,61 @@ async function bulkShift() {
   const shifts = { '1': 1, '2': 3, '3': 7, '4': 14, '5': 30, '6': -1, '7': -7 };
   const days = shifts[choice];
   if (days === undefined) { toast('Invalid choice'); return; }
+  
+  // Phase 4 — Forward shifts are postponements. Require a single shared reason.
+  let postponeReason = null;
+  if (days > 0) {
+    const reason = window.prompt(
+      `Bulk postponement: shifting ${state.selectedIds.size} task${state.selectedIds.size !== 1 ? 's' : ''} forward by ${days}d\n\nWhy are these being postponed? (Applied to all selected tasks. Min 5 chars.)\n\nExamples:\n• Site rain delay across multiple activities\n• Department holiday week\n• Vendor batch delivery delayed`,
+      ''
+    );
+    if (reason === null) { toast('Bulk shift cancelled'); return; }
+    postponeReason = reason.trim();
+    if (postponeReason.length < 5) {
+      toast('Reason required (min 5 characters). Bulk shift cancelled.');
+      return;
+    }
+  }
+  
+  const now = new Date().toISOString();
+  const who = currentUser?.displayName || 'admin';
   const updates = [];
   state.tasks.forEach(t => {
     if (state.selectedIds.has(t.id) && t.due) {
-      const d = new Date(t.due);
+      const oldDue = t.due;
+      const d = new Date(oldDue);
       d.setDate(d.getDate() + days);
       const newDue = d.toISOString().slice(0, 10);
       t.due = newDue;
-      updates.push({ id: t.id, due: newDue });
+      
+      const patch = { due: newDue };
+      
+      // Phase 4 — append postponement record if this was a forward shift
+      if (days > 0 && postponeReason) {
+        const record = {
+          from: oldDue,
+          to: newDue,
+          reason: postponeReason,
+          by: who,
+          at: now,
+          via: 'bulk_shift'
+        };
+        t.postponements = [...(t.postponements || []), record];
+        patch.postponements = t.postponements;
+        if (!t.originalDue) {
+          t.originalDue = oldDue;
+          patch.originalDue = oldDue;
+        }
+      }
+      
+      updates.push({ id: t.id, patch });
     }
   });
   saveCache();
   exitBulkMode();
   try {
-    await Promise.all(updates.map(u => fsWriteTask(u.id, { due: u.due })));
-    await writeAuditLog('bulk_shift_date', { count: updates.length, days });
+    await Promise.all(updates.map(u => fsWriteTask(u.id, u.patch)));
+    await writeAuditLog('bulk_shift_date', { count: updates.length, days, reason: postponeReason || null });
     toast(`Shifted ${updates.length} task${updates.length !== 1 ? 's' : ''} by ${days > 0 ? '+' : ''}${days}d`);
   } catch (e) { console.warn(e); }
 }
@@ -3811,11 +6058,54 @@ document.getElementById('bulkDoneBtn').onclick = bulkMarkDone;
 document.getElementById('bulkDeleteBtn').onclick = bulkDelete;
 document.getElementById('bulkReassignBtn').onclick = bulkReassign;
 document.getElementById('bulkShiftBtn').onclick = bulkShift;
+document.getElementById('bulkShareBtn').onclick = bulkShare;
 
 
 document.getElementById('shareDigest').onclick = () => shareToWhatsApp(buildDailyDigest());
 document.getElementById('shareFiltered').onclick = () => shareToWhatsApp(buildFilteredListMessage());
 document.getElementById('shareProjectSummary').onclick = () => shareToWhatsApp(buildProjectSummary(state.currentProjectId));
+
+// Phase 3 — share buttons for new sections
+document.getElementById('shareBucketBtn').onclick = () => {
+  // Whichever bucket is currently active on the dashboard
+  const open = state.tasks.filter(isOpen);
+  const buckets = {
+    overdue: open.filter(t => t.due && daysUntil(t.due) < 0),
+    today:   open.filter(t => t.due && daysUntil(t.due) === 0),
+    '3d':    open.filter(t => t.due && daysUntil(t.due) >= 1 && daysUntil(t.due) <= 3),
+    '7d':    open.filter(t => t.due && daysUntil(t.due) >= 1 && daysUntil(t.due) <= 7),
+    '30d':   open.filter(t => t.due && daysUntil(t.due) >= 1 && daysUntil(t.due) <= 30)
+  };
+  const labels = { overdue: 'Overdue', today: 'Due today', '3d': 'Due in 3 days', '7d': 'Due in 7 days', '30d': 'Due in 30 days' };
+  const tasks = buckets[currentBucket] || [];
+  if (tasks.length === 0) { toast(`Nothing to share in "${labels[currentBucket]}"`); return; }
+  // Phase 4 — picker (reminder vs export)
+  const message = pickShareFormatAndBuild(tasks, labels[currentBucket]);
+  if (!message) return;
+  shareToWhatsApp(message);
+};
+
+document.getElementById('shareSearchBtn').onclick = () => {
+  const q = (state.searchQuery || '').trim().toLowerCase();
+  if (!q) { toast('Type a search first'); return; }
+  const matches = state.tasks.filter(t =>
+    (t.title || '').toLowerCase().includes(q) ||
+    (t.assignee || '').toLowerCase().includes(q) ||
+    (t.section || '').toLowerCase().includes(q) ||
+    (t.notes || '').toLowerCase().includes(q) ||
+    (getProject(t.projectId)?.name || '').toLowerCase().includes(q)
+  );
+  if (matches.length === 0) { toast('No matches to share'); return; }
+  shareToWhatsApp(buildTasksMessage(matches, `Search: ${state.searchQuery}`));
+};
+
+document.getElementById('shareReadyQueueBtn').onclick = () => {
+  if (!isAdmin()) { toast('Admin-only'); return; }
+  const ready = state.tasks.filter(t => t.readyAt && t.status !== 'done');
+  if (ready.length === 0) { toast('Ready Queue is empty'); return; }
+  shareToWhatsApp(buildTasksMessage(ready, '🟡 Ready for Closure'));
+};
+
 document.getElementById('shareTask').onclick = () => {
   if (!state.editingId) return;
   const t = state.tasks.find(x => x.id === state.editingId);
