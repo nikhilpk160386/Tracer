@@ -3239,7 +3239,136 @@ function renderReadyQueue() {
   ready.sort((a, b) => (a.readyAt || '').localeCompare(b.readyAt || ''));
   
   list.innerHTML = '';
-  ready.forEach(t => list.appendChild(taskCard(t, { showProject: true })));
+  ready.forEach(t => {
+    const proj = getProject(t.projectId);
+    const latest = latestComment(t);
+    const row = document.createElement('div');
+    row.className = 'postpone-row'; // Reuse postpone-row styling for consistency
+    row.innerHTML = `
+      <div class="postpone-row-head">
+        <div class="postpone-row-title">${escapeHTML(t.title)}</div>
+        <div class="postpone-row-meta">
+          ${proj ? `<span class="tag" style="opacity:0.7;">${escapeHTML(proj.name)}</span>` : ''}
+          ${t.assignee ? `<span class="tag">${escapeHTML(t.assignee)}</span>` : ''}
+          ${t.due ? `<span class="tag">due ${escapeHTML(fmtDue(t.due))}</span>` : ''}
+        </div>
+      </div>
+      <div class="postpone-row-body">
+        ${latest ? `<div class="postpone-reason">"${escapeHTML(latest.text.slice(0, 220))}${latest.text.length > 220 ? '…' : ''}"</div>` : '<div class="postpone-reason" style="opacity:0.6;font-style:italic;">(no comments)</div>'}
+        <div class="postpone-meta-line">Signalled by ${escapeHTML(t.readyBy || 'someone')} · ${timeAgo(t.readyAt)}</div>
+      </div>
+      <div class="postpone-row-actions">
+        <button class="btn primary ready-close" data-task-id="${t.id}">Close task</button>
+        <button class="btn ready-reject" data-task-id="${t.id}">Reject</button>
+        <button class="btn ready-open" data-task-id="${t.id}" style="opacity:0.7;">Open task</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  
+  // Wire buttons
+  list.querySelectorAll('.ready-close').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      closeReadyTask(btn.dataset.taskId);
+    };
+  });
+  list.querySelectorAll('.ready-reject').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      rejectReadySignal(btn.dataset.taskId);
+    };
+  });
+  list.querySelectorAll('.ready-open').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const t = state.tasks.find(x => x.id === btn.dataset.taskId);
+      if (t) openTaskModal(t);
+    };
+  });
+}
+
+/* Admin closes a Ready-signalled task — sets status to done */
+async function closeReadyTask(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  if (!isAdmin()) { toast('Only admin can close'); return; }
+  
+  if (!confirm(`Close this task as Done?\n\n${t.title}\n\nSignalled ready by ${t.readyBy} · ${timeAgo(t.readyAt)}`)) return;
+  
+  const oldStatus = t.status;
+  t.status = 'done';
+  t.completedAt = new Date().toISOString();
+  // Ready signal cleared on close
+  t.readyAt = null;
+  t.readyBy = null;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, {
+      status: 'done',
+      completedAt: t.completedAt,
+      readyAt: null,
+      readyBy: null
+    });
+    await writeAuditLog('task_status', {
+      taskId: t.id, taskTitle: t.title,
+      changes: [{ field: 'status', from: oldStatus, to: 'done' }]
+    });
+    toast('✓ Task closed');
+    rerender();
+  } catch (e) {
+    // Rollback
+    t.status = oldStatus;
+    t.completedAt = null;
+    saveCache();
+    toast('Sync failed — try again');
+  }
+}
+
+/* Admin rejects a Ready signal — clears it AND auto-posts a comment with reason */
+async function rejectReadySignal(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t || !t.readyAt) return;
+  if (!isAdmin()) { toast('Only admin can reject'); return; }
+  
+  const signaller = t.readyBy || 'operator';
+  const reason = window.prompt(
+    `Reject Ready signal?\n\n${t.title}\nSignalled by: ${signaller}\n\nReason (required, min 10 chars — visible to ${signaller} as a comment):\n\nExamples:\n• Notes incomplete — need vendor PO ref\n• Pending CEO approval, not yet ready\n• Wrong project — re-check section`,
+    ''
+  );
+  if (reason === null) return;
+  const trimmed = reason.trim();
+  if (trimmed.length < 10) {
+    toast('Reason required (min 10 chars)');
+    return;
+  }
+  
+  const oldReadyAt = t.readyAt;
+  const oldReadyBy = t.readyBy;
+  t.readyAt = null;
+  t.readyBy = null;
+  saveCache();
+  
+  try {
+    await fsWriteTask(t.id, { readyAt: null, readyBy: null });
+    // Auto-post the rejection as a comment so the operator sees the feedback in the thread
+    await postComment(t.id, `🔴 Ready signal rejected: ${trimmed}`);
+    await writeAuditLog('ready_rejected', {
+      taskId: t.id, taskTitle: t.title,
+      rejecter: currentUser?.displayName || 'admin',
+      signaller: oldReadyBy,
+      changes: [{ field: 'reason', from: '', to: trimmed }]
+    });
+    toast('Ready signal rejected — operator notified via comment');
+    rerender();
+  } catch (e) {
+    // Rollback
+    t.readyAt = oldReadyAt;
+    t.readyBy = oldReadyBy;
+    saveCache();
+    toast('Sync failed — try again');
+  }
 }
 
 /* Phase 4 — Postponement Queue (admin-only)
@@ -3383,32 +3512,44 @@ async function approvePostponement(taskId) {
 async function rejectPostponement(taskId) {
   const t = state.tasks.find(x => x.id === taskId);
   if (!t || !t.pendingPostpone) return;
+  if (!isAdmin()) { toast('Only admin can reject'); return; }
   
-  const note = window.prompt(
-    `Reject postponement?\n\n${t.title}\nRequested by: ${t.pendingPostpone.requestedBy}\n\nReason for rejection (will be visible to the requester, optional):`,
+  const requester = t.pendingPostpone.requestedBy || 'operator';
+  const reason = window.prompt(
+    `Reject postponement request?\n\n${t.title}\nRequested by: ${requester}\nProposed new due: ${t.pendingPostpone.requestedDate}\nTheir reason: ${t.pendingPostpone.reason}\n\nYour rejection reason (required, min 10 chars — visible to ${requester} as a comment):\n\nExamples:\n• Push too long — try a 3-day extension instead\n• Critical task — explore parallel approval path\n• Dependency not actually a blocker, please proceed`,
     ''
   );
-  if (note === null) return;
+  if (reason === null) return;
+  const trimmed = reason.trim();
+  if (trimmed.length < 10) {
+    toast('Reason required (min 10 chars)');
+    return;
+  }
   
-  const rejectedRequest = { ...t.pendingPostpone, rejectedBy: currentUser?.displayName || 'admin', rejectedAt: new Date().toISOString(), rejectionNote: note.trim() || null };
-  
+  const rejectedRequest = { ...t.pendingPostpone };
   t.pendingPostpone = null;
   saveCache();
   
   try {
     await fsWriteTask(t.id, { pendingPostpone: null });
+    // Auto-post as comment so operator sees feedback in the thread
+    await postComment(t.id, `🔴 Postponement to ${rejectedRequest.requestedDate} rejected: ${trimmed}`);
     await writeAuditLog('postpone_rejected', {
       taskId: t.id,
       taskTitle: t.title,
       rejecter: currentUser?.displayName || 'admin',
+      requester: rejectedRequest.requestedBy,
       changes: [
         { field: 'requested_due', from: rejectedRequest.requestedDate, to: 'rejected' },
-        { field: 'note', from: '', to: note.trim() || '(no note)' }
+        { field: 'reason', from: '', to: trimmed }
       ]
     });
-    toast('Postponement rejected');
+    toast('Postponement rejected — operator notified via comment');
     rerender();
   } catch (e) {
+    // Rollback
+    t.pendingPostpone = rejectedRequest;
+    saveCache();
     toast('Sync failed — try again');
   }
 }
@@ -5883,6 +6024,14 @@ function humanAction(e) {
     case 'bulk_reassign':     return `Reassigned <strong>${e.count}</strong> tasks to <strong>${escapeHTML(e.newAssignee || 'Unassigned')}</strong>`;
     case 'bulk_shift_date':   return `Shifted <strong>${e.count}</strong> task due dates by <strong>${e.days > 0 ? '+' : ''}${e.days}d</strong>`;
     case 'template_apply':    return `Applied template <strong>${escapeHTML(e.templateName || '')}</strong> — added ${e.taskCount} tasks`;
+    case 'task_ready':        return `🟡 Signalled <strong>Ready for closure</strong> on ${target}`;
+    case 'task_ready_cancel': return `Cancelled Ready signal on ${target}`;
+    case 'ready_rejected':    return `🔴 Rejected Ready signal on ${target}${e.signaller ? ` (from ${escapeHTML(e.signaller)})` : ''}`;
+    case 'postpone_requested':return `📅 Requested postponement on ${target}`;
+    case 'postpone_approved': return `✓ Approved postponement on ${target}`;
+    case 'postpone_rejected': return `🔴 Rejected postponement on ${target}${e.requester ? ` (from ${escapeHTML(e.requester)})` : ''}`;
+    case 'comment_added':     return `💬 Commented on ${target}`;
+    case 'comment_deleted':   return `Deleted comment on ${target}`;
     default:                  return escapeHTML(e.action || 'Unknown action');
   }
 }
