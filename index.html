@@ -224,6 +224,158 @@
   .task-meta .stat-tag.ready { background: rgba(216,166,87,0.15); color: var(--accent); font-weight: 600; }
   .task-meta .stat-tag.postpone { background: rgba(95,164,247,0.14); color: var(--info); font-weight: 600; }
 
+  /* PHASE 5 — Comments thread */
+  .comments-section {
+    margin-top: 0.6rem;
+  }
+  .comments-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.55rem;
+  }
+  .comments-h .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .comments-h .count {
+    color: var(--accent);
+    font-weight: 600;
+    margin-left: 0.4rem;
+  }
+  .comments-h .latest {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+  }
+  .comments-h .latest .when { color: var(--ok); }
+  .comments-list {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.35rem 0.85rem;
+    margin-bottom: 0.6rem;
+  }
+  .comment {
+    padding: 0.65rem 0;
+    border-bottom: 1px dashed var(--line-soft);
+    position: relative;
+  }
+  .comment:last-of-type { border-bottom: none; padding-bottom: 0.3rem; }
+  .comment.newest {
+    margin: 0 -0.85rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+    background: rgba(216,166,87,0.04);
+    border-left: 2px solid var(--accent);
+  }
+  .comment.legacy {
+    opacity: 0.85;
+  }
+  .comment.legacy .comment-author { font-style: italic; }
+  .comment-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .comment-author {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+  .comment-when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+  }
+  .comment-delete {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 0.2rem 0.45rem;
+    margin-left: auto;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    min-height: 30px;
+  }
+  .comment-delete:hover { color: var(--crit); background: rgba(255,93,108,0.08); }
+  .comment-body {
+    font-size: 0.95rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+    white-space: pre-line;
+    word-wrap: break-word;
+  }
+  .compose-box {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.55rem 0.7rem;
+  }
+  .compose-box textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    resize: none;
+    outline: none;
+    min-height: 50px;
+    line-height: 1.5;
+  }
+  .compose-box textarea::placeholder { color: var(--ink-faint); }
+  .compose-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.4rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--line-soft);
+  }
+  .compose-foot .hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+  }
+  .compose-foot .hint strong { color: var(--accent); }
+  .compose-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 0.45rem 0.95rem;
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 36px;
+  }
+  .compose-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .comments-empty {
+    text-align: center;
+    padding: 0.85rem 0;
+    color: var(--ink-faint);
+    font-size: 0.88rem;
+    font-style: italic;
+  }
+  /* Comment indicator on task cards */
+  .task-meta .stat-tag.comments {
+    background: var(--bg-elev-2);
+    color: var(--ink-faint);
+  }
+  .task-meta .stat-tag.comments.fresh {
+    background: rgba(216,166,87,0.16);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
   /* PHASE 4 — Postponement queue rows */
   .postpone-row {
     background: var(--bg-elev-2);
@@ -907,6 +1059,23 @@
     padding: 0.7rem 0.85rem;
     margin-bottom: 0.55rem;
   }
+  .audit-entry.clickable {
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .audit-entry.clickable:hover,
+  .audit-entry.clickable:active {
+    border-color: var(--accent);
+    background: rgba(216,166,87,0.04);
+  }
+  .audit-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 0.4rem;
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+  }
   .audit-entry-head {
     display: flex;
     justify-content: space-between;
@@ -1382,11 +1551,11 @@
       <div class="field"><label>Project</label><select id="fProject"></select></div>
       <div class="field"><label>Section</label><input type="text" id="fSection" placeholder="e.g. Finance" autocomplete="off" /></div>
     </div>
-    <div class="field-row" data-admin-only="true">
+    <div class="field-row">
       <div class="field"><label>Assignee</label><select id="fAssignee"></select></div>
       <div class="field"><label>Due Date</label><input type="date" id="fDue" /></div>
     </div>
-    <div class="field" data-admin-only="true">
+    <div class="field">
       <label>Coordinator <span style="font-weight:400;color:var(--ink-faint);font-size:0.78rem;">(HO team member who tracks this in app)</span></label>
       <select id="fCoordinator">
         <option value="">— None —</option>
@@ -1401,10 +1570,10 @@
         <button data-s="done">Done</button>
       </div>
     </div>
-    <div class="field" data-admin-only="true">
+    <div class="field">
       <label>Priority</label>
       <div class="toggle-group" id="fPriority">
-        <button data-p="crit">Critical</button>
+        <button data-p="crit" data-admin-only="true">Critical</button>
         <button data-p="high">High</button>
         <button data-p="med">Medium</button>
         <button data-p="low">Low</button>
@@ -1423,7 +1592,21 @@
       </select>
       <div style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.3rem;">When you mark it done, due date advances instead of completing.</div>
     </div>
-    <div class="field"><label>Latest Update / Notes</label><textarea id="fNotes" placeholder="Last status update, blockers, context…"></textarea></div>
+    <!-- Phase 5 — Comments thread (replaces single Notes blob) -->
+    <div class="comments-section" id="commentsSection">
+      <div class="comments-h">
+        <div><span class="label">💬 Comments<span class="count" id="commentsCount"></span></span></div>
+        <div class="latest" id="commentsLatest"></div>
+      </div>
+      <div class="comments-list" id="commentsList"></div>
+      <div class="compose-box" id="composeBox">
+        <textarea id="commentInput" placeholder="Add a comment…" rows="2"></textarea>
+        <div class="compose-foot">
+          <div class="hint">posting as <strong id="composeAuthor">you</strong></div>
+          <button class="compose-btn" id="postCommentBtn" disabled>Post</button>
+        </div>
+      </div>
+    </div>
     
     <!-- Phase 3.1b — Ready for Closure section (HO operators only, non-done tasks) -->
     <div id="readyForClosureSection" style="display:none;border-top:1px solid var(--line);margin-top:0.8rem;padding-top:0.8rem;">
@@ -1588,7 +1771,7 @@
 
 const STORAGE_KEY = 'tracer.data.v2';
 const SEED_VERSION_KEY = 'tracer.seedVersion';
-const CURRENT_SEED_VERSION = '2026-05-16-phase4';
+const CURRENT_SEED_VERSION = '2026-05-17-phase5-comments';
 
 /* ============================================================
    FIREBASE CONFIGURATION
@@ -2145,6 +2328,22 @@ function migrateTasksForPhase3a() {
     // originalDue: the FIRST due date ever set on this task — used to compute "delta from original"
     // Captured lazily: first time a postpone is recorded, this gets set to what the due was BEFORE that move
     if (t.originalDue === undefined) t.originalDue = null;
+    
+    // Phase 5 — Conversation-style comments thread
+    // comments: array of { id, text, by, at } — append-only, each comment attributed and timestamped
+    if (t.comments === undefined) {
+      t.comments = [];
+      // Migrate existing notes blob to a single "legacy" comment so historical context isn't lost
+      if (t.notes && String(t.notes).trim().length > 0) {
+        t.comments.push({
+          id: 'legacy-' + (t.id || Math.random().toString(36).slice(2, 10)),
+          text: String(t.notes).trim(),
+          by: t.lastEditedBy || '(legacy notes)',
+          at: t.lastEditedAt || t.created || new Date().toISOString(),
+          legacy: true
+        });
+      }
+    }
   }
 }
 
@@ -2219,6 +2418,81 @@ async function deleteSnapshotFromFirestore(snapId) {
   if (!firestoreReady || !currentUser) return;
   try { await snapshotsColl().doc(snapId).delete(); }
   catch (e) { console.warn('Delete snapshot failed', e); }
+}
+
+/* ============================================================
+   PHASE 5 — COMMENTS
+   Append-only conversation thread on each task.
+   ============================================================ */
+
+function genCommentId() {
+  return 'c-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+}
+
+/* Add a comment to a task. Returns the new comment object on success, null on failure. */
+async function postComment(taskId, text) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return null;
+  const trimmed = String(text || '').trim();
+  if (trimmed.length === 0) return null;
+  if (trimmed.length > 2000) {
+    toast('Comment too long (max 2000 chars)');
+    return null;
+  }
+  const comment = {
+    id: genCommentId(),
+    text: trimmed,
+    by: currentUser?.displayName || 'someone',
+    at: new Date().toISOString()
+  };
+  t.comments = [...(t.comments || []), comment];
+  saveCache();
+  try {
+    await fsWriteTask(taskId, { comments: t.comments });
+    await writeAuditLog('comment_added', {
+      taskId, taskTitle: t.title, author: comment.by,
+      changes: [{ field: 'comment', from: '', to: trimmed.slice(0, 100) + (trimmed.length > 100 ? '…' : '') }]
+    });
+    return comment;
+  } catch (e) {
+    // Roll back local state on failure so we don't drift
+    t.comments = t.comments.filter(c => c.id !== comment.id);
+    saveCache();
+    return null;
+  }
+}
+
+/* Delete a comment. Author can delete own; admin can delete any. */
+async function deleteComment(taskId, commentId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t || !t.comments) return false;
+  const c = t.comments.find(x => x.id === commentId);
+  if (!c) return false;
+  const isAuthor = c.by === currentUser?.displayName;
+  if (!isAdmin() && !isAuthor) { toast('Only author or admin can delete'); return false; }
+  const remaining = t.comments.filter(x => x.id !== commentId);
+  const removed = c;
+  t.comments = remaining;
+  saveCache();
+  try {
+    await fsWriteTask(taskId, { comments: remaining });
+    await writeAuditLog('comment_deleted', {
+      taskId, taskTitle: t.title, deletedBy: currentUser?.displayName || 'someone',
+      changes: [{ field: 'comment', from: removed.text.slice(0, 100), to: '(deleted)' }]
+    });
+    return true;
+  } catch (e) {
+    // Restore on failure
+    t.comments = [...remaining, removed].sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+    saveCache();
+    return false;
+  }
+}
+
+/* Latest comment helper — returns {by, at, text} or null */
+function latestComment(task) {
+  if (!task.comments || task.comments.length === 0) return null;
+  return [...task.comments].sort((a, b) => (b.at || '').localeCompare(a.at || ''))[0];
 }
 
 /* ============================================================
@@ -2508,7 +2782,12 @@ function buildTaskMessage(t) {
   lines.push(`${prioEmoji(t.priority)} *${PRIO_LABELS[t.priority] || t.priority} priority*`);
   if (t.due) lines.push(`📅 Due ${fmtDue(t.due)} (${t.due})`);
   lines.push(`${statusEmoji(t.status)} ${STATUS_LABELS[t.status] || t.status}`);
-  if (t.notes) {
+  // Phase 5 — include latest comment as the "last update" line
+  const latest = latestComment(t);
+  if (latest) {
+    lines.push('');
+    lines.push(`💬 _${latest.by} · ${formatCommentDate(latest.at)}:_ ${latest.text}`);
+  } else if (t.notes) {
     lines.push('');
     lines.push(`💬 _Last update:_ ${t.notes}`);
   }
@@ -2584,8 +2863,12 @@ function buildTasksMessage(tasks, headerLabel) {
       if (t.due) meta.push(fmtDue(t.due));
       lines.push(`${prioEmoji(t.priority)} ${t.title}`);
       if (meta.length) lines.push(`   ${meta.join(' · ')}`);
-      // Include notes if present (truncated)
-      if (t.notes) {
+      // Phase 5 — Include latest comment if present (truncated)
+      const latest = latestComment(t);
+      if (latest && latest.text) {
+        const note = latest.text.length > 80 ? latest.text.substring(0, 80) + '…' : latest.text;
+        lines.push(`   💬 ${latest.by}: ${note}`);
+      } else if (t.notes) {
         const note = t.notes.length > 80 ? t.notes.substring(0, 80) + '…' : t.notes;
         lines.push(`   📝 ${note}`);
       }
@@ -3360,13 +3643,18 @@ function calcTimelinessMultiplier(task) {
 
 // Returns the effort multiplier based on notes content
 function calcEffortMultiplier(task) {
-  const notes = (task.notes || '').trim();
-  if (!notes) return 0.5;                                    // no notes
-  if (notes.length < 20) return 0.9;                          // brief
-  if (notes.length < 100) return 1.0;                          // substantive
-  // Detailed: >100 chars OR contains dates / amounts / refs
-  if (notes.length >= 100) return 1.2;
-  return 1.0;
+  // Phase 5 — combined length of all comments (legacy notes auto-converted to a comment too)
+  // Falls back to legacy notes blob for any task that somehow has notes but no comments
+  let text = '';
+  if (task.comments && task.comments.length > 0) {
+    text = task.comments.map(c => c.text || '').join(' ').trim();
+  } else if (task.notes) {
+    text = String(task.notes).trim();
+  }
+  if (!text) return 0.5;                                    // no comments
+  if (text.length < 20) return 0.9;                          // brief
+  if (text.length < 100) return 1.0;                         // substantive
+  return 1.2;                                                // detailed
 }
 
 // Calculate task score for a closed (done) task
@@ -3957,6 +4245,14 @@ function taskCard(t, opts = {}) {
   if (t.readyAt && t.status !== 'done') metaHTML += `<span class="stat-tag ready">🟡 READY</span>`;
   // Phase 4 — Postpone requested badge
   if (t.pendingPostpone && t.status !== 'done') metaHTML += `<span class="stat-tag postpone">📅 POSTPONE REQ</span>`;
+  // Phase 5 — Comments indicator (count + recency of latest if any)
+  if (t.comments && t.comments.length > 0) {
+    const latest = latestComment(t);
+    const isFresh = latest && latest.at && (Date.now() - new Date(latest.at).getTime() < 24 * 60 * 60 * 1000);
+    const freshClass = isFresh ? ' fresh' : '';
+    const recency = latest && latest.at ? ' · ' + timeAgo(latest.at).replace(' ago', '') : '';
+    metaHTML += `<span class="stat-tag comments${freshClass}">💬 ${t.comments.length}${recency}</span>`;
+  }
   if (t.recurrence) metaHTML += `<span class="tag" style="opacity:0.7;">🔁 ${escapeHTML(recurrenceLabel(t.recurrence))}</span>`;
   if (t.assignee) metaHTML += `<span class="tag">${escapeHTML(t.assignee)}</span>`;
   // Phase 3.1a — show coordinator tag only when distinct from assignee (avoids visual noise)
@@ -3971,14 +4267,22 @@ function taskCard(t, opts = {}) {
   body.appendChild(title);
   body.appendChild(meta);
 
-  // Update note
-  if (t.notes && t.status !== 'done') {
+  // Phase 5 — show latest comment as the inline preview on task card
+  const latest = latestComment(t);
+  if (latest && t.status !== 'done') {
     const upd = document.createElement('div');
     upd.className = 'task-update';
     let updHTML = '';
-    if (t.updateDate) updHTML += `<span class="upd-date">${escapeHTML(t.updateDate)}</span>`;
-    updHTML += escapeHTML(t.notes);
+    updHTML += `<span class="upd-date">${escapeHTML(latest.by || 'someone')}:</span> `;
+    const text = latest.text.length > 140 ? latest.text.slice(0, 140) + '…' : latest.text;
+    updHTML += escapeHTML(text);
     upd.innerHTML = updHTML;
+    body.appendChild(upd);
+  } else if (t.notes && t.status !== 'done' && (!t.comments || t.comments.length === 0)) {
+    // Backward compat: show notes if no comments (shouldn't happen after migration but safe)
+    const upd = document.createElement('div');
+    upd.className = 'task-update';
+    upd.textContent = t.notes.length > 140 ? t.notes.slice(0, 140) + '…' : t.notes;
     body.appendChild(upd);
   }
 
@@ -4396,6 +4700,7 @@ function renderSearch() {
     (t.assignee || '').toLowerCase().includes(q) ||
     (t.section || '').toLowerCase().includes(q) ||
     (t.notes || '').toLowerCase().includes(q) ||
+    (t.comments || []).some(c => (c.text || '').toLowerCase().includes(q)) ||
     (getProject(t.projectId)?.name || '').toLowerCase().includes(q)
   );
   document.getElementById('searchCount').textContent = `${matches.length} match${matches.length !== 1 ? 'es' : ''}`;
@@ -4451,7 +4756,6 @@ function openTaskModal(task = null) {
     fA.value = task.assignee || '';
     if (fC) fC.value = task.coordinator || '';
     document.getElementById('fDue').value = task.due || '';
-    document.getElementById('fNotes').value = task.notes || '';
     document.getElementById('fRecurrence').value = task.recurrence ? recurrenceToKey(task.recurrence) : '';
     selectedPriority = task.priority || 'med';
     selectedStatus = task.status || 'todo';
@@ -4462,11 +4766,13 @@ function openTaskModal(task = null) {
     fA.value = '';
     if (fC) fC.value = '';
     document.getElementById('fDue').value = '';
-    document.getElementById('fNotes').value = '';
     document.getElementById('fRecurrence').value = '';
     selectedPriority = 'med';
     selectedStatus = 'todo';
   }
+  
+  // Phase 5 — render the comments thread for this task
+  renderCommentsInModal(task);
 
   document.querySelectorAll('#fPriority button').forEach(b => b.classList.toggle('active', b.dataset.p === selectedPriority));
   document.querySelectorAll('#fStatus button').forEach(b => b.classList.toggle('active', b.dataset.s === selectedStatus));
@@ -4618,6 +4924,103 @@ function updatePostponeHistoryUI(task) {
   list.innerHTML = html;
 }
 
+/* Phase 5 — Render the comments thread inside the task modal */
+function renderCommentsInModal(task) {
+  const list = document.getElementById('commentsList');
+  const countEl = document.getElementById('commentsCount');
+  const latestEl = document.getElementById('commentsLatest');
+  const composeAuthor = document.getElementById('composeAuthor');
+  const input = document.getElementById('commentInput');
+  const postBtn = document.getElementById('postCommentBtn');
+  if (!list) return;
+  
+  // Author display in compose box
+  if (composeAuthor) composeAuthor.textContent = currentUser?.displayName || 'you';
+  
+  // Clear input
+  if (input) input.value = '';
+  if (postBtn) postBtn.disabled = true;
+  
+  // For NEW tasks (no task object yet) — show empty state with compose only
+  if (!task) {
+    list.innerHTML = '<div class="comments-empty">Add the first comment when this task is created.</div>';
+    countEl.textContent = '';
+    latestEl.textContent = '';
+    return;
+  }
+  
+  const comments = task.comments || [];
+  countEl.textContent = comments.length > 0 ? comments.length : '';
+  
+  if (comments.length === 0) {
+    list.innerHTML = '<div class="comments-empty">No comments yet. Be the first to add a note.</div>';
+    latestEl.textContent = '';
+    return;
+  }
+  
+  // Sort newest-first, mark the newest one
+  const sorted = [...comments].sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+  const newest = sorted[0];
+  latestEl.innerHTML = `latest <span class="when">${escapeHTML(timeAgo(newest.at))}</span>`;
+  
+  // Render comments (newest first)
+  let html = '';
+  sorted.forEach((c, idx) => {
+    const isNewest = idx === 0 && sorted.length > 1;
+    const isLegacy = c.legacy === true;
+    const canDelete = isAdmin() || c.by === currentUser?.displayName;
+    const classes = ['comment'];
+    if (isNewest) classes.push('newest');
+    if (isLegacy) classes.push('legacy');
+    
+    html += `
+      <div class="${classes.join(' ')}">
+        <div class="comment-head">
+          <span class="comment-author">${escapeHTML(c.by || 'someone')}${isLegacy ? ' (legacy)' : ''}</span>
+          <span class="comment-when">${escapeHTML(formatCommentDate(c.at))}</span>
+          ${canDelete ? `<button class="comment-delete" data-comment-id="${escapeHTML(c.id)}" aria-label="Delete">×</button>` : ''}
+        </div>
+        <div class="comment-body">${escapeHTML(c.text || '')}</div>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
+  
+  // Wire delete buttons
+  list.querySelectorAll('.comment-delete').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const cid = btn.dataset.commentId;
+      if (!confirm('Delete this comment?')) return;
+      const ok = await deleteComment(task.id, cid);
+      if (ok) {
+        toast('Comment deleted');
+        renderCommentsInModal(task);
+        rerender();
+      } else {
+        toast('Could not delete — try again');
+      }
+    };
+  });
+}
+
+/* Format comment date: "today · 11:30" or "14 May · 11:30" */
+function formatCommentDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  const isYesterday = d.toDateString() === yesterday.toDateString();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  if (sameDay) return `today · ${hh}:${mm}`;
+  if (isYesterday) return `yesterday · ${hh}:${mm}`;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d.getDate()} ${months[d.getMonth()]} · ${hh}:${mm}`;
+}
+
 function closeModal() { modal.classList.remove('show'); state.editingId = null; }
 
 document.querySelectorAll('#fPriority button').forEach(b => {
@@ -4635,6 +5038,39 @@ document.querySelectorAll('#fStatus button').forEach(b => {
 
 document.getElementById('addBtn').onclick = () => openTaskModal();
 document.getElementById('modalClose').onclick = closeModal;
+
+// Phase 5 — Comment compose box wiring
+(function() {
+  const input = document.getElementById('commentInput');
+  const btn = document.getElementById('postCommentBtn');
+  if (!input || !btn) return;
+  
+  input.addEventListener('input', () => {
+    btn.disabled = input.value.trim().length === 0;
+  });
+  
+  btn.onclick = async () => {
+    const text = input.value.trim();
+    if (!text) return;
+    const taskId = state.editingId;
+    if (!taskId) {
+      // New task — comment will be posted after the task is created via save
+      toast('Save the task first, then your comment will post');
+      return;
+    }
+    btn.disabled = true;
+    const comment = await postComment(taskId, text);
+    if (comment) {
+      input.value = '';
+      const t = state.tasks.find(x => x.id === taskId);
+      renderCommentsInModal(t);
+      rerender();
+    } else {
+      toast('Could not post comment — try again');
+      btn.disabled = false;
+    }
+  };
+})();
 document.getElementById('btnCancel').onclick = closeModal;
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
@@ -4644,18 +5080,21 @@ document.getElementById('btnMarkReady').onclick = async () => {
   if (!t) return;
   if (t.status === 'done') { toast('Already done'); return; }
   
-  // Soft warning if no notes — let user proceed with reduced points
-  const currentNotes = document.getElementById('fNotes').value.trim();
-  if (!currentNotes) {
-    const proceed = confirm('No notes on this task yet.\n\nMarking ready without notes earns only 50% of potential points.\n\nContinue anyway?');
+  // Phase 5 — check if there are any comments. Soft-warn if none.
+  const hasComments = t.comments && t.comments.length > 0;
+  // Also auto-post any pending unsent text in the compose box
+  const composeInput = document.getElementById('commentInput');
+  const pendingText = composeInput ? composeInput.value.trim() : '';
+  
+  if (!hasComments && pendingText.length === 0) {
+    const proceed = confirm('No comments on this task yet.\n\nMarking ready without an update comment earns only 50% of potential points.\n\nContinue anyway?');
     if (!proceed) return;
   }
   
-  // Save any unsaved notes first
-  const newNotes = currentNotes || null;
-  if (newNotes !== (t.notes || null)) {
-    t.notes = newNotes;
-    try { await fsWriteTask(t.id, { notes: newNotes }); } catch (e) { console.warn('Notes save failed', e); }
+  // If there's text in the compose box, post it first as a "ready for closure" comment
+  if (pendingText.length > 0) {
+    await postComment(t.id, pendingText);
+    if (composeInput) composeInput.value = '';
   }
   
   // Apply Ready signal
@@ -4852,6 +5291,11 @@ document.getElementById('fAssignee').addEventListener('change', async (e) => {
 document.getElementById('btnSave').onclick = async () => {
   const title = document.getElementById('fTitle').value.trim();
   if (!title) { toast('Task title is required'); return; }
+  // Phase 5 — note: 'notes' field removed; comments thread is separate, posted via postComment().
+  // We do auto-post any pending compose-box text on save so user doesn't lose their typed comment.
+  const composeInput = document.getElementById('commentInput');
+  const pendingComment = composeInput ? composeInput.value.trim() : '';
+  
   const data = {
     title,
     projectId: document.getElementById('fProject').value,
@@ -4861,7 +5305,6 @@ document.getElementById('btnSave').onclick = async () => {
     due: document.getElementById('fDue').value || null,
     priority: selectedPriority,
     status: selectedStatus,
-    notes: document.getElementById('fNotes').value.trim() || null,
     recurrence: keyToRecurrence(document.getElementById('fRecurrence').value)
   };
 
@@ -4929,11 +5372,10 @@ document.getElementById('btnSave').onclick = async () => {
         toast(`Only admin can change ${blocked.join(', ')}`);
         return;
       }
-      // Allowed for operators
+      // Allowed for operators on edit: title, section only (comments are independent)
       allowedPatch = {
         title: data.title,
-        section: data.section,
-        notes: data.notes
+        section: data.section
       };
     }
 
@@ -4968,6 +5410,10 @@ document.getElementById('btnSave').onclick = async () => {
           changes
         });
       }
+      // Phase 5 — also post the pending comment if user typed one in compose box
+      if (pendingComment.length > 0) {
+        await postComment(t.id, pendingComment);
+      }
       toast('Task updated');
     } catch (e) {
       toast('Update failed — check connection');
@@ -4993,25 +5439,29 @@ document.getElementById('btnSave').onclick = async () => {
       coordBonus: null
     };
 
-    // Phase 3.1a — Coordinator assignment per locked design:
-    // Operators set their own name as coordinator when creating tasks
-    // Admin can pick anyone (data.coordinator from form) or smart-default
+    // Phase 5 — Coordinator assignment:
+    // Operators can now pick coordinator (defaults to themselves if not picked).
+    // Admin can pick anyone, or smart-default from assignee.
     if (!isAdmin()) {
-      // Operator creating task — they're the coordinator
-      newTask.coordinator = currentUser?.displayName || null;
+      // Operator: use picked coordinator if provided, else default to self
+      newTask.coordinator = data.coordinator || currentUser?.displayName || null;
     } else {
-      // Admin — use explicit pick from form, or smart-default from assignee
+      // Admin: use explicit pick, or smart-default from assignee
       newTask.coordinator = data.coordinator || smartDefaultCoordinator(data.assignee);
     }
 
-    // Operator restriction: force defaults on create — status=todo, no due date, no assignee, med priority, no recurrence
+    // Phase 5 — Operator restrictions on CREATE are now narrowly scoped:
+    // - Status forced to 'todo' (operators can't create pre-completed tasks)
+    // - Critical priority blocked (operators can pick low/med/high)
+    // - Recurrence blocked (recurring tasks remain admin-controlled)
+    // - completedAt forced to null
+    // Allowed for operators: title, section, assignee, coordinator, due date, priority (≤high)
     if (!isAdmin()) {
       newTask.status = 'todo';
-      newTask.priority = 'med';
-      newTask.due = null;
-      newTask.assignee = null;
-      newTask.recurrence = null;
       newTask.completedAt = null;
+      newTask.recurrence = null;
+      // Demote Critical to High if operator selected it
+      if (newTask.priority === 'crit') newTask.priority = 'high';
     }
     state.tasks.push(newTask);
     saveCache();
@@ -5025,6 +5475,10 @@ document.getElementById('btnSave').onclick = async () => {
         taskTitle: newTask.title,
         projectId: newTask.projectId
       });
+      // Phase 5 — post the pending comment if user typed one
+      if (pendingComment.length > 0) {
+        await postComment(newTask.id, pendingComment);
+      }
       toast('Task added');
     } catch (e) {
       toast('Create failed — check connection');
@@ -5367,6 +5821,16 @@ function renderActivity() {
     });
   });
   list.innerHTML = html.join('');
+  
+  // Phase 5 — wire clicks: tapping an entry routes to that task
+  list.querySelectorAll('.audit-entry.clickable').forEach(el => {
+    el.onclick = () => {
+      const tid = el.dataset.auditTaskId;
+      const t = state.tasks.find(x => x.id === tid);
+      if (t) openTaskModal(t);
+      else toast('Task no longer exists');
+    };
+  });
 }
 
 function renderAuditEntry(e) {
@@ -5383,14 +5847,19 @@ function renderAuditEntry(e) {
       return `<div>${field} ${from}${arrow}${to}</div>`;
     }).join('') + '</div>';
   }
+  // Phase 5 — make entries clickable when they reference a task that still exists
+  const taskExists = e.taskId && state.tasks.some(t => t.id === e.taskId);
+  const clickableAttr = taskExists ? ` data-audit-task-id="${escapeHTML(e.taskId)}" role="button" tabindex="0"` : '';
+  const clickableClass = taskExists ? ' clickable' : '';
   return `
-    <div class="audit-entry">
+    <div class="audit-entry${clickableClass}"${clickableAttr}>
       <div class="audit-entry-head">
         <span class="audit-actor">${actor}</span>
         <span class="audit-time">${escapeHTML(time)}</span>
       </div>
       <div class="audit-action">${actionLabel}</div>
       ${changesHTML}
+      ${taskExists ? '<div class="audit-cta">Tap to open task →</div>' : ''}
     </div>
   `;
 }
@@ -6093,6 +6562,7 @@ document.getElementById('shareSearchBtn').onclick = () => {
     (t.assignee || '').toLowerCase().includes(q) ||
     (t.section || '').toLowerCase().includes(q) ||
     (t.notes || '').toLowerCase().includes(q) ||
+    (t.comments || []).some(c => (c.text || '').toLowerCase().includes(q)) ||
     (getProject(t.projectId)?.name || '').toLowerCase().includes(q)
   );
   if (matches.length === 0) { toast('No matches to share'); return; }
@@ -6124,7 +6594,10 @@ document.getElementById('remindTask').onclick = () => {
   if (t.section) notesParts.push(`Section: ${t.section}`);
   if (t.assignee) notesParts.push(`Assignee: ${t.assignee}`);
   if (t.priority) notesParts.push(`Priority: ${PRIO_LABELS[t.priority] || t.priority}`);
-  if (t.notes) notesParts.push(`\n${t.notes}`);
+  // Phase 5 — include latest comment (or legacy notes if no comments)
+  const latest = latestComment(t);
+  if (latest) notesParts.push(`\n${latest.by}: ${latest.text}`);
+  else if (t.notes) notesParts.push(`\n${t.notes}`);
   sendToReminders(t.title, t.due, notesParts.join('\n'));
 };
 
