@@ -1570,6 +1570,10 @@
         <button data-s="done">Done</button>
       </div>
     </div>
+    <div class="field" id="completionInfoRow" style="display:none;">
+      <label>✓ Completed</label>
+      <div class="value" id="completionInfo" style="background:rgba(155,206,106,0.06);border-color:rgba(155,206,106,0.30);color:var(--ok);"></div>
+    </div>
     <div class="field">
       <label>Priority</label>
       <div class="toggle-group" id="fPriority">
@@ -2782,6 +2786,14 @@ function buildTaskMessage(t) {
   lines.push(`${prioEmoji(t.priority)} *${PRIO_LABELS[t.priority] || t.priority} priority*`);
   if (t.due) lines.push(`📅 Due ${fmtDue(t.due)} (${t.due})`);
   lines.push(`${statusEmoji(t.status)} ${STATUS_LABELS[t.status] || t.status}`);
+  // Show completion date for done tasks
+  if (t.status === 'done' && t.completedAt) {
+    const dt = new Date(t.completedAt);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dateStr = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()} · ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+    const closer = t.closedBy ? ` by ${t.closedBy}` : '';
+    lines.push(`✓ Completed ${dateStr}${closer}`);
+  }
   // Phase 5 — include latest comment as the "last update" line
   const latest = latestComment(t);
   if (latest) {
@@ -3297,8 +3309,10 @@ async function closeReadyTask(taskId) {
   if (!confirm(`Close this task as Done?\n\n${t.title}\n\nSignalled ready by ${t.readyBy} · ${timeAgo(t.readyAt)}`)) return;
   
   const oldStatus = t.status;
+  const closer = currentUser?.displayName || 'admin';
   t.status = 'done';
   t.completedAt = new Date().toISOString();
+  t.closedBy = closer;
   // Ready signal cleared on close
   t.readyAt = null;
   t.readyBy = null;
@@ -3308,6 +3322,7 @@ async function closeReadyTask(taskId) {
     await fsWriteTask(t.id, {
       status: 'done',
       completedAt: t.completedAt,
+      closedBy: closer,
       readyAt: null,
       readyBy: null
     });
@@ -4401,6 +4416,13 @@ function taskCard(t, opts = {}) {
     metaHTML += `<span class="tag" style="opacity:0.65;">⚙ ${escapeHTML(t.coordinator)}</span>`;
   }
   if (t.due) metaHTML += `<span class="due ${dc}">${dueLabel(t.due)}</span>`;
+  // Show completion date tag for done tasks
+  if (t.status === 'done' && t.completedAt) {
+    const dt = new Date(t.completedAt);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dateStr = `${dt.getDate()} ${months[dt.getMonth()]}`;
+    metaHTML += `<span class="stat-tag" style="background:rgba(155,206,106,0.10);color:var(--ok);font-weight:600;">✓ ${escapeHTML(dateStr)}</span>`;
+  }
   if (t.section && !opts.showProject) metaHTML += `<span class="tag" style="opacity:0.6;">${escapeHTML(t.section)}</span>`;
   if (opts.showProject && proj) metaHTML += `<span class="tag" style="opacity:0.7;">${escapeHTML(proj.name)}</span>`;
   meta.innerHTML = metaHTML;
@@ -4479,10 +4501,15 @@ async function cycleStatus(id) {
 
   // Normal task: todo -> wip -> done -> todo
   if (t.status === 'todo' || t.status === 'blocked') t.status = 'wip';
-  else if (t.status === 'wip') { t.status = 'done'; t.completedAt = new Date().toISOString(); }
+  else if (t.status === 'wip') { 
+    t.status = 'done'; 
+    t.completedAt = new Date().toISOString();
+    t.closedBy = currentUser?.displayName || 'someone';
+  }
   else if (t.status === 'done') { 
     t.status = 'todo'; 
     t.completedAt = null;
+    t.closedBy = null;
     // Phase 3.1b — clear Ready signal when reverting from done back to todo
     t.readyAt = null;
     t.readyBy = null;
@@ -4492,7 +4519,7 @@ async function cycleStatus(id) {
   toast(`Set to ${STATUS_LABELS[t.status]}`);
 
   try {
-    const patch = { status: t.status, completedAt: t.completedAt };
+    const patch = { status: t.status, completedAt: t.completedAt, closedBy: t.closedBy };
     // If we reverted from done → todo, include readyAt clearing in the Firestore write
     if (oldStatus === 'done' && t.status === 'todo') {
       patch.readyAt = null;
@@ -4917,6 +4944,21 @@ function openTaskModal(task = null) {
 
   document.querySelectorAll('#fPriority button').forEach(b => b.classList.toggle('active', b.dataset.p === selectedPriority));
   document.querySelectorAll('#fStatus button').forEach(b => b.classList.toggle('active', b.dataset.s === selectedStatus));
+
+  // Completion info: show for done tasks, with date + who closed it
+  const completionRow = document.getElementById('completionInfoRow');
+  const completionInfo = document.getElementById('completionInfo');
+  if (task && task.status === 'done' && task.completedAt) {
+    completionRow.style.display = '';
+    const dt = new Date(task.completedAt);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dateStr = `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()} · ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+    const closer = task.closedBy || task.lastEditedBy || 'someone';
+    const closerNote = closer !== task.assignee ? ` (closed by ${escapeHTML(closer)})` : '';
+    completionInfo.innerHTML = `${escapeHTML(dateStr)}${closerNote}`;
+  } else if (completionRow) {
+    completionRow.style.display = 'none';
+  }
 
   // Phase 3.1b — Show Ready for Closure section for HO operators on non-done tasks
   updateReadyForClosureUI(task);
@@ -5526,8 +5568,18 @@ document.getElementById('btnSave').onclick = async () => {
 
     // Apply locally
     Object.assign(t, allowedPatch);
-    if (allowedPatch.status === 'done' && !t.completedAt) t.completedAt = new Date().toISOString();
-    else if (allowedPatch.status && allowedPatch.status !== 'done') t.completedAt = null;
+    if (allowedPatch.status === 'done' && !t.completedAt) {
+      t.completedAt = new Date().toISOString();
+      t.closedBy = currentUser?.displayName || 'admin';
+      allowedPatch.completedAt = t.completedAt;
+      allowedPatch.closedBy = t.closedBy;
+    }
+    else if (allowedPatch.status && allowedPatch.status !== 'done') {
+      t.completedAt = null;
+      t.closedBy = null;
+      allowedPatch.completedAt = null;
+      allowedPatch.closedBy = null;
+    }
     
     // Phase 3.1b — if admin moves task back to todo/blocked, clear Ready signal (it no longer reflects reality)
     if (allowedPatch.status && allowedPatch.status !== 'done' && allowedPatch.status !== 'wip' && t.readyAt) {
@@ -6526,16 +6578,17 @@ async function bulkMarkDone() {
   if (!canEditStatus()) { toast('Only admin can mark done'); return; }
   const ids = Array.from(state.selectedIds);
   const completedAt = new Date().toISOString();
+  const closer = currentUser?.displayName || 'admin';
   ids.forEach(id => {
     const t = state.tasks.find(x => x.id === id);
-    if (t) { t.status = 'done'; t.completedAt = completedAt; }
+    if (t) { t.status = 'done'; t.completedAt = completedAt; t.closedBy = closer; }
   });
   saveCache();
   toast(`${ids.length} marked done`);
   exitBulkMode();
   // Firestore writes in parallel
   try {
-    await Promise.all(ids.map(id => fsWriteTask(id, { status: 'done', completedAt })));
+    await Promise.all(ids.map(id => fsWriteTask(id, { status: 'done', completedAt, closedBy: closer })));
     await writeAuditLog('bulk_mark_done', {
       count: ids.length,
       taskIds: ids
