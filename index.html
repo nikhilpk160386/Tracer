@@ -728,6 +728,32 @@
     color: var(--ink-faint);
     font-style: italic;
   }
+  .signin-info-line {
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    text-align: left;
+    margin: -0.4rem 0 0.9rem;
+    line-height: 1.4;
+  }
+  .signin-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.95rem;
+    align-items: center;
+  }
+  .signin-link {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0.1rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .signin-link:hover { color: var(--accent); }
   .signin-footer {
     margin-top: 2rem;
     font-size: 0.72rem;
@@ -738,6 +764,60 @@
     font-size: 0.85rem;
     margin-top: 1rem;
   }
+
+  /* MANAGE MEMBERS */
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.2rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .member-row:last-child { border-bottom: none; }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .member-sub {
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 0.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .role-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+  }
+  .role-pill.admin { color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent); }
+  .role-pill.operator { color: var(--ink-faint); background: var(--bg-elev-2); border: 1px solid var(--line-soft); }
+  .role-pill.you { color: var(--info); background: var(--info-soft); border: 1px solid var(--info); }
+  .member-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+  .member-act {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .member-act:hover { border-color: var(--accent); color: var(--ink); }
+  .member-act.danger:hover { border-color: var(--crit); color: var(--crit); }
 
   /* ROLE-BASED VISIBILITY */
   body.operator [data-admin-only="true"] { display: none !important; }
@@ -1369,21 +1449,28 @@
     <div class="signin-brand">TRACER<span>.</span></div>
     <div class="signin-tagline">Project command center for construction teams</div>
 
-    <!-- Step 1: Workspace code -->
-    <div class="signin-step" id="signinStep1">
-      <h2>Enter workspace code</h2>
-      <p>Ask the workspace admin for the code if you don't have it.</p>
-      <input type="text" id="signinCode" class="signin-input" placeholder="Workspace code" autocomplete="off" autocapitalize="off" autocorrect="off" />
-      <div class="signin-error" id="signinError"></div>
-      <button class="signin-btn" id="signinCodeBtn">Continue</button>
-    </div>
+    <!-- Email authentication -->
+    <div class="signin-step" id="signinStepAuth">
+      <h2 id="authHeading">Sign in</h2>
+      <p id="authSubhead">Use your work email and password.</p>
+      <input type="email" id="signinEmail" class="signin-input" placeholder="Email" autocomplete="email" autocapitalize="off" autocorrect="off" inputmode="email" />
+      <input type="password" id="signinPassword" class="signin-input" placeholder="Password" autocomplete="current-password" />
 
-    <!-- Step 2: Display name picker -->
-    <div class="signin-step" id="signinStep2" style="display:none;">
-      <h2>Who are you?</h2>
-      <p>Pick your name so teammates know who edited what.</p>
-      <div class="signin-namelist" id="signinNames"></div>
-      <div class="signin-error" id="signinError2"></div>
+      <!-- Register-only extras -->
+      <div id="registerExtra" style="display:none;">
+        <input type="password" id="signinPassword2" class="signin-input" placeholder="Confirm password" autocomplete="new-password" />
+        <select id="signinNameSelect" class="signin-input" style="appearance:auto;-webkit-appearance:menulist;"></select>
+        <input type="text" id="signinNameOther" class="signin-input" placeholder="Type your full name" autocomplete="name" style="display:none;" />
+        <input type="text" id="signinCode" class="signin-input" placeholder="Workspace code" autocomplete="off" autocapitalize="off" autocorrect="off" />
+        <div class="signin-info-line">Account creation needs the workspace code — ask the admin if you don't have it.</div>
+      </div>
+
+      <div class="signin-error" id="signinError"></div>
+      <button class="signin-btn" id="signinAuthBtn">Sign in</button>
+      <div class="signin-links">
+        <button type="button" class="signin-link" id="signinForgot">Forgot password?</button>
+        <button type="button" class="signin-link" id="signinToggle">Need an account? Create one</button>
+      </div>
     </div>
 
     <!-- Loading state -->
@@ -1392,7 +1479,7 @@
       <p>Syncing with workspace.</p>
     </div>
 
-    <div class="signin-footer">v2 · Firebase sync</div>
+    <div class="signin-footer">v3 · Email accounts</div>
   </div>
 </div>
 
@@ -1556,7 +1643,7 @@
       <div class="field"><label>Due Date</label><input type="date" id="fDue" /></div>
     </div>
     <div class="field">
-      <label>Coordinator <span style="font-weight:400;color:var(--ink-faint);font-size:0.78rem;">(HO team member who tracks this in app)</span></label>
+      <label>Coordinator <span style="font-weight:400;color:var(--ink-faint);font-size:0.78rem;">(team member who tracks this in app)</span></label>
       <select id="fCoordinator">
         <option value="">— None —</option>
       </select>
@@ -1744,7 +1831,15 @@
         <button class="btn" id="signoutBtn">Sign Out</button>
       </div>
       <div class="settings-info" style="margin-top:0.6rem;">
-        Signing out clears your identity from this device. You can sign back in with the workspace code anytime.
+        Signing out ends your session on this device. Sign back in anytime with your email and password.
+      </div>
+    </div>
+
+    <div class="settings-section" data-admin-only="true">
+      <h3>Manage Members</h3>
+      <div id="membersList"></div>
+      <div class="settings-info" style="margin-top:0.7rem;">
+        Promote a member to Admin to give full edit and approval rights. Demote to Operator for view-and-signal access. Remove revokes their role and hides them from the team — they can no longer act as admin. New members sign up with their email and the workspace code.
       </div>
     </div>
 
@@ -1854,6 +1949,7 @@ let unsubscribeProjects = null;
 let unsubscribeMeta = null;
 let unsubscribeSnapshots = null;
 let unsubscribeAudit = null;
+let unsubscribeMembers = null;
 let currentUser = null; // { displayName, signedInAt }
 let suppressLocalRender = false;
 
@@ -1892,126 +1988,214 @@ function setStoredAuth(auth) {
   else localStorage.removeItem(AUTH_KEY);
 }
 
+/* ============================================================
+   AUTH UI — email + password
+   ============================================================ */
+let authMode = 'login'; // 'login' | 'register'
+let listenersAttached = false;
+let pendingSignedIn = false; // guards onAuthStateChanged re-entrancy
+let pendingDisplayName = null; // chosen name during registration, used before auth profile updates propagate
+
 function showSigninScreen() {
+  pendingDisplayName = null;
   document.getElementById('signinOverlay').classList.add('show');
-  document.getElementById('signinStep1').style.display = '';
-  document.getElementById('signinStep2').style.display = 'none';
+  document.getElementById('signinStepAuth').style.display = '';
   document.getElementById('signinLoading').style.display = 'none';
-  document.getElementById('signinCode').value = '';
+  document.getElementById('signinPassword').value = '';
+  const p2 = document.getElementById('signinPassword2'); if (p2) p2.value = '';
   document.getElementById('signinError').textContent = '';
-  setTimeout(() => document.getElementById('signinCode').focus(), 100);
+  setAuthMode('login');
+  setTimeout(() => document.getElementById('signinEmail').focus(), 100);
 }
 
 function hideSigninScreen() {
   document.getElementById('signinOverlay').classList.remove('show');
 }
 
-async function showNamePicker() {
-  document.getElementById('signinStep1').style.display = 'none';
-  document.getElementById('signinStep2').style.display = '';
-  document.getElementById('signinLoading').style.display = 'none';
-  const list = document.getElementById('signinNames');
-  list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink-faint);font-size:0.85rem;">Loading team members…</div>';
-
-  // Fetch the workspace doc to get the latest teamMembers (the source of truth, not local cache)
-  let names = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
-  try {
-    if (firestoreReady && firebaseAuth.currentUser) {
-      const doc = await workspaceDoc().get();
-      const data = doc.data() || {};
-      if (data.teamMembers && data.teamMembers.length) {
-        names = data.teamMembers;
-        state.teamMembers = data.teamMembers; // sync into state for future use
-      }
-    }
-  } catch (e) {
-    console.warn('Could not fetch team members from Firebase, falling back to defaults', e);
-  }
-
-  list.innerHTML = '';
-  names.forEach(name => {
-    const btn = document.createElement('button');
-    btn.className = 'signin-name';
-    btn.textContent = name;
-    btn.onclick = () => pickDisplayName(name);
-    list.appendChild(btn);
-  });
-  // "Other (type my name)" option
-  const other = document.createElement('button');
-  other.className = 'signin-name other';
-  other.textContent = '+ Other (type my name)';
-  other.onclick = () => {
-    const typed = prompt('Type your full name:')?.trim();
-    if (typed && typed.length > 0) pickDisplayName(typed);
-  };
-  list.appendChild(other);
-}
-
 function showSigninLoading() {
-  document.getElementById('signinStep1').style.display = 'none';
-  document.getElementById('signinStep2').style.display = 'none';
+  document.getElementById('signinStepAuth').style.display = 'none';
   document.getElementById('signinLoading').style.display = '';
 }
 
-async function submitWorkspaceCode() {
-  const input = document.getElementById('signinCode');
-  const err = document.getElementById('signinError');
-  const code = (input.value || '').trim().toLowerCase();
-  if (!code) {
-    err.textContent = 'Please enter the workspace code.';
-    return;
+function setAuthMode(mode) {
+  authMode = mode;
+  const reg = mode === 'register';
+  document.getElementById('registerExtra').style.display = reg ? '' : 'none';
+  document.getElementById('authHeading').textContent = reg ? 'Create account' : 'Sign in';
+  document.getElementById('authSubhead').textContent = reg
+    ? 'Set up your account with your work email.'
+    : 'Use your work email and password.';
+  document.getElementById('signinAuthBtn').textContent = reg ? 'Create account' : 'Sign in';
+  document.getElementById('signinToggle').textContent = reg
+    ? 'Already have an account? Sign in'
+    : 'Need an account? Create one';
+  document.getElementById('signinForgot').style.display = reg ? 'none' : '';
+  document.getElementById('signinPassword').setAttribute('autocomplete', reg ? 'new-password' : 'current-password');
+  document.getElementById('signinError').textContent = '';
+  if (reg) populateNameSelect();
+}
+
+function toggleAuthMode() {
+  setAuthMode(authMode === 'login' ? 'register' : 'login');
+}
+
+function populateNameSelect() {
+  const sel = document.getElementById('signinNameSelect');
+  if (!sel) return;
+  const names = (state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES).slice();
+  sel.innerHTML = '';
+  const ph = document.createElement('option');
+  ph.value = ''; ph.textContent = 'Select your name…'; ph.disabled = true; ph.selected = true;
+  sel.appendChild(ph);
+  names.forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    sel.appendChild(o);
+  });
+  const other = document.createElement('option');
+  other.value = '__other__'; other.textContent = 'Other (type my name)…';
+  sel.appendChild(other);
+  sel.onchange = () => {
+    const o = document.getElementById('signinNameOther');
+    if (sel.value === '__other__') { o.style.display = ''; o.focus(); }
+    else { o.style.display = 'none'; }
+  };
+}
+
+function resolveChosenName() {
+  const sel = document.getElementById('signinNameSelect');
+  if (sel && sel.value === '__other__') {
+    return (document.getElementById('signinNameOther').value || '').trim();
   }
-  if (code !== WORKSPACE_CODE) {
-    err.textContent = 'Invalid workspace code. Ask the admin.';
-    input.value = '';
-    return;
-  }
-  err.textContent = '';
-  showSigninLoading();
-  try {
-    if (!firebaseAuth.currentUser) {
-      await firebaseAuth.signInAnonymously();
-    }
-    // Move to name picker after we know we have a Firebase identity
-    showNamePicker();
-  } catch (e) {
-    console.error('Anonymous sign-in failed', e);
-    err.textContent = 'Connection failed. Check internet and try again.';
-    document.getElementById('signinStep1').style.display = '';
-    document.getElementById('signinLoading').style.display = 'none';
+  return (sel && sel.value ? sel.value : '').trim();
+}
+
+function authErrorMessage(e) {
+  const code = e && e.code ? e.code : '';
+  switch (code) {
+    case 'auth/invalid-email': return 'That email address looks invalid.';
+    case 'auth/user-disabled': return 'This account has been disabled. Ask the admin.';
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential': return 'Wrong email or password.';
+    case 'auth/email-already-in-use': return 'An account already exists for this email. Try signing in.';
+    case 'auth/weak-password': return 'Password is too weak — use at least 6 characters.';
+    case 'auth/too-many-requests': return 'Too many attempts. Wait a moment and try again.';
+    case 'auth/network-request-failed': return 'Network error. Check your internet and try again.';
+    default: return (e && e.message) ? e.message.replace('Firebase: ', '') : 'Something went wrong. Try again.';
   }
 }
 
-async function pickDisplayName(name) {
-  if (!name) return;
-  showSigninLoading();
-  currentUser = { displayName: name, signedInAt: new Date().toISOString() };
-  setStoredAuth({ signedIn: true, displayName: name, signedInAt: currentUser.signedInAt });
-  // Register in Firestore members subcollection so others see who's active
+async function submitAuth() {
+  const err = document.getElementById('signinError');
+  const email = (document.getElementById('signinEmail').value || '').trim().toLowerCase();
+  const pw = document.getElementById('signinPassword').value || '';
+  err.textContent = '';
+
+  if (!email) { err.textContent = 'Please enter your email.'; return; }
+  if (!pw) { err.textContent = 'Please enter your password.'; return; }
+
+  if (authMode === 'register') {
+    const pw2 = document.getElementById('signinPassword2').value || '';
+    const code = (document.getElementById('signinCode').value || '').trim().toLowerCase();
+    const name = resolveChosenName();
+    if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
+    if (pw !== pw2) { err.textContent = 'Passwords do not match.'; return; }
+    if (!name) { err.textContent = 'Please choose or type your name.'; return; }
+    if (code !== WORKSPACE_CODE) { err.textContent = 'Invalid workspace code. Ask the admin.'; return; }
+    pendingDisplayName = name; // ensure onSignedIn uses this even before updateProfile propagates
+    showSigninLoading();
+    try {
+      const cred = await firebaseAuth.createUserWithEmailAndPassword(email, pw);
+      try { await cred.user.updateProfile({ displayName: name }); } catch (e) {}
+      // onAuthStateChanged will fire and run onSignedIn with this displayName
+    } catch (e) {
+      console.error('Registration failed', e);
+      pendingDisplayName = null;
+      err.textContent = authErrorMessage(e);
+      document.getElementById('signinStepAuth').style.display = '';
+      document.getElementById('signinLoading').style.display = 'none';
+    }
+  } else {
+    showSigninLoading();
+    try {
+      await firebaseAuth.signInWithEmailAndPassword(email, pw);
+      // onAuthStateChanged will fire and run onSignedIn
+    } catch (e) {
+      console.error('Sign-in failed', e);
+      err.textContent = authErrorMessage(e);
+      document.getElementById('signinStepAuth').style.display = '';
+      document.getElementById('signinLoading').style.display = 'none';
+    }
+  }
+}
+
+async function forgotPassword() {
+  const err = document.getElementById('signinError');
+  const email = (document.getElementById('signinEmail').value || '').trim().toLowerCase();
+  if (!email) { err.textContent = 'Enter your email above first, then tap “Forgot password?”'; return; }
   try {
-    await firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('members').doc(firebaseAuth.currentUser.uid).set({
-      displayName: name,
-      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-      uid: firebaseAuth.currentUser.uid
+    await firebaseAuth.sendPasswordResetEmail(email);
+    err.style.color = 'var(--ok)';
+    err.textContent = 'Password reset link sent. Check your email.';
+    setTimeout(() => { err.style.color = ''; }, 6000);
+  } catch (e) {
+    err.style.color = '';
+    err.textContent = authErrorMessage(e);
+  }
+}
+
+/* Unified post-authentication routine — single source of truth after any sign-in */
+async function onSignedIn(user) {
+  if (pendingSignedIn) return;
+  pendingSignedIn = true;
+  showSigninLoading();
+
+  // Resolve display name: pending (just registered) -> auth profile -> existing member doc -> email local-part
+  let displayName = (pendingDisplayName || user.displayName || '').trim();
+  let role = 'operator';
+  try {
+    const memberSnap = await membersColl().doc(user.uid).get();
+    if (memberSnap.exists) {
+      const m = memberSnap.data() || {};
+      if (!displayName && m.displayName) displayName = m.displayName;
+      if (m.role) role = m.role;
+    }
+  } catch (e) { /* offline — fall through */ }
+  if (!displayName) displayName = (user.email || 'User').split('@')[0];
+  pendingDisplayName = null;
+
+  currentUser = { displayName, email: user.email || null, signedInAt: new Date().toISOString() };
+  setStoredAuth({ signedIn: true, displayName, email: user.email || null, signedInAt: currentUser.signedInAt });
+
+  // Register / refresh this member, ensure team list + admin bootstrap
+  try {
+    await membersColl().doc(user.uid).set({
+      uid: user.uid,
+      email: user.email || null,
+      displayName,
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
-    // Ensure the name is in the global teamMembers list
-    await ensureTeamMember(name);
-    // Bootstrap: first ever signin becomes admin
-    await ensureFirstAdmin();
+    await ensureTeamMember(displayName);
+    await ensureFirstAdmin();          // promotes by name-match if displayName is in adminNames
+    await syncMyRoleField();           // writes role on member doc to match admin status
   } catch (e) {
     console.warn('Member register failed', e);
-    // Non-fatal — proceed
   }
+
   hideSigninScreen();
-  // Start the live data sync
-  await attachFirestoreListeners();
-  // Render the app
+  if (!listenersAttached) {
+    await attachFirestoreListeners();
+    listenersAttached = true;
+  }
+  maybeAutoSnapshot();
+  processRecurringTasks();
   rerender();
 }
 
 /* Adds a name to the workspace teamMembers list if not present */
 async function ensureTeamMember(name) {
-  const docRef = firebaseDb.collection('workspaces').doc(WORKSPACE_ID);
+  const docRef = workspaceDoc();
   await firebaseDb.runTransaction(async tx => {
     const doc = await tx.get(docRef);
     let members = [];
@@ -2024,14 +2208,23 @@ async function ensureTeamMember(name) {
   });
 }
 
+/* Keep this member's role field aligned with admin status (cosmetic source for the UI) */
+async function syncMyRoleField() {
+  if (!firebaseAuth.currentUser) return;
+  const role = isAdmin() ? 'admin' : 'operator';
+  try { await membersColl().doc(firebaseAuth.currentUser.uid).set({ role }, { merge: true }); } catch (e) {}
+}
+
 async function signOut() {
-  if (!confirm('Sign out of TRACER on this device? You can sign in again with the workspace code.')) return;
+  if (!confirm('Sign out of TRACER on this device? Sign back in anytime with your email and password.')) return;
   // Tear down listeners
   if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
   if (unsubscribeProjects) { unsubscribeProjects(); unsubscribeProjects = null; }
   if (unsubscribeMeta) { unsubscribeMeta(); unsubscribeMeta = null; }
   if (unsubscribeSnapshots) { unsubscribeSnapshots(); unsubscribeSnapshots = null; }
   if (unsubscribeAudit) { unsubscribeAudit(); unsubscribeAudit = null; }
+  if (unsubscribeMembers) { unsubscribeMembers(); unsubscribeMembers = null; }
+  listenersAttached = false;
   setStoredAuth(null);
   currentUser = null;
   try { await firebaseAuth.signOut(); } catch (e) {}
@@ -2040,6 +2233,7 @@ async function signOut() {
   state.projects = [];
   state.assignees = [];
   state.snapshots = [];
+  state.members = [];
   showSigninScreen();
 }
 
@@ -2052,6 +2246,7 @@ function tasksColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_
 function projectsColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('projects'); }
 function snapshotsColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('snapshots'); }
 function workspaceDoc() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID); }
+function membersColl() { return firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('members'); }
 
 // Used by every write so we know who did what
 function editStamp() {
@@ -2103,6 +2298,8 @@ async function attachFirestoreListeners() {
     _adminUids = d.admins || [];
     state.adminNames = d.adminNames || [];
     updateRoleUI();
+    try { syncMyRoleField(); } catch (e) {}
+    try { renderMembers(); } catch (e) {}
     saveCache();
     if (!suppressLocalRender) rerender();
   }, err => console.warn('Meta sync error', err));
@@ -2135,8 +2332,23 @@ async function attachFirestoreListeners() {
     try { renderActivity(); } catch (e) { /* render fails before DOM ready — ignore */ }
   }, err => console.warn('Audit sync error', err));
 
-  // Also: include metadata changes so cached/server-only states both trigger renders
-  // (helps when local cache has data but listener hasn't confirmed yet)
+  // Members (for Manage Members UI + role display)
+  unsubscribeMembers = membersColl().onSnapshot(snap => {
+    const members = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      members.push({
+        uid: doc.id,
+        email: d.email || null,
+        displayName: d.displayName || (d.email ? d.email.split('@')[0] : 'Unknown'),
+        role: d.role || 'operator',
+        lastSeen: d.lastSeen?.toDate ? d.lastSeen.toDate() : null
+      });
+    });
+    members.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    state.members = members;
+    try { renderMembers(); } catch (e) {}
+  }, err => console.warn('Members sync error', err));
 }
 
 // Save current state to localStorage as offline cache
@@ -2260,6 +2472,7 @@ let state = {
   audit: [],       // [{ id, displayName, action, at, ... }] from Firestore
   teamMembers: DEFAULT_DISPLAY_NAMES.slice(), // Synced via Firestore once signed in
   adminNames: [],
+  members: [],      // [{ uid, email, displayName, role, lastSeen }] from members subcollection
   currentProjectId: SEED.projects[0]?.id || 'mes',
   editingId: null,
   searchQuery: '',
@@ -2311,9 +2524,9 @@ function loadOrSeed() {
 function migrateTasksForPhase3a() {
   if (!state.tasks || !state.tasks.length) return;
   for (const t of state.tasks) {
-    // Coordinator: auto-assigned via smart defaults; admin can edit in-app later
+    // Coordinator: left empty by default — admin assigns manually in-app.
     if (t.coordinator === undefined) {
-      t.coordinator = smartDefaultCoordinator(t.assignee);
+      t.coordinator = null;
     }
     // readyAt: timestamp when operator signals task is ready for closure (Phase 3.1b)
     if (t.readyAt === undefined) t.readyAt = null;
@@ -2631,6 +2844,150 @@ async function ensureFirstAdmin() {
   }
 }
 
+/* ============================================================
+   MANAGE MEMBERS (admin-only)
+   Authority for access remains workspace.admins (UIDs) + adminNames.
+   Promote/demote keep BOTH the admins array and the member.role in sync.
+   ============================================================ */
+function renderMembers() {
+  const wrap = document.getElementById('membersList');
+  if (!wrap) return;
+  const myUid = firebaseAuth?.currentUser?.uid || null;
+  const members = state.members || [];
+  if (!members.length) {
+    wrap.innerHTML = '<div class="settings-info">No members yet.</div>';
+    return;
+  }
+  const adminCount = members.filter(m => _adminUids.includes(m.uid)).length;
+  wrap.innerHTML = '';
+  members.forEach(m => {
+    const isAdminMember = _adminUids.includes(m.uid);
+    const isMe = m.uid === myUid;
+    const row = document.createElement('div');
+    row.className = 'member-row';
+
+    const info = document.createElement('div');
+    info.className = 'member-info';
+    const name = document.createElement('div');
+    name.className = 'member-name';
+    name.appendChild(document.createTextNode(m.displayName));
+    const pill = document.createElement('span');
+    pill.className = 'role-pill ' + (isAdminMember ? 'admin' : 'operator');
+    pill.textContent = isAdminMember ? 'Admin' : 'Operator';
+    name.appendChild(pill);
+    if (isMe) {
+      const you = document.createElement('span');
+      you.className = 'role-pill you';
+      you.textContent = 'You';
+      name.appendChild(you);
+    }
+    const sub = document.createElement('div');
+    sub.className = 'member-sub';
+    sub.textContent = m.email || '(no email)';
+    info.appendChild(name);
+    info.appendChild(sub);
+
+    const actions = document.createElement('div');
+    actions.className = 'member-actions';
+    if (isAdminMember) {
+      const demote = document.createElement('button');
+      demote.className = 'member-act';
+      demote.textContent = 'Make operator';
+      // Can't demote the last admin (would lock everyone out of admin powers)
+      demote.disabled = adminCount <= 1;
+      if (demote.disabled) demote.style.opacity = '0.4';
+      demote.onclick = () => demoteMember(m);
+      actions.appendChild(demote);
+    } else {
+      const promote = document.createElement('button');
+      promote.className = 'member-act';
+      promote.textContent = 'Make admin';
+      promote.onclick = () => promoteMember(m);
+      actions.appendChild(promote);
+    }
+    if (!isMe) {
+      const remove = document.createElement('button');
+      remove.className = 'member-act danger';
+      remove.textContent = 'Remove';
+      remove.disabled = isAdminMember && adminCount <= 1;
+      if (remove.disabled) remove.style.opacity = '0.4';
+      remove.onclick = () => removeMember(m);
+      actions.appendChild(remove);
+    }
+
+    row.appendChild(info);
+    row.appendChild(actions);
+    wrap.appendChild(row);
+  });
+}
+
+async function promoteMember(m) {
+  if (!isAdmin()) { toast('Admin-only'); return; }
+  if (!confirm(`Make ${m.displayName} an admin? They'll get full edit and approval rights.`)) return;
+  try {
+    await firebaseDb.runTransaction(async tx => {
+      const ref = workspaceDoc();
+      const doc = await tx.get(ref);
+      const data = doc.data() || {};
+      const admins = data.admins || [];
+      const adminNames = data.adminNames || [];
+      if (!admins.includes(m.uid)) admins.push(m.uid);
+      if (m.displayName && !adminNames.includes(m.displayName)) adminNames.push(m.displayName);
+      tx.set(ref, { admins, adminNames }, { merge: true });
+    });
+    await membersColl().doc(m.uid).set({ role: 'admin' }, { merge: true });
+    toast(`${m.displayName} is now an admin`);
+  } catch (e) { console.warn('promote failed', e); toast('Could not update — try again'); }
+}
+
+async function demoteMember(m) {
+  if (!isAdmin()) { toast('Admin-only'); return; }
+  const adminCount = (state.members || []).filter(x => _adminUids.includes(x.uid)).length;
+  if (adminCount <= 1) { toast('Cannot demote the last admin'); return; }
+  if (!confirm(`Make ${m.displayName} an operator? They'll lose admin rights.`)) return;
+  try {
+    await firebaseDb.runTransaction(async tx => {
+      const ref = workspaceDoc();
+      const doc = await tx.get(ref);
+      const data = doc.data() || {};
+      const admins = (data.admins || []).filter(u => u !== m.uid);
+      // Remove the name from adminNames only if no other admin UID shares it
+      let adminNames = data.adminNames || [];
+      const stillUsed = (state.members || []).some(x => x.uid !== m.uid && admins.includes(x.uid) && x.displayName === m.displayName);
+      if (!stillUsed) adminNames = adminNames.filter(n => n !== m.displayName);
+      tx.set(ref, { admins, adminNames }, { merge: true });
+    });
+    await membersColl().doc(m.uid).set({ role: 'operator' }, { merge: true });
+    toast(`${m.displayName} is now an operator`);
+  } catch (e) { console.warn('demote failed', e); toast('Could not update — try again'); }
+}
+
+async function removeMember(m) {
+  if (!isAdmin()) { toast('Admin-only'); return; }
+  if (m.uid === firebaseAuth?.currentUser?.uid) { toast("You can't remove yourself"); return; }
+  const isAdminMember = _adminUids.includes(m.uid);
+  const adminCount = (state.members || []).filter(x => _adminUids.includes(x.uid)).length;
+  if (isAdminMember && adminCount <= 1) { toast('Cannot remove the last admin'); return; }
+  if (!confirm(`Remove ${m.displayName} from the workspace?\n\nThey lose any admin rights and are hidden from the team list. Their account still exists but, with the recommended security rules in place, they can no longer read or edit workspace data.`)) return;
+  try {
+    // Strip admin rights first
+    if (isAdminMember) {
+      await firebaseDb.runTransaction(async tx => {
+        const ref = workspaceDoc();
+        const doc = await tx.get(ref);
+        const data = doc.data() || {};
+        const admins = (data.admins || []).filter(u => u !== m.uid);
+        let adminNames = data.adminNames || [];
+        const stillUsed = (state.members || []).some(x => x.uid !== m.uid && admins.includes(x.uid) && x.displayName === m.displayName);
+        if (!stillUsed) adminNames = adminNames.filter(n => n !== m.displayName);
+        tx.set(ref, { admins, adminNames }, { merge: true });
+      });
+    }
+    await membersColl().doc(m.uid).delete();
+    toast(`${m.displayName} removed`);
+  } catch (e) { console.warn('remove failed', e); toast('Could not remove — try again'); }
+}
+
 /* ===== UTILITIES ===== */
 function uid() { return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
@@ -2900,94 +3257,78 @@ function buildReminderMessage(tasks, opts = {}) {
     return '_No tasks to send._';
   }
   
-  // Detect whether all selected tasks share one assignee — if so, address them
+  // Detect whether all selected tasks share one assignee — if so, greet them personally
   const assignees = [...new Set(tasks.map(t => t.assignee).filter(Boolean))];
   const singleAssignee = assignees.length === 1 ? assignees[0] : null;
+  // Use the first name from the assignee string for the greeting
   const recipientName = (singleAssignee && singleAssignee.split(/\s*[&/]\s*/)[0].trim()) || null;
   
-  // Sender (the person sharing — pulled from currentUser if available)
+  // Sender — dynamic signature from whoever is signed in
   const sender = (currentUser?.displayName || '').trim();
-  const senderFirstName = sender ? sender.split(/\s+/)[0] : null;
+  const senderName = sender || 'TRACER';
   
-  // Bucket tasks by urgency
-  const today = new Date();
-  const overdue = [];
-  const dueSoon = []; // next 3 days
-  const later = [];
-  tasks.forEach(t => {
-    if (!t.due) { later.push(t); return; }
-    const days = daysUntil(t.due);
-    if (days < 0) overdue.push(t);
-    else if (days <= 3) dueSoon.push(t);
-    else later.push(t);
-  });
-  
-  // Sort each bucket by priority then due date
-  const byPrioThenDue = (a, b) => {
+  // Sort tasks by priority, then due date (most urgent first)
+  const sorted = [...tasks].sort((a, b) => {
     const pDiff = (PRIO_ORDER[a.priority] ?? 2) - (PRIO_ORDER[b.priority] ?? 2);
     if (pDiff !== 0) return pDiff;
     return (a.due || '').localeCompare(b.due || '');
-  };
-  overdue.sort(byPrioThenDue);
-  dueSoon.sort(byPrioThenDue);
-  later.sort(byPrioThenDue);
+  });
+  
+  const isSingular = sorted.length === 1;
+  const taskWord = isSingular ? 'task' : 'tasks';
   
   const lines = [];
   
-  // Conversational opener
-  if (recipientName) {
-    lines.push(`Hi ${recipientName},`);
-  } else {
-    lines.push(`Hi,`);
-  }
+  // Personal greeting
+  lines.push(`Hi ${recipientName || 'team'},`);
+  lines.push('');
+  lines.push(`Reminder on below mentioned ${taskWord}.`);
   lines.push('');
   
-  // Context sentence based on what's in the bundle
-  if (overdue.length > 0 && (dueSoon.length > 0 || later.length > 0)) {
-    lines.push(`Just a quick reminder on ${tasks.length} task${tasks.length !== 1 ? 's' : ''} — a few are overdue, would appreciate an update.`);
-  } else if (overdue.length > 0) {
-    lines.push(`Quick reminder — ${overdue.length === 1 ? 'this is' : 'these are'} overdue. Could you update on status?`);
-  } else if (dueSoon.length > 0) {
-    lines.push(`A quick heads-up — ${dueSoon.length === 1 ? 'this is' : 'these are'} due in the next few days.`);
-  } else {
-    lines.push(`Wanted to flag ${tasks.length === 1 ? 'this task' : 'these tasks'} for your attention.`);
-  }
+  // Numbered, compact 2-line-per-task format
+  sorted.forEach((t, idx) => {
+    const proj = getProject(t.projectId);
+    lines.push(`${idx + 1}. *${t.title}*`);
+    // Combined meta line: Project · Priority · Due
+    const metaParts = [];
+    if (proj) metaParts.push(proj.name);
+    else if (t.section) metaParts.push(t.section);
+    metaParts.push(`${prioEmoji(t.priority)} ${PRIO_LABELS[t.priority] || t.priority}`);
+    if (t.due) {
+      metaParts.push(`Due ${fmtDueShort(t.due)} (${dueRelative(t.due)})`);
+    } else {
+      metaParts.push('No due date');
+    }
+    lines.push(metaParts.join(' · '));
+    lines.push('');
+  });
+  
+  // Closing question
+  lines.push(`Please update status of the same or share what's the issue in completing the ${taskWord}?`);
   lines.push('');
-  
-  // Render each bucket
-  const renderBucket = (label, items, emoji) => {
-    if (items.length === 0) return;
-    lines.push(`${emoji} *${label}*`);
-    items.forEach(t => {
-      const proj = getProject(t.projectId);
-      lines.push(`• ${t.title}`);
-      const meta = [];
-      if (proj) meta.push(proj.name);
-      if (t.section && !proj) meta.push(t.section);
-      if (t.due) meta.push(fmtDue(t.due));
-      if (meta.length) lines.push(`  _${meta.join(' · ')}_`);
-    });
-    lines.push('');
-  };
-  
-  renderBucket('OVERDUE', overdue, '🔴');
-  renderBucket('Due this week', dueSoon, '🟡');
-  renderBucket('Upcoming', later, '⚪');
-  
-  // Soft sign-off
-  if (overdue.length > 0) {
-    lines.push(`Let me know if anything is blocked or you need help unblocking.`);
-  } else {
-    lines.push(`Let me know if you need any help on these.`);
-  }
-  
-  if (senderFirstName) {
-    lines.push('');
-    lines.push(`Thanks,`);
-    lines.push(senderFirstName);
-  }
+  lines.push('Regards,');
+  lines.push(senderName);
   
   return lines.join('\n');
+}
+
+/* Short due date for reminder: "15 May" */
+function fmtDueShort(due) {
+  if (!due) return '';
+  const d = new Date(due);
+  if (isNaN(d.getTime())) return due;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+/* Relative due phrasing for reminder: "2 days overdue", "in 1 day", "today" */
+function dueRelative(due) {
+  if (!due) return '';
+  const days = daysUntil(due);
+  if (days < 0) return `${Math.abs(days)} ${Math.abs(days) === 1 ? 'day' : 'days'} overdue`;
+  if (days === 0) return 'today';
+  if (days === 1) return 'in 1 day';
+  return `in ${days} days`;
 }
 
 /* Phase 4 — Picker: ask user whether they want reminder tone or task-list export
@@ -2996,15 +3337,14 @@ function buildReminderMessage(tasks, opts = {}) {
 function pickShareFormatAndBuild(tasks, headerLabel) {
   if (!tasks || tasks.length === 0) return null;
   
-  // Default to reminder if all tasks share one assignee (most likely use-case),
-  // task-list export otherwise.
   const assignees = [...new Set(tasks.map(t => t.assignee).filter(Boolean))];
   const isReminderLikely = assignees.length === 1;
+  const recipientName = isReminderLikely ? assignees[0].split(/[&/]/)[0].trim() : null;
   
-  // Use confirm() with descriptive prompt. OK = the suggested default, Cancel = the other.
+  // OK = the suggested default for this context, Cancel = the alternative format
   const prompt = isReminderLikely
-    ? `Send as a friendly reminder to ${assignees[0]}?\n\n• OK = Reminder (Hi ${assignees[0].split(/[&/]/)[0].trim()}, quick reminder...)\n• Cancel = Task list export (📋 formatted bullet list)`
-    : `Send as a task list export?\n\n• OK = Task list (📋 formatted bullet list)\n• Cancel = Friendly reminder (conversational tone)`;
+    ? `Send as a personal reminder to ${recipientName}?\n\n• OK = Reminder ("Hi ${recipientName}, reminder on below mentioned tasks...")\n• Cancel = Plain task list`
+    : `Send as a plain task list?\n\n• OK = Task list (formatted bullet list)\n• Cancel = Personal reminder format`;
   
   const choseDefault = window.confirm(prompt);
   const useReminder = choseDefault ? isReminderLikely : !isReminderLikely;
@@ -3828,8 +4168,9 @@ function scoreClosedTask(task) {
   
   const taskScore = Math.round(base * timeliness * priority * effort * 10) / 10;
   
-  // Coordinator bonus +3, only when coordinator != assignee (and coordinator is HO)
-  const coordBonus = (task.coordinator && task.coordinator !== task.assignee && isHO(task.coordinator)) ? 3 : 0;
+  // Coordinator bonus +3, whenever there's a coordinator who isn't also the assignee
+  // (coordinator can be anyone on the team, not only HO).
+  const coordBonus = (task.coordinator && task.coordinator !== task.assignee) ? 3 : 0;
   
   return {
     taskScore,
@@ -3906,7 +4247,7 @@ function computePerformanceSnapshot(today = new Date()) {
     return scores[name];
   }
   
-  // Pass 1: closed tasks since Phase 3 launch — task score → assignee, +3 → coordinator (if different & HO)
+  // Pass 1: closed tasks since Phase 3 launch — task score → assignee, +3 → coordinator (if different)
   for (const t of state.tasks) {
     if (t.status === 'done' && t.completedAt && t.completedAt >= PHASE3_LAUNCH) {
       const result = scoreClosedTask(t);
@@ -4157,12 +4498,12 @@ function computeWeeklyRecap() {
   };
 }
 
-// Notes quality diagnostic for HO coordinators (admin-only)
-// Returns avg effort multiplier across tasks coordinated by each HO member
+// Notes quality diagnostic per coordinator (admin-only)
+// Returns avg effort multiplier across tasks coordinated by each person
 function computeNotesQualityByCoordinator() {
   const stats = {}; // name → { totalEffort, count, avgEffort }
   state.tasks.forEach(t => {
-    if (t.coordinator && isHO(t.coordinator) && t.status === 'done' && t.completedAt >= PHASE3_LAUNCH) {
+    if (t.coordinator && t.status === 'done' && t.completedAt >= PHASE3_LAUNCH) {
       const name = String(t.coordinator).trim();
       if (!stats[name]) stats[name] = { totalEffort: 0, count: 0 };
       stats[name].totalEffort += calcEffortMultiplier(t);
@@ -4908,11 +5249,17 @@ function openTaskModal(task = null) {
   addOpt.textContent = '+ Add new assignee…';
   fA.appendChild(addOpt);
 
-  // Phase 3.1a — Coordinator dropdown (HO team only, plus None)
+  // Coordinator dropdown — anyone on the team (everyone who's signed in / been added),
+  // plus the task's existing coordinator preserved even if not currently in the list.
   const fC = document.getElementById('fCoordinator');
   if (fC) {
     fC.innerHTML = '<option value="">— None —</option>';
-    HO_TEAM.forEach(name => {
+    const coordNames = (state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES).slice();
+    if (task && task.coordinator && !coordNames.some(n => n.toLowerCase() === String(task.coordinator).toLowerCase())) {
+      coordNames.push(task.coordinator);
+    }
+    coordNames.sort((a, b) => a.localeCompare(b));
+    coordNames.forEach(name => {
       const o = document.createElement('option'); o.value = name; o.textContent = name; fC.appendChild(o);
     });
   }
@@ -5632,16 +5979,10 @@ document.getElementById('btnSave').onclick = async () => {
       coordBonus: null
     };
 
-    // Phase 5 — Coordinator assignment:
-    // Operators can now pick coordinator (defaults to themselves if not picked).
-    // Admin can pick anyone, or smart-default from assignee.
-    if (!isAdmin()) {
-      // Operator: use picked coordinator if provided, else default to self
-      newTask.coordinator = data.coordinator || currentUser?.displayName || null;
-    } else {
-      // Admin: use explicit pick, or smart-default from assignee
-      newTask.coordinator = data.coordinator || smartDefaultCoordinator(data.assignee);
-    }
+    // Phase 5 / Phase C — Coordinator assignment:
+    // No auto-assignment. Coordinator stays empty unless explicitly picked from the dropdown;
+    // the admin assigns coordinators manually later.
+    newTask.coordinator = data.coordinator || null;
 
     // Phase 5 — Operator restrictions on CREATE are now narrowly scoped:
     // - Status forced to 'todo' (operators can't create pre-completed tasks)
@@ -6234,6 +6575,7 @@ document.getElementById('templatesModal').addEventListener('click', e => {
 function openSettings() {
   refreshSnapshotList();
   refreshDataSummary();
+  try { renderMembers(); } catch (e) {}
   document.getElementById('settingsModal').classList.add('show');
 }
 function closeSettings() {
@@ -6256,8 +6598,10 @@ function refreshDataSummary() {
   const wInfo = document.getElementById('workspaceInfo');
   if (wInfo) {
     if (currentUser && firestoreReady) {
-      const team = state.teamMembers && state.teamMembers.length ? state.teamMembers : DEFAULT_DISPLAY_NAMES;
-      wInfo.innerHTML = `Signed in as <strong>${escapeHTML(currentUser.displayName)}</strong> · Live sync <span style="color:var(--ok);">●</span> ON<br>Team members: ${team.map(n => escapeHTML(n)).join(', ')}`;
+      const roleLabel = isAdmin() ? 'Admin' : 'Operator';
+      const emailLine = currentUser.email ? ` · ${escapeHTML(currentUser.email)}` : '';
+      const count = (state.members && state.members.length) ? state.members.length : 0;
+      wInfo.innerHTML = `Signed in as <strong>${escapeHTML(currentUser.displayName)}</strong> <span class="role-pill ${isAdmin() ? 'admin' : 'operator'}">${roleLabel}</span><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--ink-faint);">${escapeHTML(currentUser.email || '')}</span><br>Live sync <span style="color:var(--ok);">●</span> ON · ${count} member${count !== 1 ? 's' : ''}`;
     } else if (currentUser) {
       wInfo.innerHTML = `Signed in as <strong>${escapeHTML(currentUser.displayName)}</strong> · Live sync OFF (offline or Firebase unreachable)`;
     } else {
@@ -6819,44 +7163,35 @@ if (!fbOk) {
   processRecurringTasks();
   renderDashboard();
 } else {
-  // Check stored auth state
-  const stored = getStoredAuth();
-  if (stored && stored.signedIn && stored.displayName) {
-    // Already signed in — restore session and attach listeners
-    currentUser = { displayName: stored.displayName, signedInAt: stored.signedInAt };
-    // Render local cache immediately so UI isn't blank
-    renderDashboard();
-    // Then sign in to Firebase (anonymous) and attach listeners
-    firebaseAuth.signInAnonymously()
-      .then(async () => {
-        // Refresh member presence
-        try {
-          await firebaseDb.collection('workspaces').doc(WORKSPACE_ID).collection('members').doc(firebaseAuth.currentUser.uid).set({
-            displayName: stored.displayName,
-            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-            uid: firebaseAuth.currentUser.uid
-          }, { merge: true });
-          await ensureFirstAdmin();
-        } catch (e) {}
-        await attachFirestoreListeners();
-        maybeAutoSnapshot();
-        processRecurringTasks();
-      })
-      .catch(err => {
-        console.error('Auto sign-in failed', err);
-        // Show sign-in screen
-        showSigninScreen();
-      });
-  } else {
-    // Not signed in — show sign-in screen
-    showSigninScreen();
-  }
+  // Render local cache immediately so the UI isn't blank while auth resolves
+  renderDashboard();
+  // Firebase Auth is the single source of truth. Sessions persist across reloads.
+  firebaseAuth.onAuthStateChanged(user => {
+    if (user && !user.isAnonymous) {
+      // Real (email) account — proceed into the app
+      onSignedIn(user);
+    } else {
+      // No user, or a leftover anonymous session from the pre-v3 build.
+      if (user && user.isAnonymous) {
+        // Clean up old anonymous sessions so the email login is shown.
+        firebaseAuth.signOut().catch(() => {});
+      }
+      pendingSignedIn = false;
+      currentUser = null;
+      showSigninScreen();
+    }
+  });
 }
 
 // Wire sign-in form
-document.getElementById('signinCodeBtn').onclick = submitWorkspaceCode;
-document.getElementById('signinCode').addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitWorkspaceCode();
+document.getElementById('signinAuthBtn').onclick = submitAuth;
+document.getElementById('signinToggle').onclick = toggleAuthMode;
+document.getElementById('signinForgot').onclick = forgotPassword;
+document.getElementById('signinPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAuth();
+});
+document.getElementById('signinEmail').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { document.getElementById('signinPassword').focus(); }
 });
 
 /* ===== SW + INSTALL ===== */
